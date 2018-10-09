@@ -1,0 +1,2531 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 10.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     95970,       2522]
+NotebookOptionsPosition[     93223,       2437]
+NotebookOutlinePosition[     93582,       2453]
+CellTagsIndexPosition[     93539,       2450]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{
+   "kAG", ",", " ", "kTC", ",", " ", "kGA", ",", " ", "kCT", ",", " ", "kAC", 
+    ",", " ", "kTG", ",", " ", "kGT", ",", " ", "kCA", ",", " ", "kAT", ",", 
+    "kTA", ",", " ", "kGC", ",", " ", "kCG"}], "}"}], "=", 
+  "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "16.1", ",", " ", "16.0", ",", " ", "17.6", ",", " ", "17.7", ",", " ", 
+     "4.3", ",", " ", "4.3", ",", " ", "4.1", ",", " ", "4.1", ",", " ", 
+     "3.6", ",", " ", "3.5", ",", " ", "4.4", ",", " ", "4.4"}], "}"}], "=", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+     "12.8", ",", "12.7", ",", "20.9", ",", "21.1", ",", "3.4", ",", "3.4", 
+      ",", "4.8", ",", "4.9", ",", "2.8", ",", "2.8", ",", "5.3", ",", 
+      "5.2"}], "}"}], "=", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "14.9", ",", " ", "14.8", ",", " ", "16.1", ",", " ", "16.2", ",", " ", 
+       "4.0", ",", " ", "4.0", ",", " ", "5.6", ",", " ", "5.7", ",", " ", 
+       "3.3", ",", " ", "3.3", ",", " ", "6.2", ",", " ", "6.1"}], "}"}], " ",
+      "=", " "}]}]}]}]], "Input",
+ CellChangeTimes->{{3.629708169232407*^9, 3.629708212381239*^9}, {
+  3.629708290988246*^9, 3.629708407912759*^9}, {3.6297084496649313`*^9, 
+  3.6297084920142107`*^9}, {3.629708531366527*^9, 3.62970860629312*^9}}],
+
+Cell["\<\
+Below is the system of equations for the equilibrium of the genome hypercube \
+system: \
+\>", "Text",
+ CellChangeTimes->{{3.627631164447887*^9, 3.627631172142551*^9}, {
+  3.627631502223967*^9, 3.627631540045679*^9}}],
+
+Cell[BoxData[
+ RowBox[{"hc01", "=", 
+  RowBox[{
+   RowBox[{"Solve", "[", "\[IndentingNewLine]", "  ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCA"}], "-", 
+        RowBox[{"j", "*", "CAA"}], "+", 
+        RowBox[{"l", "*", "CTA"}], "-", 
+        RowBox[{"l", "*", "CAA"}], "+", 
+        RowBox[{"m", "*", "CGA"}], "-", 
+        RowBox[{"n", "*", "CAA"}], "+", 
+        RowBox[{"i", "*", "CAC"}], "-", 
+        RowBox[{"j", "*", "CAA"}], "+", 
+        RowBox[{"l", "*", "CAT"}], "-", 
+        RowBox[{"l", "*", "CAA"}], "+", 
+        RowBox[{"m", "*", "CAG"}], "-", 
+        RowBox[{"n", "*", "CAA"}]}], "\[Equal]", "0"}], "&&", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCC"}], "-", 
+        RowBox[{"j", "*", "CAC"}], "+", 
+        RowBox[{"l", "*", "CTC"}], "-", 
+        RowBox[{"l", "*", "CAC"}], "+", 
+        RowBox[{"m", "*", "CGC"}], "-", 
+        RowBox[{"n", "*", "CAC"}], "+", 
+        RowBox[{"j", "*", "CAA"}], "-", 
+        RowBox[{"i", "*", "CAC"}], "+", 
+        RowBox[{"n", "*", "CAT"}], "-", 
+        RowBox[{"m", "*", "CAC"}], "+", 
+        RowBox[{"k", "*", "CAG"}], "-", 
+        RowBox[{"k", "*", "CAC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCG"}], "-", 
+        RowBox[{"j", "*", "CAG"}], "+", 
+        RowBox[{"l", "*", "CTG"}], "-", 
+        RowBox[{"l", "*", "CAG"}], "+", 
+        RowBox[{"m", "*", "CGG"}], "-", 
+        RowBox[{"n", "*", "CAG"}], "+", 
+        RowBox[{"n", "*", "CAA"}], "-", 
+        RowBox[{"m", "*", "CAG"}], "+", 
+        RowBox[{"k", "*", "CAC"}], "-", 
+        RowBox[{"k", "*", "CAG"}], "+", 
+        RowBox[{"j", "*", "CAT"}], "-", 
+        RowBox[{"i", "*", "CAG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCT"}], "-", 
+        RowBox[{"j", "*", "CAT"}], "+", 
+        RowBox[{"l", "*", "CTT"}], "-", 
+        RowBox[{"l", "*", "CAT"}], "+", 
+        RowBox[{"m", "*", "CGT"}], "-", 
+        RowBox[{"n", "*", "CAT"}], "+", 
+        RowBox[{"l", "*", "CAA"}], "-", 
+        RowBox[{"l", "*", "CAT"}], "+", 
+        RowBox[{"m", "*", "CAC"}], "-", 
+        RowBox[{"n", "*", "CAT"}], "+", 
+        RowBox[{"i", "*", "CAG"}], "-", 
+        RowBox[{"j", "*", "CAT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAA"}], "-", 
+        RowBox[{"i", "*", "CCA"}], "+", 
+        RowBox[{"n", "*", "CTA"}], "-", 
+        RowBox[{"m", "*", "CCA"}], "+", 
+        RowBox[{"k", "*", "CGA"}], "-", 
+        RowBox[{"k", "*", "CCA"}], "+", 
+        RowBox[{"i", "*", "CCC"}], "-", 
+        RowBox[{"j", "*", "CCA"}], "+", 
+        RowBox[{"l", "*", "CCT"}], "-", 
+        RowBox[{"l", "*", "CCA"}], "+", 
+        RowBox[{"m", "*", "CCG"}], "-", 
+        RowBox[{"n", "*", "CCA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAC"}], "-", 
+        RowBox[{"i", "*", "CCC"}], "+", 
+        RowBox[{"n", "*", "CTC"}], "-", 
+        RowBox[{"m", "*", "CCC"}], "+", 
+        RowBox[{"k", "*", "CGC"}], "-", 
+        RowBox[{"k", "*", "CCC"}], "+", 
+        RowBox[{"j", "*", "CCA"}], "-", 
+        RowBox[{"i", "*", "CCC"}], "+", 
+        RowBox[{"n", "*", "CCT"}], "-", 
+        RowBox[{"m", "*", "CCC"}], "+", 
+        RowBox[{"k", "*", "CCG"}], "-", 
+        RowBox[{"k", "*", "CCC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAG"}], "-", 
+        RowBox[{"i", "*", "CCG"}], "+", 
+        RowBox[{"n", "*", "CTG"}], "-", 
+        RowBox[{"m", "*", "CCG"}], "+", 
+        RowBox[{"k", "*", "CGG"}], "-", 
+        RowBox[{"k", "*", "CCG"}], "+", 
+        RowBox[{"n", "*", "CCA"}], "-", 
+        RowBox[{"m", "*", "CCG"}], "+", 
+        RowBox[{"k", "*", "CCC"}], "-", 
+        RowBox[{"k", "*", "CCG"}], "+", 
+        RowBox[{"j", "*", "CCT"}], "-", 
+        RowBox[{"i", "*", "CCG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAT"}], "-", 
+        RowBox[{"i", "*", "CCT"}], "+", 
+        RowBox[{"n", "*", "CTT"}], "-", 
+        RowBox[{"m", "*", "CCT"}], "+", 
+        RowBox[{"k", "*", "CGT"}], "-", 
+        RowBox[{"k", "*", "CCT"}], "+", 
+        RowBox[{"l", "*", "CCA"}], "-", 
+        RowBox[{"l", "*", "CCT"}], "+", 
+        RowBox[{"m", "*", "CCC"}], "-", 
+        RowBox[{"n", "*", "CCT"}], "+", 
+        RowBox[{"i", "*", "CCG"}], "-", 
+        RowBox[{"j", "*", "CCT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAA"}], "-", 
+        RowBox[{"m", "*", "CGA"}], "+", 
+        RowBox[{"k", "*", "CCA"}], "-", 
+        RowBox[{"k", "*", "CGA"}], "+", 
+        RowBox[{"j", "*", "CTA"}], "-", 
+        RowBox[{"i", "*", "CGA"}], "+", 
+        RowBox[{"i", "*", "CGC"}], "-", 
+        RowBox[{"j", "*", "CGA"}], "+", 
+        RowBox[{"l", "*", "CGT"}], "-", 
+        RowBox[{"l", "*", "CGA"}], "+", 
+        RowBox[{"m", "*", "CGG"}], "-", 
+        RowBox[{"n", "*", "CGA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAC"}], "-", 
+        RowBox[{"m", "*", "CGC"}], "+", 
+        RowBox[{"k", "*", "CCC"}], "-", 
+        RowBox[{"k", "*", "CGC"}], "+", 
+        RowBox[{"j", "*", "CTC"}], "-", 
+        RowBox[{"i", "*", "CGC"}], "+", 
+        RowBox[{"j", "*", "CGA"}], "-", 
+        RowBox[{"i", "*", "CGC"}], "+", 
+        RowBox[{"n", "*", "CGT"}], "-", 
+        RowBox[{"m", "*", "CGC"}], "+", 
+        RowBox[{"k", "*", "CGG"}], "-", 
+        RowBox[{"k", "*", "CGC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAG"}], "-", 
+        RowBox[{"m", "*", "CGG"}], "+", 
+        RowBox[{"k", "*", "CCG"}], "-", 
+        RowBox[{"k", "*", "CGG"}], "+", 
+        RowBox[{"j", "*", "CTG"}], "-", 
+        RowBox[{"i", "*", "CGG"}], "+", 
+        RowBox[{"n", "*", "CGA"}], "-", 
+        RowBox[{"m", "*", "CGG"}], "+", 
+        RowBox[{"k", "*", "CGC"}], "-", 
+        RowBox[{"k", "*", "CGG"}], "+", 
+        RowBox[{"j", "*", "CGT"}], "-", 
+        RowBox[{"i", "*", "CGG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAT"}], "-", 
+        RowBox[{"m", "*", "CGT"}], "+", 
+        RowBox[{"k", "*", "CCT"}], "-", 
+        RowBox[{"k", "*", "CGT"}], "+", 
+        RowBox[{"j", "*", "CTT"}], "-", 
+        RowBox[{"i", "*", "CGT"}], "+", 
+        RowBox[{"l", "*", "CGA"}], "-", 
+        RowBox[{"l", "*", "CGT"}], "+", 
+        RowBox[{"m", "*", "CGC"}], "-", 
+        RowBox[{"n", "*", "CGT"}], "+", 
+        RowBox[{"i", "*", "CGG"}], "-", 
+        RowBox[{"j", "*", "CGT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAA"}], "-", 
+        RowBox[{"l", "*", "CTA"}], "+", 
+        RowBox[{"m", "*", "CCA"}], "-", 
+        RowBox[{"n", "*", "CTA"}], "+", 
+        RowBox[{"i", "*", "CGA"}], "-", 
+        RowBox[{"j", "*", "CTA"}], "+", 
+        RowBox[{"i", "*", "CTC"}], "-", 
+        RowBox[{"j", "*", "CTA"}], "+", 
+        RowBox[{"l", "*", "CTT"}], "-", 
+        RowBox[{"l", "*", "CTA"}], "+", 
+        RowBox[{"m", "*", "CTG"}], "-", 
+        RowBox[{"n", "*", "CTA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAC"}], "-", 
+        RowBox[{"l", "*", "CTC"}], "+", 
+        RowBox[{"m", "*", "CCC"}], "-", 
+        RowBox[{"n", "*", "CTC"}], "+", 
+        RowBox[{"i", "*", "CGC"}], "-", 
+        RowBox[{"j", "*", "CTC"}], "+", 
+        RowBox[{"j", "*", "CTA"}], "-", 
+        RowBox[{"i", "*", "CTC"}], "+", 
+        RowBox[{"n", "*", "CTT"}], "-", 
+        RowBox[{"m", "*", "CTC"}], "+", 
+        RowBox[{"k", "*", "CTG"}], "-", 
+        RowBox[{"k", "*", "CTC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAG"}], "-", 
+        RowBox[{"l", "*", "CTG"}], "+", 
+        RowBox[{"m", "*", "CCG"}], "-", 
+        RowBox[{"n", "*", "CTG"}], "+", 
+        RowBox[{"i", "*", "CGG"}], "-", 
+        RowBox[{"j", "*", "CTG"}], "+", 
+        RowBox[{"n", "*", "CTA"}], "-", 
+        RowBox[{"m", "*", "CTG"}], "+", 
+        RowBox[{"k", "*", "CTC"}], "-", 
+        RowBox[{"k", "*", "CTG"}], "+", 
+        RowBox[{"j", "*", "CTT"}], "-", 
+        RowBox[{"i", "*", "CTG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAT"}], "-", 
+        RowBox[{"l", "*", "CTT"}], "+", 
+        RowBox[{"m", "*", "CCT"}], "-", 
+        RowBox[{"n", "*", "CTT"}], "+", 
+        RowBox[{"i", "*", "CGT"}], "-", 
+        RowBox[{"j", "*", "CTT"}], "+", 
+        RowBox[{"l", "*", "CTA"}], "-", 
+        RowBox[{"l", "*", "CTT"}], "+", 
+        RowBox[{"m", "*", "CTC"}], "-", 
+        RowBox[{"n", "*", "CTT"}], "+", 
+        RowBox[{"i", "*", "CTG"}], "-", 
+        RowBox[{"j", "*", "CTT"}]}], "\[Equal]", "0"}], "&&", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+       "CAA", "+", "CAC", "+", "CAG", "+", "CAT", "+", "CCA", "+", "CCC", "+",
+         "CCG", "+", "CCT", "+", "CGA", "+", "CGC", "+", "CGG", "+", "CGT", 
+        "+", "CTA", "+", "CTC", "+", "CTG", "+", "CTT"}], "\[Equal]", " ", 
+       "1"}]}], ",", "\[IndentingNewLine]", "  ", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "j", ",", "k", ",", "l", ",", "m", ",", "n"}], 
+      "}"}]}], "]"}], "//", "FullSimplify"}]}]], "Input",
+ CellChangeTimes->{{3.6275802715387697`*^9, 3.627580326905966*^9}, {
+   3.6275803591834993`*^9, 3.627580423063693*^9}, {3.627580583503688*^9, 
+   3.627580600859324*^9}, {3.6275808927578077`*^9, 3.6275809067714653`*^9}, {
+   3.627581005209201*^9, 3.627581022432825*^9}, 3.627582115636842*^9, {
+   3.627632302343526*^9, 3.627632347909464*^9}, {3.627632407771782*^9, 
+   3.627632430562595*^9}, {3.627632505347328*^9, 3.627632508745604*^9}, {
+   3.627632547539197*^9, 3.627632550857359*^9}, {3.6276328077791557`*^9, 
+   3.627632814963026*^9}}],
+
+Cell[BoxData[
+ RowBox[{"hc02", "=", 
+  RowBox[{
+   RowBox[{"Solve", "[", "\[IndentingNewLine]", "  ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCA"}], "-", 
+        RowBox[{"j", "*", "CAA"}], "+", 
+        RowBox[{"l", "*", "CTA"}], "-", 
+        RowBox[{"l", "*", "CAA"}], "+", 
+        RowBox[{"m", "*", "CGA"}], "-", 
+        RowBox[{"n", "*", "CAA"}], "+", 
+        RowBox[{"i", "*", "CAC"}], "-", 
+        RowBox[{"j", "*", "CAA"}], "+", 
+        RowBox[{"l", "*", "CAT"}], "-", 
+        RowBox[{"l", "*", "CAA"}], "+", 
+        RowBox[{"m", "*", "CAG"}], "-", 
+        RowBox[{"n", "*", "CAA"}]}], "\[Equal]", "0"}], "&&", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCC"}], "-", 
+        RowBox[{"j", "*", "CAC"}], "+", 
+        RowBox[{"l", "*", "CTC"}], "-", 
+        RowBox[{"l", "*", "CAC"}], "+", 
+        RowBox[{"m", "*", "CGC"}], "-", 
+        RowBox[{"n", "*", "CAC"}], "+", 
+        RowBox[{"j", "*", "CAA"}], "-", 
+        RowBox[{"i", "*", "CAC"}], "+", 
+        RowBox[{"n", "*", "CAT"}], "-", 
+        RowBox[{"m", "*", "CAC"}], "+", 
+        RowBox[{"k", "*", "CAG"}], "-", 
+        RowBox[{"k", "*", "CAC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCG"}], "-", 
+        RowBox[{"j", "*", "CAG"}], "+", 
+        RowBox[{"l", "*", "CTG"}], "-", 
+        RowBox[{"l", "*", "CAG"}], "+", 
+        RowBox[{"m", "*", "CGG"}], "-", 
+        RowBox[{"n", "*", "CAG"}], "+", 
+        RowBox[{"n", "*", "CAA"}], "-", 
+        RowBox[{"m", "*", "CAG"}], "+", 
+        RowBox[{"k", "*", "CAC"}], "-", 
+        RowBox[{"k", "*", "CAG"}], "+", 
+        RowBox[{"j", "*", "CAT"}], "-", 
+        RowBox[{"i", "*", "CAG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCT"}], "-", 
+        RowBox[{"j", "*", "CAT"}], "+", 
+        RowBox[{"l", "*", "CTT"}], "-", 
+        RowBox[{"l", "*", "CAT"}], "+", 
+        RowBox[{"m", "*", "CGT"}], "-", 
+        RowBox[{"n", "*", "CAT"}], "+", 
+        RowBox[{"l", "*", "CAA"}], "-", 
+        RowBox[{"l", "*", "CAT"}], "+", 
+        RowBox[{"m", "*", "CAC"}], "-", 
+        RowBox[{"n", "*", "CAT"}], "+", 
+        RowBox[{"i", "*", "CAG"}], "-", 
+        RowBox[{"j", "*", "CAT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAA"}], "-", 
+        RowBox[{"i", "*", "CCA"}], "+", 
+        RowBox[{"n", "*", "CTA"}], "-", 
+        RowBox[{"m", "*", "CCA"}], "+", 
+        RowBox[{"k", "*", "CGA"}], "-", 
+        RowBox[{"k", "*", "CCA"}], "+", 
+        RowBox[{"i", "*", "CCC"}], "-", 
+        RowBox[{"j", "*", "CCA"}], "+", 
+        RowBox[{"l", "*", "CCT"}], "-", 
+        RowBox[{"l", "*", "CCA"}], "+", 
+        RowBox[{"m", "*", "CCG"}], "-", 
+        RowBox[{"n", "*", "CCA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAC"}], "-", 
+        RowBox[{"i", "*", "CCC"}], "+", 
+        RowBox[{"n", "*", "CTC"}], "-", 
+        RowBox[{"m", "*", "CCC"}], "+", 
+        RowBox[{"k", "*", "CGC"}], "-", 
+        RowBox[{"k", "*", "CCC"}], "+", 
+        RowBox[{"j", "*", "CCA"}], "-", 
+        RowBox[{"i", "*", "CCC"}], "+", 
+        RowBox[{"n", "*", "CCT"}], "-", 
+        RowBox[{"m", "*", "CCC"}], "+", 
+        RowBox[{"k", "*", "CCG"}], "-", 
+        RowBox[{"k", "*", "CCC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAG"}], "-", 
+        RowBox[{"i", "*", "CCG"}], "+", 
+        RowBox[{"n", "*", "CTG"}], "-", 
+        RowBox[{"m", "*", "CCG"}], "+", 
+        RowBox[{"k", "*", "CGG"}], "-", 
+        RowBox[{"k", "*", "CCG"}], "+", 
+        RowBox[{"n", "*", "CCA"}], "-", 
+        RowBox[{"m", "*", "CCG"}], "+", 
+        RowBox[{"k", "*", "CCC"}], "-", 
+        RowBox[{"k", "*", "CCG"}], "+", 
+        RowBox[{"j", "*", "CCT"}], "-", 
+        RowBox[{"i", "*", "CCG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAT"}], "-", 
+        RowBox[{"i", "*", "CCT"}], "+", 
+        RowBox[{"n", "*", "CTT"}], "-", 
+        RowBox[{"m", "*", "CCT"}], "+", 
+        RowBox[{"k", "*", "CGT"}], "-", 
+        RowBox[{"k", "*", "CCT"}], "+", 
+        RowBox[{"l", "*", "CCA"}], "-", 
+        RowBox[{"l", "*", "CCT"}], "+", 
+        RowBox[{"m", "*", "CCC"}], "-", 
+        RowBox[{"n", "*", "CCT"}], "+", 
+        RowBox[{"i", "*", "CCG"}], "-", 
+        RowBox[{"j", "*", "CCT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAA"}], "-", 
+        RowBox[{"m", "*", "CGA"}], "+", 
+        RowBox[{"k", "*", "CCA"}], "-", 
+        RowBox[{"k", "*", "CGA"}], "+", 
+        RowBox[{"j", "*", "CTA"}], "-", 
+        RowBox[{"i", "*", "CGA"}], "+", 
+        RowBox[{"i", "*", "CGC"}], "-", 
+        RowBox[{"j", "*", "CGA"}], "+", 
+        RowBox[{"l", "*", "CGT"}], "-", 
+        RowBox[{"l", "*", "CGA"}], "+", 
+        RowBox[{"m", "*", "CGG"}], "-", 
+        RowBox[{"n", "*", "CGA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAC"}], "-", 
+        RowBox[{"m", "*", "CGC"}], "+", 
+        RowBox[{"k", "*", "CCC"}], "-", 
+        RowBox[{"k", "*", "CGC"}], "+", 
+        RowBox[{"j", "*", "CTC"}], "-", 
+        RowBox[{"i", "*", "CGC"}], "+", 
+        RowBox[{"j", "*", "CGA"}], "-", 
+        RowBox[{"i", "*", "CGC"}], "+", 
+        RowBox[{"n", "*", "CGT"}], "-", 
+        RowBox[{"m", "*", "CGC"}], "+", 
+        RowBox[{"k", "*", "CGG"}], "-", 
+        RowBox[{"k", "*", "CGC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAG"}], "-", 
+        RowBox[{"m", "*", "CGG"}], "+", 
+        RowBox[{"k", "*", "CCG"}], "-", 
+        RowBox[{"k", "*", "CGG"}], "+", 
+        RowBox[{"j", "*", "CTG"}], "-", 
+        RowBox[{"i", "*", "CGG"}], "+", 
+        RowBox[{"n", "*", "CGA"}], "-", 
+        RowBox[{"m", "*", "CGG"}], "+", 
+        RowBox[{"k", "*", "CGC"}], "-", 
+        RowBox[{"k", "*", "CGG"}], "+", 
+        RowBox[{"j", "*", "CGT"}], "-", 
+        RowBox[{"i", "*", "CGG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAT"}], "-", 
+        RowBox[{"m", "*", "CGT"}], "+", 
+        RowBox[{"k", "*", "CCT"}], "-", 
+        RowBox[{"k", "*", "CGT"}], "+", 
+        RowBox[{"j", "*", "CTT"}], "-", 
+        RowBox[{"i", "*", "CGT"}], "+", 
+        RowBox[{"l", "*", "CGA"}], "-", 
+        RowBox[{"l", "*", "CGT"}], "+", 
+        RowBox[{"m", "*", "CGC"}], "-", 
+        RowBox[{"n", "*", "CGT"}], "+", 
+        RowBox[{"i", "*", "CGG"}], "-", 
+        RowBox[{"j", "*", "CGT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAA"}], "-", 
+        RowBox[{"l", "*", "CTA"}], "+", 
+        RowBox[{"m", "*", "CCA"}], "-", 
+        RowBox[{"n", "*", "CTA"}], "+", 
+        RowBox[{"i", "*", "CGA"}], "-", 
+        RowBox[{"j", "*", "CTA"}], "+", 
+        RowBox[{"i", "*", "CTC"}], "-", 
+        RowBox[{"j", "*", "CTA"}], "+", 
+        RowBox[{"l", "*", "CTT"}], "-", 
+        RowBox[{"l", "*", "CTA"}], "+", 
+        RowBox[{"m", "*", "CTG"}], "-", 
+        RowBox[{"n", "*", "CTA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAC"}], "-", 
+        RowBox[{"l", "*", "CTC"}], "+", 
+        RowBox[{"m", "*", "CCC"}], "-", 
+        RowBox[{"n", "*", "CTC"}], "+", 
+        RowBox[{"i", "*", "CGC"}], "-", 
+        RowBox[{"j", "*", "CTC"}], "+", 
+        RowBox[{"j", "*", "CTA"}], "-", 
+        RowBox[{"i", "*", "CTC"}], "+", 
+        RowBox[{"n", "*", "CTT"}], "-", 
+        RowBox[{"m", "*", "CTC"}], "+", 
+        RowBox[{"k", "*", "CTG"}], "-", 
+        RowBox[{"k", "*", "CTC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAG"}], "-", 
+        RowBox[{"l", "*", "CTG"}], "+", 
+        RowBox[{"m", "*", "CCG"}], "-", 
+        RowBox[{"n", "*", "CTG"}], "+", 
+        RowBox[{"i", "*", "CGG"}], "-", 
+        RowBox[{"j", "*", "CTG"}], "+", 
+        RowBox[{"n", "*", "CTA"}], "-", 
+        RowBox[{"m", "*", "CTG"}], "+", 
+        RowBox[{"k", "*", "CTC"}], "-", 
+        RowBox[{"k", "*", "CTG"}], "+", 
+        RowBox[{"j", "*", "CTT"}], "-", 
+        RowBox[{"i", "*", "CTG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAT"}], "-", 
+        RowBox[{"l", "*", "CTT"}], "+", 
+        RowBox[{"m", "*", "CCT"}], "-", 
+        RowBox[{"n", "*", "CTT"}], "+", 
+        RowBox[{"i", "*", "CGT"}], "-", 
+        RowBox[{"j", "*", "CTT"}], "+", 
+        RowBox[{"l", "*", "CTA"}], "-", 
+        RowBox[{"l", "*", "CTT"}], "+", 
+        RowBox[{"m", "*", "CTC"}], "-", 
+        RowBox[{"n", "*", "CTT"}], "+", 
+        RowBox[{"i", "*", "CTG"}], "-", 
+        RowBox[{"j", "*", "CTT"}]}], "\[Equal]", "0"}], "&&", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+       "CAA", "+", "CAC", "+", "CAG", "+", "CAT", "+", "CCA", "+", "CCC", "+",
+         "CCG", "+", "CCT", "+", "CGA", "+", "CGC", "+", "CGG", "+", "CGT", 
+        "+", "CTA", "+", "CTC", "+", "CTG", "+", "CTT"}], "\[Equal]", " ", 
+       "1"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "CAA", ",", "CAC", ",", "CAG", ",", "CAT", ",", "CCA", ",", "CCC", ",", 
+       "CCG", ",", "CCT", ",", "CGA", ",", "CGC", ",", "CGG", ",", "CGT", ",",
+        "CTA", ",", "CTC", ",", "CTG", ",", "CTT"}], "}"}]}], "]"}], "//", 
+   "FullSimplify"}]}]], "Input",
+ CellChangeTimes->{{3.6275802715387697`*^9, 3.627580326905966*^9}, {
+   3.6275803591834993`*^9, 3.627580423063693*^9}, {3.627580583503688*^9, 
+   3.627580600859324*^9}, {3.6275808927578077`*^9, 3.6275809067714653`*^9}, {
+   3.627581005209201*^9, 3.627581022432825*^9}, 3.627582115636842*^9, {
+   3.627632302343526*^9, 3.627632347909464*^9}, {3.627632407771782*^9, 
+   3.627632430562595*^9}, {3.627632505347328*^9, 3.627632508745604*^9}, {
+   3.627632547539197*^9, 3.627632550857359*^9}, {3.6276327652229652`*^9, 
+   3.627632819632115*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[IndentingNewLine]", 
+  RowBox[{"FullSimplify", "[", 
+   RowBox[{"0", "\[Equal]", 
+    RowBox[{
+     RowBox[{"l", "*", "CAT"}], "-", 
+     RowBox[{"l", "*", "CTT"}], "+", 
+     RowBox[{"m", "*", "CCT"}], "-", 
+     RowBox[{"n", "*", "CTT"}], "+", 
+     RowBox[{"i", "*", "CGT"}], "-", 
+     RowBox[{"j", "*", "CTT"}], "+", 
+     RowBox[{"l", "*", "CTA"}], "-", 
+     RowBox[{"l", "*", "CTT"}], "+", 
+     RowBox[{"m", "*", "CTC"}], "-", 
+     RowBox[{"n", "*", "CTT"}], "+", 
+     RowBox[{"i", "*", "CTG"}], "-", 
+     RowBox[{"j", "*", "CTT"}]}]}], "  ", " ", "]"}]}]], "Input",
+ CellChangeTimes->{{3.627581086758855*^9, 3.627581111173168*^9}, 
+   3.627581144966777*^9, {3.6275812127942257`*^9, 3.6275812401134987`*^9}, 
+   3.627581286990185*^9, 3.62758132433309*^9, 3.6275813769721003`*^9, 
+   3.627581499324012*^9, {3.6275815375432158`*^9, 3.627581539199957*^9}, {
+   3.627581582551545*^9, 3.627581632776737*^9}, {3.62758166713339*^9, 
+   3.627581695591462*^9}, {3.6275817304517097`*^9, 3.62758180246616*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"CGT", "+", "CTG"}], ")"}], " ", "i"}], "+", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"CAT", "+", "CTA"}], ")"}], " ", "l"}], "+", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"CCT", "+", "CTC"}], ")"}], " ", "m"}]}], "\[Equal]", 
+  RowBox[{"2", " ", "CTT", " ", 
+   RowBox[{"(", 
+    RowBox[{"j", "+", "l", "+", "n"}], ")"}]}]}]], "Output",
+ CellChangeTimes->{{3.6275811222936277`*^9, 3.627581148016337*^9}, {
+   3.627581215681234*^9, 3.627581243532701*^9}, 3.627581289253207*^9, 
+   3.6275813270184298`*^9, 3.627581380422222*^9, 3.627581502973638*^9, 
+   3.627581541252833*^9, {3.627581585029813*^9, 3.6275816358862133`*^9}, 
+   3.6275816692264853`*^9, 3.62758169975842*^9, {3.6275817338560677`*^9, 
+   3.627581804457129*^9}}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"eq2", "=", 
+  RowBox[{
+   RowBox[{"Solve", "[", "\[IndentingNewLine]", "  ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAC", "+", "CCA"}], ")"}], "*", " ", "i"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAT", "+", "CTA"}], ")"}], "*", " ", "l"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAG", "+", "CGA"}], ")"}], "*", " ", "m"}], "-", 
+        RowBox[{"2", "*", " ", "CAA", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"j", "+", "l", "+", "n"}], ")"}]}]}], "\[Equal]", "0"}], 
+      " ", "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"CCC", " ", "*", "i"}], "+", 
+        RowBox[{"CAA", "*", " ", "j"}], "+", 
+        RowBox[{"CAG", " ", "*", "k"}], "+", 
+        RowBox[{"CTC", "*", " ", "l"}], "+", 
+        RowBox[{"CGC", "*", " ", "m"}], "+", 
+        RowBox[{"CAT", " ", "*", "n"}], "-", 
+        RowBox[{"CAC", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+          ")"}]}]}], "\[Equal]", "0"}], " ", "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"CCG", " ", "*", "i"}], "+", 
+        RowBox[{"CAT", " ", "*", "j"}], "+", 
+        RowBox[{"CAC", "*", " ", "k"}], "+", 
+        RowBox[{"CTG", "*", " ", "l"}], "+", 
+        RowBox[{"CGG", " ", "*", "m"}], "+", 
+        RowBox[{"CAA", "*", " ", "n"}], "-", 
+        RowBox[{"CAG", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+          ")"}]}]}], "\[Equal]", "0"}], "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAG", "+", "CCT"}], ")"}], "*", " ", "i"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAA", "+", "CTT"}], ")"}], "*", " ", "l"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAC", "+", "CGT"}], ")"}], " ", "*", "m"}], "-", 
+        RowBox[{"2", " ", "*", "CAT", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"j", "+", "l", "+", "n"}], ")"}]}]}], "\[Equal]", "0"}], 
+      " ", "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"CCC", " ", "*", "i"}], "+", 
+        RowBox[{"CAA", " ", "*", "j"}], "+", 
+        RowBox[{"CGA", "*", " ", "k"}], "+", 
+        RowBox[{"CCT", " ", "*", "l"}], "+", 
+        RowBox[{"CCG", " ", "*", "m"}], "+", 
+        RowBox[{"CTA", "*", " ", "n"}], "-", 
+        RowBox[{"CCA", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+          ")"}]}]}], "\[Equal]", "0"}], " ", "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAC", "+", "CCA"}], ")"}], " ", "*", "j"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CCG", "+", "CGC"}], ")"}], " ", "*", "k"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CCT", "+", "CTC"}], ")"}], "*", " ", "n"}], "-", 
+        RowBox[{"2", "*", " ", "CCC", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "k", "+", "m"}], ")"}]}]}], "\[Equal]", "0"}], 
+      " ", "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAG", "+", "CCT"}], ")"}], "*", " ", "j"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CCC", "+", "CGG"}], ")"}], " ", "*", "k"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CCA", "+", "CTG"}], ")"}], "*", " ", "n"}], "-", 
+        RowBox[{"2", " ", "*", "CCG", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "k", "+", "m"}], ")"}]}]}], "\[Equal]", "0"}], 
+      " ", "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"CCG", " ", "*", "i"}], "+", 
+        RowBox[{"CAT", " ", "*", "j"}], "+", 
+        RowBox[{"CGT", " ", "*", "k"}], "+", 
+        RowBox[{"CCA", " ", "*", "l"}], "+", 
+        RowBox[{"CCC", " ", "*", "m"}], "+", 
+        RowBox[{"CTT", "*", " ", "n"}], "-", 
+        RowBox[{"CCT", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+          ")"}]}]}], "\[Equal]", "0"}], " ", "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"CGC", " ", "*", "i"}], "+", 
+        RowBox[{"CTA", " ", "*", "j"}], "+", 
+        RowBox[{"CCA", " ", "*", "k"}], "+", 
+        RowBox[{"CGT", " ", "*", "l"}], "+", 
+        RowBox[{"CGG", "*", " ", "m"}], "+", 
+        RowBox[{"CAA", " ", "*", "n"}], "-", 
+        RowBox[{"CGA", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+          ")"}]}]}], "\[Equal]", "0"}], "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CGA", "+", "CTC"}], ")"}], "*", " ", "j"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CCC", "+", "CGG"}], ")"}], "*", " ", "k"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAC", "+", "CGT"}], ")"}], "*", " ", "n"}], "-", 
+        RowBox[{"2", " ", "*", "CGC", "*", " ", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "k", "+", "m"}], ")"}]}]}], "\[Equal]", "0"}], "&&",
+       "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CGT", "+", "CTG"}], ")"}], "*", " ", "j"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CCG", "+", "CGC"}], ")"}], "*", " ", "k"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAG", "+", "CGA"}], ")"}], "*", " ", "n"}], "-", 
+        RowBox[{"2", " ", "*", "CGG", "*", " ", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "k", "+", "m"}], ")"}]}]}], "\[Equal]", "0"}], "&&",
+       "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"CGG", " ", "*", "i"}], "+", 
+        RowBox[{"CTT", " ", "*", "j"}], "+", 
+        RowBox[{"CCT", " ", "*", "k"}], "+", 
+        RowBox[{"CGA", "*", " ", "l"}], "+", 
+        RowBox[{"CGC", "*", " ", "m"}], "+", 
+        RowBox[{"CAT", " ", "*", "n"}], "-", 
+        RowBox[{"CGT", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+          ")"}]}]}], "\[Equal]", "0"}], " ", "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CGA", "+", "CTC"}], ")"}], " ", "*", "i"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAA", "+", "CTT"}], ")"}], " ", "*", "l"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CCA", "+", "CTG"}], ")"}], "*", " ", "m"}], "-", 
+        RowBox[{"2", " ", "*", "CTA", "*", " ", 
+         RowBox[{"(", 
+          RowBox[{"j", "+", "l", "+", "n"}], ")"}]}]}], "\[Equal]", "0"}], "&&",
+       "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"CGC", "*", " ", "i"}], "+", 
+        RowBox[{"CTA", " ", "*", "j"}], "+", 
+        RowBox[{"CTG", " ", "*", "k"}], "+", 
+        RowBox[{"CAC", " ", "*", "l"}], "+", 
+        RowBox[{"CCC", "*", " ", "m"}], "+", 
+        RowBox[{"CTT", " ", "*", "n"}], "-", 
+        RowBox[{"CTC", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+          ")"}]}]}], "\[Equal]", "0"}], " ", "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"CGG", " ", "*", "i"}], "+", 
+        RowBox[{"CTT", "*", " ", "j"}], "+", 
+        RowBox[{"CTC", " ", "*", "k"}], "+", 
+        RowBox[{"CAG", " ", "*", "l"}], "+", 
+        RowBox[{"CCG", "*", " ", "m"}], "+", 
+        RowBox[{"CTA", "*", " ", "n"}], "-", 
+        RowBox[{"CTG", "*", " ", 
+         RowBox[{"(", 
+          RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+          ")"}]}]}], "\[Equal]", "0"}], "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CGT", "+", "CTG"}], ")"}], "*", " ", "i"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CAT", "+", "CTA"}], ")"}], "*", " ", "l"}], "+", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"CCT", "+", "CTC"}], ")"}], "*", " ", "m"}], "-", 
+        RowBox[{"2", " ", "*", "CTT", " ", "*", 
+         RowBox[{"(", 
+          RowBox[{"j", "+", "l", "+", "n"}], ")"}]}]}], "\[Equal]", "0"}], 
+      " ", "&&", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+       "CAA", "+", "CAC", "+", "CAG", "+", "CAT", "+", "CCA", "+", "CCC", "+",
+         "CCG", "+", "CCT", "+", "CGA", "+", "CGC", "+", "CGG", "+", "CGT", 
+        "+", "CTA", "+", "CTC", "+", "CTG", "+", "CTT"}], "\[Equal]", " ", 
+       "1"}]}], ",", "\[IndentingNewLine]", " ", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "j", ",", "k", ",", "l", ",", "m", ",", "n"}], 
+      "}"}]}], "\[IndentingNewLine]", "]"}], "//", 
+   "FullSimplify"}]}]], "Input",
+ CellChangeTimes->{
+  3.6275812290734377`*^9, 3.6275812663127728`*^9, {3.627581298072253*^9, 
+   3.627581343406002*^9}, {3.627581389093795*^9, 3.6275813917256603`*^9}, {
+   3.6275815139084663`*^9, 3.6275815161230516`*^9}, {3.627581555163669*^9, 
+   3.627581557961782*^9}, {3.6275815952748547`*^9, 3.627581681558988*^9}, {
+   3.627581713526622*^9, 3.627581815291008*^9}, {3.627581853241364*^9, 
+   3.627582063892496*^9}, {3.627582164970242*^9, 3.627582245217094*^9}, {
+   3.627582328062208*^9, 3.627582345325193*^9}, {3.627582496205388*^9, 
+   3.627582497706975*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"eq2", "=", 
+     RowBox[{"DSolve", "[", "\[IndentingNewLine]", "  ", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"CAA", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAC", "[", "t", "]"}], "+", 
+              RowBox[{"CCA", "[", "t", "]"}]}], ")"}], "*", " ", "i"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAT", "[", "t", "]"}], "+", 
+              RowBox[{"CTA", "[", "t", "]"}]}], ")"}], "*", " ", "l"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAG", "[", "t", "]"}], "+", 
+              RowBox[{"CGA", "[", "t", "]"}]}], ")"}], "*", " ", "m"}], "-", 
+           RowBox[{"2", "*", " ", 
+            RowBox[{"CAA", "[", "t", "]"}], " ", "*", 
+            RowBox[{"(", 
+             RowBox[{"j", "+", "l", "+", "n"}], ")"}]}]}]}], " ", ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CAC", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"CCC", "[", "t", "]"}], " ", "*", "i"}], "+", 
+           RowBox[{
+            RowBox[{"CAA", "[", "t", "]"}], "*", " ", "j"}], "+", 
+           RowBox[{
+            RowBox[{"CAG", " ", "[", "t", "]"}], "*", "k"}], "+", 
+           RowBox[{
+            RowBox[{"CTC", "[", "t", "]"}], "*", " ", "l"}], "+", 
+           RowBox[{
+            RowBox[{"CGC", "[", "t", "]"}], "*", " ", "m"}], "+", 
+           RowBox[{
+            RowBox[{"CAT", "[", "t", "]"}], " ", "*", "n"}], "-", 
+           RowBox[{
+            RowBox[{"CAC", "[", "t", "]"}], " ", "*", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+             ")"}]}]}]}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CAG", "'"}], "[", "t", "]"}], "\[Equal]", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"CCG", "[", "t", "]"}], " ", "*", "i"}], "+", 
+           RowBox[{
+            RowBox[{"CAT", "[", "t", "]"}], " ", "*", "j"}], "+", 
+           RowBox[{
+            RowBox[{"CAC", "[", "t", "]"}], "*", " ", "k"}], "+", 
+           RowBox[{
+            RowBox[{"CTG", "[", "t", "]"}], "*", " ", "l"}], "+", 
+           RowBox[{
+            RowBox[{"CGG", " ", "[", "t", "]"}], "*", "m"}], "+", 
+           RowBox[{
+            RowBox[{"CAA", "[", "t", "]"}], "*", " ", "n"}], "-", 
+           RowBox[{
+            RowBox[{"CAG", " ", "[", "t", "]"}], "*", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+             ")"}]}]}]}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CAT", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAG", "[", "t", "]"}], "+", 
+              RowBox[{"CCT", "[", "t", "]"}]}], ")"}], "*", " ", "i"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAA", "[", "t", "]"}], "+", 
+              RowBox[{"CTT", "[", "t", "]"}]}], ")"}], "*", " ", "l"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAC", "[", "t", "]"}], "+", 
+              RowBox[{"CGT", "[", "t", "]"}]}], ")"}], " ", "*", "m"}], "-", 
+           RowBox[{"2", " ", "*", 
+            RowBox[{"CAT", "[", "t", "]"}], " ", "*", 
+            RowBox[{"(", 
+             RowBox[{"j", "+", "l", "+", "n"}], ")"}]}]}]}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CCA", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"CCC", "[", "t", "]"}], " ", "*", "i"}], "+", 
+           RowBox[{
+            RowBox[{"CAA", "[", "t", "]"}], " ", "*", "j"}], "+", 
+           RowBox[{
+            RowBox[{"CGA", "[", "t", "]"}], "*", " ", "k"}], "+", 
+           RowBox[{
+            RowBox[{"CCT", "[", "t", "]"}], " ", "*", "l"}], "+", 
+           RowBox[{
+            RowBox[{"CCG", "[", "t", "]"}], " ", "*", "m"}], "+", 
+           RowBox[{
+            RowBox[{"CTA", "[", "t", "]"}], "*", " ", "n"}], "-", 
+           RowBox[{
+            RowBox[{"CCA", "[", "t", "]"}], " ", "*", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+             ")"}]}]}]}], " ", ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CCC", "'"}], "[", "t", "]"}], "\[Equal]", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAC", "[", "t", "]"}], "+", 
+              RowBox[{"CCA", "[", "t", "]"}]}], ")"}], " ", "*", "j"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CCG", "[", "t", "]"}], "+", 
+              RowBox[{"CGC", "[", "t", "]"}]}], ")"}], " ", "*", "k"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CCT", "[", "t", "]"}], "+", 
+              RowBox[{"CTC", "[", "t", "]"}]}], ")"}], "*", " ", "n"}], "-", 
+           RowBox[{"2", "*", " ", 
+            RowBox[{"CCC", "[", "t", "]"}], " ", "*", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "k", "+", "m"}], ")"}]}]}]}], " ", ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CCG", "'"}], "[", "t", "]"}], "\[Equal]", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAG", "[", "t", "]"}], "+", 
+              RowBox[{"CCT", "[", "t", "]"}]}], ")"}], "*", " ", "j"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CCC", "[", "t", "]"}], "+", 
+              RowBox[{"CGG", "[", "t", "]"}]}], ")"}], " ", "*", "k"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CCA", "[", "t", "]"}], "+", 
+              RowBox[{"CTG", "[", "t", "]"}]}], ")"}], "*", " ", "n"}], "-", 
+           RowBox[{"2", " ", "*", 
+            RowBox[{"CCG", " ", "[", "t", "]"}], "*", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "k", "+", "m"}], ")"}]}]}]}], " ", ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CCT", "'"}], "[", "t", "]"}], "\[Equal]", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"CCG", "[", "t", "]"}], " ", "*", "i"}], "+", 
+           RowBox[{
+            RowBox[{"CAT", "[", "t", "]"}], " ", "*", "j"}], "+", 
+           RowBox[{
+            RowBox[{"CGT", "[", "t", "]"}], " ", "*", "k"}], "+", 
+           RowBox[{
+            RowBox[{"CCA", "[", "t", "]"}], " ", "*", "l"}], "+", 
+           RowBox[{
+            RowBox[{"CCC", "[", "t", "]"}], "*", "m"}], "+", 
+           RowBox[{
+            RowBox[{"CTT", "[", "t", "]"}], "*", " ", "n"}], "-", 
+           RowBox[{
+            RowBox[{"CCT", "[", "t", "]"}], " ", "*", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+             ")"}]}]}]}], " ", ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CGA", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"CGC", "[", "t", "]"}], " ", "*", "i"}], "+", 
+           RowBox[{
+            RowBox[{"CTA", "[", "t", "]"}], " ", "*", "j"}], "+", 
+           RowBox[{
+            RowBox[{"CCA", "[", "t", "]"}], "*", "k"}], "+", 
+           RowBox[{
+            RowBox[{"CGT", "[", "t", "]"}], " ", "*", "l"}], "+", 
+           RowBox[{
+            RowBox[{"CGG", "[", "t", "]"}], "*", " ", "m"}], "+", 
+           RowBox[{
+            RowBox[{"CAA", "[", "t", "]"}], " ", "*", "n"}], "-", 
+           RowBox[{
+            RowBox[{"CGA", "[", "t", "]"}], "*", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+             ")"}]}]}]}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CGC", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CGA", "[", "t", "]"}], "+", 
+              RowBox[{"CTC", "[", "t", "]"}]}], ")"}], "*", " ", "j"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CCC", "[", "t", "]"}], "+", 
+              RowBox[{"CGG", "[", "t", "]"}]}], ")"}], "*", " ", "k"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAC", "[", "t", "]"}], "+", 
+              RowBox[{"CGT", "[", "t", "]"}]}], ")"}], "*", " ", "n"}], "-", 
+           RowBox[{"2", " ", "*", 
+            RowBox[{"CGC", "[", "t", "]"}], "*", " ", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "k", "+", "m"}], ")"}]}]}]}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CGG", "'"}], "[", "t", "]"}], "\[Equal]", " ", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CGT", "[", "t", "]"}], "+", 
+              RowBox[{"CTG", "[", "t", "]"}]}], ")"}], "*", " ", "j"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CCG", "[", "t", "]"}], "+", 
+              RowBox[{"CGC", "[", "t", "]"}]}], ")"}], "*", " ", "k"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAG", "[", "t", "]"}], "+", 
+              RowBox[{"CGA", "[", "t", "]"}]}], ")"}], "*", " ", "n"}], "-", 
+           RowBox[{"2", " ", "*", 
+            RowBox[{"CGG", "[", "t", "]"}], "*", " ", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "k", "+", "m"}], ")"}]}]}]}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CGT", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"CGG", "[", "t", "]"}], " ", "*", "i"}], "+", 
+           RowBox[{
+            RowBox[{"CTT", "[", "t", "]"}], " ", "*", "j"}], "+", 
+           RowBox[{
+            RowBox[{"CCT", "[", "t", "]"}], " ", "*", "k"}], "+", 
+           RowBox[{
+            RowBox[{"CGA", "[", "t", "]"}], "*", " ", "l"}], "+", 
+           RowBox[{
+            RowBox[{"CGC", "[", "t", "]"}], "*", " ", "m"}], "+", 
+           RowBox[{
+            RowBox[{"CAT", "[", "t", "]"}], " ", "*", "n"}], "-", 
+           RowBox[{
+            RowBox[{"CGT", " ", "[", "t", "]"}], "*", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+             ")"}]}]}]}], " ", ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CTA", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CGA", "[", "t", "]"}], "+", 
+              RowBox[{"CTC", "[", "t", "]"}]}], ")"}], " ", "*", "i"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAA", "[", "t", "]"}], "+", 
+              RowBox[{"CTT", "[", "t", "]"}]}], ")"}], " ", "*", "l"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CCA", "[", "t", "]"}], "+", 
+              RowBox[{"CTG", "[", "t", "]"}]}], ")"}], "*", " ", "m"}], "-", 
+           RowBox[{"2", " ", "*", 
+            RowBox[{"CTA", "[", "t", "]"}], "*", " ", 
+            RowBox[{"(", 
+             RowBox[{"j", "+", "l", "+", "n"}], ")"}]}]}]}], ",", 
+         "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CTC", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"CGC", "[", "t", "]"}], "*", " ", "i"}], "+", 
+           RowBox[{
+            RowBox[{"CTA", "[", "t", "]"}], " ", "*", "j"}], "+", 
+           RowBox[{
+            RowBox[{"CTG", "[", "t", "]"}], " ", "*", "k"}], "+", 
+           RowBox[{
+            RowBox[{"CAC", "[", "t", "]"}], " ", "*", "l"}], "+", 
+           RowBox[{
+            RowBox[{"CCC", "[", "t", "]"}], "*", " ", "m"}], "+", 
+           RowBox[{
+            RowBox[{"CTT", "[", "t", "]"}], " ", "*", "n"}], "-", 
+           RowBox[{
+            RowBox[{"CTC", "[", "t", "]"}], " ", "*", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+             ")"}]}]}]}], " ", ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CTG", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"CGG", " ", "[", "t", "]"}], "*", "i"}], "+", 
+           RowBox[{
+            RowBox[{"CTT", "[", "t", "]"}], "*", " ", "j"}], "+", 
+           RowBox[{
+            RowBox[{"CTC", "[", "t", "]"}], " ", "*", "k"}], "+", 
+           RowBox[{
+            RowBox[{"CAG", " ", "[", "t", "]"}], "*", "l"}], "+", 
+           RowBox[{
+            RowBox[{"CCG", "[", "t", "]"}], "*", " ", "m"}], "+", 
+           RowBox[{
+            RowBox[{"CTA", "[", "t", "]"}], "*", " ", "n"}], "-", 
+           RowBox[{
+            RowBox[{"CTG", "[", "t", "]"}], "*", " ", 
+            RowBox[{"(", 
+             RowBox[{"i", "+", "j", "+", "k", "+", "l", "+", "m", "+", "n"}], 
+             ")"}]}]}]}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"CTT", "'"}], "[", "t", "]"}], "\[Equal]", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CGT", "[", "t", "]"}], "+", 
+              RowBox[{"CTG", "[", "t", "]"}]}], ")"}], "*", " ", "i"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CAT", "[", "t", "]"}], "+", 
+              RowBox[{"CTA", "[", "t", "]"}]}], ")"}], "*", " ", "l"}], "+", 
+           RowBox[{
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"CCT", "[", "t", "]"}], "+", 
+              RowBox[{"CTC", "[", "t", "]"}]}], ")"}], "*", " ", "m"}], "-", 
+           RowBox[{"2", " ", "*", 
+            RowBox[{"CTT", "[", "t", "]"}], " ", "*", 
+            RowBox[{"(", 
+             RowBox[{"j", "+", "l", "+", "n"}], ")"}]}]}]}]}], "}"}], ",", 
+       "\[IndentingNewLine]", " ", 
+       RowBox[{"{", 
+        RowBox[{
+        "CAA", ",", "CAC", ",", "CAG", ",", "CAT", ",", "CCA", ",", "CCC", 
+         ",", "CCG", ",", "CCT", ",", "CGA", ",", "CGC", ",", "CGG", ",", 
+         "CGT", ",", "CTA", ",", "CTC", ",", "CTG", ",", "CTT"}], "}"}], ",", 
+       " ", "t"}], "]"}]}], "\[IndentingNewLine]"}], "]"}], "//", 
+  "FullSimplify"}]], "Input",
+ CellChangeTimes->{{3.627582535882715*^9, 3.627582715479311*^9}, {
+   3.627582777293613*^9, 3.627582807379406*^9}, {3.627582974488093*^9, 
+   3.627583032248466*^9}, {3.627583171333926*^9, 3.627583472367269*^9}, {
+   3.627583518367084*^9, 3.6275835557409286`*^9}, 3.627583596277157*^9}],
+
+Cell[BoxData["\[IndentingNewLine]"], "Input",
+ CellChangeTimes->{3.627646790402976*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"CAA", "=", 
+   RowBox[{"134408249", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CAC", "=", 
+   RowBox[{"67825715", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CAG", "=", 
+   RowBox[{"96146324", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CAT", "=", 
+   RowBox[{"108265406", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CCA", "=", 
+   RowBox[{"97345439", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CCC", "=", 
+   RowBox[{"69625606", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CCG", "=", 
+   RowBox[{"13066878", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CCT", "=", 
+   RowBox[{"96176526", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CGA", "=", 
+   RowBox[{"81863001", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CGC", "=", 
+   RowBox[{"56875422", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CGG", "=", 
+   RowBox[{"69709260", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CGT", "=", 
+   RowBox[{"68024076", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CTA", "=", 
+   RowBox[{"93207971", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CTC", "=", 
+   RowBox[{"81851281", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CTG", "=", 
+   RowBox[{"97573424", "/", "1366670324"}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"CTT", "=", 
+   RowBox[{"134705746", "/", "1366670324"}]}], 
+  ";"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.627647156600696*^9, 3.627647156601625*^9}, {
+   3.627647371239533*^9, 3.6276475447036753`*^9}, 3.627648303536675*^9, {
+   3.627649377627243*^9, 3.6276494035774384`*^9}, {3.629648499513178*^9, 
+   3.629648517905925*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"n", "=", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"5.51", "+", "6.33"}], ")"}], "/", 
+   "20"}]}], "\[IndentingNewLine]", 
+ RowBox[{"m", "=", " ", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"10.30", "+", "10.59"}], ")"}], "/", "20"}]}], "\n", 
+ RowBox[{"j", " ", "=", " ", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.86", "+", "1.71"}], ")"}], "/", 
+   "20"}]}], "\[IndentingNewLine]", 
+ RowBox[{"i", " ", "=", " ", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"2.74", "+", "2.60"}], ")"}], "/", 
+   "20"}]}], "\[IndentingNewLine]", 
+ RowBox[{"l", " ", "=", " ", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.86", "+", "1.92"}], ")"}], "/", 
+   "20"}]}], "\[IndentingNewLine]", 
+ RowBox[{"k", " ", "=", " ", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"2.66", "+", "1.74"}], ")"}], "/", "20"}]}]}], "Input",
+ CellChangeTimes->{{3.627647623079199*^9, 3.627647628765378*^9}}],
+
+Cell[BoxData["0.592`"], "Output",
+ CellChangeTimes->{{3.6276476091241693`*^9, 3.627647631256876*^9}}],
+
+Cell[BoxData["1.0445`"], "Output",
+ CellChangeTimes->{{3.6276476091241693`*^9, 3.6276476312614737`*^9}}],
+
+Cell[BoxData["0.17850000000000002`"], "Output",
+ CellChangeTimes->{{3.6276476091241693`*^9, 3.627647631264287*^9}}],
+
+Cell[BoxData["0.267`"], "Output",
+ CellChangeTimes->{{3.6276476091241693`*^9, 3.6276476312668867`*^9}}],
+
+Cell[BoxData["0.18900000000000003`"], "Output",
+ CellChangeTimes->{{3.6276476091241693`*^9, 3.627647631269177*^9}}],
+
+Cell[BoxData["0.22000000000000003`"], "Output",
+ CellChangeTimes->{{3.6276476091241693`*^9, 3.627647631271257*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"hc02", "=", 
+  RowBox[{
+   RowBox[{"Solve", "[", "\[IndentingNewLine]", "  ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"i", "*", "CCA"}], "-", 
+       RowBox[{"j", "*", "CAA"}], "+", 
+       RowBox[{"l", "*", "CTA"}], "-", 
+       RowBox[{"l", "*", "CAA"}], "+", 
+       RowBox[{"m", "*", "CGA"}], "-", 
+       RowBox[{"n", "*", "CAA"}], "+", 
+       RowBox[{"i", "*", "CAC"}], "-", 
+       RowBox[{"j", "*", "CAA"}], "+", 
+       RowBox[{"l", "*", "CAT"}], "-", 
+       RowBox[{"l", "*", "CAA"}], "+", 
+       RowBox[{"m", "*", "CAG"}], "-", 
+       RowBox[{"n", "*", "CAA"}]}], "\[Equal]", "0"}], "&&", 
+     "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"i", "*", "CCC"}], "-", 
+       RowBox[{"j", "*", "CAC"}], "+", 
+       RowBox[{"l", "*", "CTC"}], "-", 
+       RowBox[{"l", "*", "CAC"}], "+", 
+       RowBox[{"m", "*", "CGC"}], "-", 
+       RowBox[{"n", "*", "CAC"}], "+", 
+       RowBox[{"j", "*", "CAA"}], "-", 
+       RowBox[{"i", "*", "CAC"}], "+", 
+       RowBox[{"n", "*", "CAT"}], "-", 
+       RowBox[{"m", "*", "CAC"}], "+", 
+       RowBox[{"k", "*", "CAG"}], "-", 
+       RowBox[{"k", "*", "CAC"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"i", "*", "CCG"}], "-", 
+       RowBox[{"j", "*", "CAG"}], "+", 
+       RowBox[{"l", "*", "CTG"}], "-", 
+       RowBox[{"l", "*", "CAG"}], "+", 
+       RowBox[{"m", "*", "CGG"}], "-", 
+       RowBox[{"n", "*", "CAG"}], "+", 
+       RowBox[{"n", "*", "CAA"}], "-", 
+       RowBox[{"m", "*", "CAG"}], "+", 
+       RowBox[{"k", "*", "CAC"}], "-", 
+       RowBox[{"k", "*", "CAG"}], "+", 
+       RowBox[{"j", "*", "CAT"}], "-", 
+       RowBox[{"i", "*", "CAG"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"i", "*", "CCT"}], "-", 
+       RowBox[{"j", "*", "CAT"}], "+", 
+       RowBox[{"l", "*", "CTT"}], "-", 
+       RowBox[{"l", "*", "CAT"}], "+", 
+       RowBox[{"m", "*", "CGT"}], "-", 
+       RowBox[{"n", "*", "CAT"}], "+", 
+       RowBox[{"l", "*", "CAA"}], "-", 
+       RowBox[{"l", "*", "CAT"}], "+", 
+       RowBox[{"m", "*", "CAC"}], "-", 
+       RowBox[{"n", "*", "CAT"}], "+", 
+       RowBox[{"i", "*", "CAG"}], "-", 
+       RowBox[{"j", "*", "CAT"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"j", "*", "CAA"}], "-", 
+       RowBox[{"i", "*", "CCA"}], "+", 
+       RowBox[{"n", "*", "CTA"}], "-", 
+       RowBox[{"m", "*", "CCA"}], "+", 
+       RowBox[{"k", "*", "CGA"}], "-", 
+       RowBox[{"k", "*", "CCA"}], "+", 
+       RowBox[{"i", "*", "CCC"}], "-", 
+       RowBox[{"j", "*", "CCA"}], "+", 
+       RowBox[{"l", "*", "CCT"}], "-", 
+       RowBox[{"l", "*", "CCA"}], "+", 
+       RowBox[{"m", "*", "CCG"}], "-", 
+       RowBox[{"n", "*", "CCA"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"j", "*", "CAC"}], "-", 
+       RowBox[{"i", "*", "CCC"}], "+", 
+       RowBox[{"n", "*", "CTC"}], "-", 
+       RowBox[{"m", "*", "CCC"}], "+", 
+       RowBox[{"k", "*", "CGC"}], "-", 
+       RowBox[{"k", "*", "CCC"}], "+", 
+       RowBox[{"j", "*", "CCA"}], "-", 
+       RowBox[{"i", "*", "CCC"}], "+", 
+       RowBox[{"n", "*", "CCT"}], "-", 
+       RowBox[{"m", "*", "CCC"}], "+", 
+       RowBox[{"k", "*", "CCG"}], "-", 
+       RowBox[{"k", "*", "CCC"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"j", "*", "CAG"}], "-", 
+       RowBox[{"i", "*", "CCG"}], "+", 
+       RowBox[{"n", "*", "CTG"}], "-", 
+       RowBox[{"m", "*", "CCG"}], "+", 
+       RowBox[{"k", "*", "CGG"}], "-", 
+       RowBox[{"k", "*", "CCG"}], "+", 
+       RowBox[{"n", "*", "CCA"}], "-", 
+       RowBox[{"m", "*", "CCG"}], "+", 
+       RowBox[{"k", "*", "CCC"}], "-", 
+       RowBox[{"k", "*", "CCG"}], "+", 
+       RowBox[{"j", "*", "CCT"}], "-", 
+       RowBox[{"i", "*", "CCG"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"j", "*", "CAT"}], "-", 
+       RowBox[{"i", "*", "CCT"}], "+", 
+       RowBox[{"n", "*", "CTT"}], "-", 
+       RowBox[{"m", "*", "CCT"}], "+", 
+       RowBox[{"k", "*", "CGT"}], "-", 
+       RowBox[{"k", "*", "CCT"}], "+", 
+       RowBox[{"l", "*", "CCA"}], "-", 
+       RowBox[{"l", "*", "CCT"}], "+", 
+       RowBox[{"m", "*", "CCC"}], "-", 
+       RowBox[{"n", "*", "CCT"}], "+", 
+       RowBox[{"i", "*", "CCG"}], "-", 
+       RowBox[{"j", "*", "CCT"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"n", "*", "CAA"}], "-", 
+       RowBox[{"m", "*", "CGA"}], "+", 
+       RowBox[{"k", "*", "CCA"}], "-", 
+       RowBox[{"k", "*", "CGA"}], "+", 
+       RowBox[{"j", "*", "CTA"}], "-", 
+       RowBox[{"i", "*", "CGA"}], "+", 
+       RowBox[{"i", "*", "CGC"}], "-", 
+       RowBox[{"j", "*", "CGA"}], "+", 
+       RowBox[{"l", "*", "CGT"}], "-", 
+       RowBox[{"l", "*", "CGA"}], "+", 
+       RowBox[{"m", "*", "CGG"}], "-", 
+       RowBox[{"n", "*", "CGA"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"n", "*", "CAC"}], "-", 
+       RowBox[{"m", "*", "CGC"}], "+", 
+       RowBox[{"k", "*", "CCC"}], "-", 
+       RowBox[{"k", "*", "CGC"}], "+", 
+       RowBox[{"j", "*", "CTC"}], "-", 
+       RowBox[{"i", "*", "CGC"}], "+", 
+       RowBox[{"j", "*", "CGA"}], "-", 
+       RowBox[{"i", "*", "CGC"}], "+", 
+       RowBox[{"n", "*", "CGT"}], "-", 
+       RowBox[{"m", "*", "CGC"}], "+", 
+       RowBox[{"k", "*", "CGG"}], "-", 
+       RowBox[{"k", "*", "CGC"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"n", "*", "CAG"}], "-", 
+       RowBox[{"m", "*", "CGG"}], "+", 
+       RowBox[{"k", "*", "CCG"}], "-", 
+       RowBox[{"k", "*", "CGG"}], "+", 
+       RowBox[{"j", "*", "CTG"}], "-", 
+       RowBox[{"i", "*", "CGG"}], "+", 
+       RowBox[{"n", "*", "CGA"}], "-", 
+       RowBox[{"m", "*", "CGG"}], "+", 
+       RowBox[{"k", "*", "CGC"}], "-", 
+       RowBox[{"k", "*", "CGG"}], "+", 
+       RowBox[{"j", "*", "CGT"}], "-", 
+       RowBox[{"i", "*", "CGG"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"n", "*", "CAT"}], "-", 
+       RowBox[{"m", "*", "CGT"}], "+", 
+       RowBox[{"k", "*", "CCT"}], "-", 
+       RowBox[{"k", "*", "CGT"}], "+", 
+       RowBox[{"j", "*", "CTT"}], "-", 
+       RowBox[{"i", "*", "CGT"}], "+", 
+       RowBox[{"l", "*", "CGA"}], "-", 
+       RowBox[{"l", "*", "CGT"}], "+", 
+       RowBox[{"m", "*", "CGC"}], "-", 
+       RowBox[{"n", "*", "CGT"}], "+", 
+       RowBox[{"i", "*", "CGG"}], "-", 
+       RowBox[{"j", "*", "CGT"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"l", "*", "CAA"}], "-", 
+       RowBox[{"l", "*", "CTA"}], "+", 
+       RowBox[{"m", "*", "CCA"}], "-", 
+       RowBox[{"n", "*", "CTA"}], "+", 
+       RowBox[{"i", "*", "CGA"}], "-", 
+       RowBox[{"j", "*", "CTA"}], "+", 
+       RowBox[{"i", "*", "CTC"}], "-", 
+       RowBox[{"j", "*", "CTA"}], "+", 
+       RowBox[{"l", "*", "CTT"}], "-", 
+       RowBox[{"l", "*", "CTA"}], "+", 
+       RowBox[{"m", "*", "CTG"}], "-", 
+       RowBox[{"n", "*", "CTA"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"l", "*", "CAC"}], "-", 
+       RowBox[{"l", "*", "CTC"}], "+", 
+       RowBox[{"m", "*", "CCC"}], "-", 
+       RowBox[{"n", "*", "CTC"}], "+", 
+       RowBox[{"i", "*", "CGC"}], "-", 
+       RowBox[{"j", "*", "CTC"}], "+", 
+       RowBox[{"j", "*", "CTA"}], "-", 
+       RowBox[{"i", "*", "CTC"}], "+", 
+       RowBox[{"n", "*", "CTT"}], "-", 
+       RowBox[{"m", "*", "CTC"}], "+", 
+       RowBox[{"k", "*", "CTG"}], "-", 
+       RowBox[{"k", "*", "CTC"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"l", "*", "CAG"}], "-", 
+       RowBox[{"l", "*", "CTG"}], "+", 
+       RowBox[{"m", "*", "CCG"}], "-", 
+       RowBox[{"n", "*", "CTG"}], "+", 
+       RowBox[{"i", "*", "CGG"}], "-", 
+       RowBox[{"j", "*", "CTG"}], "+", 
+       RowBox[{"n", "*", "CTA"}], "-", 
+       RowBox[{"m", "*", "CTG"}], "+", 
+       RowBox[{"k", "*", "CTC"}], "-", 
+       RowBox[{"k", "*", "CTG"}], "+", 
+       RowBox[{"j", "*", "CTT"}], "-", 
+       RowBox[{"i", "*", "CTG"}]}], "\[Equal]", "0"}], "&&", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"l", "*", "CAT"}], "-", 
+       RowBox[{"l", "*", "CTT"}], "+", 
+       RowBox[{"m", "*", "CCT"}], "-", 
+       RowBox[{"n", "*", "CTT"}], "+", 
+       RowBox[{"i", "*", "CGT"}], "-", 
+       RowBox[{"j", "*", "CTT"}], "+", 
+       RowBox[{"l", "*", "CTA"}], "-", 
+       RowBox[{"l", "*", "CTT"}], "+", 
+       RowBox[{"m", "*", "CTC"}], "-", 
+       RowBox[{"n", "*", "CTT"}], "+", 
+       RowBox[{"i", "*", "CTG"}], "-", 
+       RowBox[{"j", "*", "CTT"}]}], "\[Equal]", "0"}], "&&", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "CAA", ",", "CAC", ",", "CAG", ",", "CAT", ",", "CCA", ",", "CCC", ",", 
+       "CCG", ",", "CCT", ",", "CGA", ",", "CGC", ",", "CGG", ",", "CGT", ",",
+        "CTA", ",", "CTC", ",", "CTG", ",", "CTT"}], "}"}]}], "]"}], "//", 
+   "FullSimplify"}]}]], "Input",
+ CellChangeTimes->{
+  3.62764921045849*^9, {3.627649328599002*^9, 3.6276493504007683`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Solve", "::", "naqs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\
+\[NoBreak] is not a quantified system of equations and inequalities. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/Solve\\\", ButtonNote -> \
+\\\"Solve::naqs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{{3.627649333834189*^9, 3.627649352933216*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Solve", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"4", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"6970926", " ", "i"}], "-", 
+       RowBox[{"8279875", " ", "j"}], "+", 
+       RowBox[{"3473811", " ", "k"}], "+", 
+       RowBox[{"6970926", " ", "m"}]}], ")"}]}], "\[Equal]", 
+    RowBox[{"35601865", " ", "n"}]}], "&&", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"1685184", " ", "i"}], "+", 
+     RowBox[{"66681670", " ", "j"}], "+", 
+     RowBox[{"28152450", " ", "k"}], "+", 
+     RowBox[{"13838925", " ", "l"}], "+", 
+     RowBox[{"40241330", " ", "n"}]}], "\[Equal]", 
+    RowBox[{"11148654", " ", "m"}]}], "&&", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"163714282", " ", "i"}], "+", 
+     RowBox[{"82698053", " ", "l"}], "+", 
+     RowBox[{"194918863", " ", "m"}]}], "\[Equal]", 
+    RowBox[{"186415942", " ", 
+     RowBox[{"(", 
+      RowBox[{"j", "+", "n"}], ")"}]}]}], "&&", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"24975859", " ", "i"}], "+", 
+     RowBox[{"14025566", " ", "l"}], "+", 
+     RowBox[{"12225675", " ", "m"}]}], "\[Equal]", 
+    RowBox[{
+     RowBox[{"11356690", " ", "j"}], "+", 
+     RowBox[{"15722143", " ", "k"}], "+", 
+     RowBox[{"52854465", " ", "n"}]}]}], "&&", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"27864164", " ", "i"}], "+", 
+     RowBox[{"15722143", " ", "k"}], "+", 
+     RowBox[{"1427100", " ", "l"}], "+", 
+     RowBox[{"84506546", " ", "m"}], "+", 
+     RowBox[{"4365453", " ", "n"}]}], "\[Equal]", 
+    RowBox[{"37132322", " ", "j"}]}], "&&", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"165597500", " ", "i"}], "+", 
+     RowBox[{"178027807", " ", "m"}]}], "\[Equal]", 
+    RowBox[{"7", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"38487356", " ", "j"}], "+", 
+       RowBox[{"9705445", " ", "l"}], "+", 
+       RowBox[{"38487356", " ", "n"}]}], ")"}]}]}], "&&", 
+   FractionBox["134408249", "1366670324"]}], "]"}]], "Output",
+ CellChangeTimes->{{3.6276493345105*^9, 3.627649352936839*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"hc01", "=", 
+  RowBox[{
+   RowBox[{"NSolve", "[", "\[IndentingNewLine]", "  ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCA"}], "-", 
+        RowBox[{"j", "*", "CAA"}], "+", 
+        RowBox[{"l", "*", "CTA"}], "-", 
+        RowBox[{"l", "*", "CAA"}], "+", 
+        RowBox[{"m", "*", "CGA"}], "-", 
+        RowBox[{"n", "*", "CAA"}], "+", 
+        RowBox[{"i", "*", "CAC"}], "-", 
+        RowBox[{"j", "*", "CAA"}], "+", 
+        RowBox[{"l", "*", "CAT"}], "-", 
+        RowBox[{"l", "*", "CAA"}], "+", 
+        RowBox[{"m", "*", "CAG"}], "-", 
+        RowBox[{"n", "*", "CAA"}]}], "\[Equal]", "0"}], "&&", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCC"}], "-", 
+        RowBox[{"j", "*", "CAC"}], "+", 
+        RowBox[{"l", "*", "CTC"}], "-", 
+        RowBox[{"l", "*", "CAC"}], "+", 
+        RowBox[{"m", "*", "CGC"}], "-", 
+        RowBox[{"n", "*", "CAC"}], "+", 
+        RowBox[{"j", "*", "CAA"}], "-", 
+        RowBox[{"i", "*", "CAC"}], "+", 
+        RowBox[{"n", "*", "CAT"}], "-", 
+        RowBox[{"m", "*", "CAC"}], "+", 
+        RowBox[{"k", "*", "CAG"}], "-", 
+        RowBox[{"k", "*", "CAC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCG"}], "-", 
+        RowBox[{"j", "*", "CAG"}], "+", 
+        RowBox[{"l", "*", "CTG"}], "-", 
+        RowBox[{"l", "*", "CAG"}], "+", 
+        RowBox[{"m", "*", "CGG"}], "-", 
+        RowBox[{"n", "*", "CAG"}], "+", 
+        RowBox[{"n", "*", "CAA"}], "-", 
+        RowBox[{"m", "*", "CAG"}], "+", 
+        RowBox[{"k", "*", "CAC"}], "-", 
+        RowBox[{"k", "*", "CAG"}], "+", 
+        RowBox[{"j", "*", "CAT"}], "-", 
+        RowBox[{"i", "*", "CAG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCT"}], "-", 
+        RowBox[{"j", "*", "CAT"}], "+", 
+        RowBox[{"l", "*", "CTT"}], "-", 
+        RowBox[{"l", "*", "CAT"}], "+", 
+        RowBox[{"m", "*", "CGT"}], "-", 
+        RowBox[{"n", "*", "CAT"}], "+", 
+        RowBox[{"l", "*", "CAA"}], "-", 
+        RowBox[{"l", "*", "CAT"}], "+", 
+        RowBox[{"m", "*", "CAC"}], "-", 
+        RowBox[{"n", "*", "CAT"}], "+", 
+        RowBox[{"i", "*", "CAG"}], "-", 
+        RowBox[{"j", "*", "CAT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAA"}], "-", 
+        RowBox[{"i", "*", "CCA"}], "+", 
+        RowBox[{"n", "*", "CTA"}], "-", 
+        RowBox[{"m", "*", "CCA"}], "+", 
+        RowBox[{"k", "*", "CGA"}], "-", 
+        RowBox[{"k", "*", "CCA"}], "+", 
+        RowBox[{"i", "*", "CCC"}], "-", 
+        RowBox[{"j", "*", "CCA"}], "+", 
+        RowBox[{"l", "*", "CCT"}], "-", 
+        RowBox[{"l", "*", "CCA"}], "+", 
+        RowBox[{"m", "*", "CCG"}], "-", 
+        RowBox[{"n", "*", "CCA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAC"}], "-", 
+        RowBox[{"i", "*", "CCC"}], "+", 
+        RowBox[{"n", "*", "CTC"}], "-", 
+        RowBox[{"m", "*", "CCC"}], "+", 
+        RowBox[{"k", "*", "CGC"}], "-", 
+        RowBox[{"k", "*", "CCC"}], "+", 
+        RowBox[{"j", "*", "CCA"}], "-", 
+        RowBox[{"i", "*", "CCC"}], "+", 
+        RowBox[{"n", "*", "CCT"}], "-", 
+        RowBox[{"m", "*", "CCC"}], "+", 
+        RowBox[{"k", "*", "CCG"}], "-", 
+        RowBox[{"k", "*", "CCC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAG"}], "-", 
+        RowBox[{"i", "*", "CCG"}], "+", 
+        RowBox[{"n", "*", "CTG"}], "-", 
+        RowBox[{"m", "*", "CCG"}], "+", 
+        RowBox[{"k", "*", "CGG"}], "-", 
+        RowBox[{"k", "*", "CCG"}], "+", 
+        RowBox[{"n", "*", "CCA"}], "-", 
+        RowBox[{"m", "*", "CCG"}], "+", 
+        RowBox[{"k", "*", "CCC"}], "-", 
+        RowBox[{"k", "*", "CCG"}], "+", 
+        RowBox[{"j", "*", "CCT"}], "-", 
+        RowBox[{"i", "*", "CCG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAT"}], "-", 
+        RowBox[{"i", "*", "CCT"}], "+", 
+        RowBox[{"n", "*", "CTT"}], "-", 
+        RowBox[{"m", "*", "CCT"}], "+", 
+        RowBox[{"k", "*", "CGT"}], "-", 
+        RowBox[{"k", "*", "CCT"}], "+", 
+        RowBox[{"l", "*", "CCA"}], "-", 
+        RowBox[{"l", "*", "CCT"}], "+", 
+        RowBox[{"m", "*", "CCC"}], "-", 
+        RowBox[{"n", "*", "CCT"}], "+", 
+        RowBox[{"i", "*", "CCG"}], "-", 
+        RowBox[{"j", "*", "CCT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAA"}], "-", 
+        RowBox[{"m", "*", "CGA"}], "+", 
+        RowBox[{"k", "*", "CCA"}], "-", 
+        RowBox[{"k", "*", "CGA"}], "+", 
+        RowBox[{"j", "*", "CTA"}], "-", 
+        RowBox[{"i", "*", "CGA"}], "+", 
+        RowBox[{"i", "*", "CGC"}], "-", 
+        RowBox[{"j", "*", "CGA"}], "+", 
+        RowBox[{"l", "*", "CGT"}], "-", 
+        RowBox[{"l", "*", "CGA"}], "+", 
+        RowBox[{"m", "*", "CGG"}], "-", 
+        RowBox[{"n", "*", "CGA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAC"}], "-", 
+        RowBox[{"m", "*", "CGC"}], "+", 
+        RowBox[{"k", "*", "CCC"}], "-", 
+        RowBox[{"k", "*", "CGC"}], "+", 
+        RowBox[{"j", "*", "CTC"}], "-", 
+        RowBox[{"i", "*", "CGC"}], "+", 
+        RowBox[{"j", "*", "CGA"}], "-", 
+        RowBox[{"i", "*", "CGC"}], "+", 
+        RowBox[{"n", "*", "CGT"}], "-", 
+        RowBox[{"m", "*", "CGC"}], "+", 
+        RowBox[{"k", "*", "CGG"}], "-", 
+        RowBox[{"k", "*", "CGC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAG"}], "-", 
+        RowBox[{"m", "*", "CGG"}], "+", 
+        RowBox[{"k", "*", "CCG"}], "-", 
+        RowBox[{"k", "*", "CGG"}], "+", 
+        RowBox[{"j", "*", "CTG"}], "-", 
+        RowBox[{"i", "*", "CGG"}], "+", 
+        RowBox[{"n", "*", "CGA"}], "-", 
+        RowBox[{"m", "*", "CGG"}], "+", 
+        RowBox[{"k", "*", "CGC"}], "-", 
+        RowBox[{"k", "*", "CGG"}], "+", 
+        RowBox[{"j", "*", "CGT"}], "-", 
+        RowBox[{"i", "*", "CGG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAT"}], "-", 
+        RowBox[{"m", "*", "CGT"}], "+", 
+        RowBox[{"k", "*", "CCT"}], "-", 
+        RowBox[{"k", "*", "CGT"}], "+", 
+        RowBox[{"j", "*", "CTT"}], "-", 
+        RowBox[{"i", "*", "CGT"}], "+", 
+        RowBox[{"l", "*", "CGA"}], "-", 
+        RowBox[{"l", "*", "CGT"}], "+", 
+        RowBox[{"m", "*", "CGC"}], "-", 
+        RowBox[{"n", "*", "CGT"}], "+", 
+        RowBox[{"i", "*", "CGG"}], "-", 
+        RowBox[{"j", "*", "CGT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAA"}], "-", 
+        RowBox[{"l", "*", "CTA"}], "+", 
+        RowBox[{"m", "*", "CCA"}], "-", 
+        RowBox[{"n", "*", "CTA"}], "+", 
+        RowBox[{"i", "*", "CGA"}], "-", 
+        RowBox[{"j", "*", "CTA"}], "+", 
+        RowBox[{"i", "*", "CTC"}], "-", 
+        RowBox[{"j", "*", "CTA"}], "+", 
+        RowBox[{"l", "*", "CTT"}], "-", 
+        RowBox[{"l", "*", "CTA"}], "+", 
+        RowBox[{"m", "*", "CTG"}], "-", 
+        RowBox[{"n", "*", "CTA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAC"}], "-", 
+        RowBox[{"l", "*", "CTC"}], "+", 
+        RowBox[{"m", "*", "CCC"}], "-", 
+        RowBox[{"n", "*", "CTC"}], "+", 
+        RowBox[{"i", "*", "CGC"}], "-", 
+        RowBox[{"j", "*", "CTC"}], "+", 
+        RowBox[{"j", "*", "CTA"}], "-", 
+        RowBox[{"i", "*", "CTC"}], "+", 
+        RowBox[{"n", "*", "CTT"}], "-", 
+        RowBox[{"m", "*", "CTC"}], "+", 
+        RowBox[{"k", "*", "CTG"}], "-", 
+        RowBox[{"k", "*", "CTC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAG"}], "-", 
+        RowBox[{"l", "*", "CTG"}], "+", 
+        RowBox[{"m", "*", "CCG"}], "-", 
+        RowBox[{"n", "*", "CTG"}], "+", 
+        RowBox[{"i", "*", "CGG"}], "-", 
+        RowBox[{"j", "*", "CTG"}], "+", 
+        RowBox[{"n", "*", "CTA"}], "-", 
+        RowBox[{"m", "*", "CTG"}], "+", 
+        RowBox[{"k", "*", "CTC"}], "-", 
+        RowBox[{"k", "*", "CTG"}], "+", 
+        RowBox[{"j", "*", "CTT"}], "-", 
+        RowBox[{"i", "*", "CTG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAT"}], "-", 
+        RowBox[{"l", "*", "CTT"}], "+", 
+        RowBox[{"m", "*", "CCT"}], "-", 
+        RowBox[{"n", "*", "CTT"}], "+", 
+        RowBox[{"i", "*", "CGT"}], "-", 
+        RowBox[{"j", "*", "CTT"}], "+", 
+        RowBox[{"l", "*", "CTA"}], "-", 
+        RowBox[{"l", "*", "CTT"}], "+", 
+        RowBox[{"m", "*", "CTC"}], "-", 
+        RowBox[{"n", "*", "CTT"}], "+", 
+        RowBox[{"i", "*", "CTG"}], "-", 
+        RowBox[{"j", "*", "CTT"}]}], "\[Equal]", "0"}], " ", "&&", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"i", ",", "j", ",", "k", ",", "l", ",", "m", ",", "n"}], 
+        "}"}], ">", "0"}]}], ",", "\[IndentingNewLine]", "  ", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "j", ",", "k", ",", "l", ",", "m", ",", "n"}], "}"}], 
+     ",", " ", "Reals"}], "]"}], "//", "FullSimplify"}]}]], "Input",
+ CellChangeTimes->{
+  3.6276471869334097`*^9, 3.62764838537469*^9, {3.627649441900914*^9, 
+   3.6276494490280848`*^9}, {3.6296485407307177`*^9, 3.629648559914899*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", "}"}]], "Output",
+ CellChangeTimes->{
+  3.627648440623715*^9, {3.627649426227209*^9, 3.627649451374312*^9}, {
+   3.629648529812469*^9, 3.6296485620610037`*^9}}]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"$eq", "=", 
+   RowBox[{"With", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"CTT", "=", "CAA"}], ",", 
+       RowBox[{"CAT", "=", "CAA"}], ",", " ", 
+       RowBox[{"CTA", "=", "CAA"}], ",", " ", 
+       RowBox[{"CGT", "=", "CAC"}], ",", 
+       RowBox[{"CAG", "=", "CAC"}], ",", " ", 
+       RowBox[{"CCT", "=", "CAC"}], ",", " ", 
+       RowBox[{"CCA", "=", "CAC"}], ",", " ", 
+       RowBox[{"CTG", "=", "CAC"}], ",", 
+       RowBox[{"CGA", "=", "CAC"}], ",", " ", 
+       RowBox[{"CTC", "=", "CAC"}], ",", " ", 
+       RowBox[{"CGG", "=", "CCC"}], ",", " ", 
+       RowBox[{"CCG", "=", "CCC"}], ",", " ", 
+       RowBox[{"CGC", "=", "CCC"}]}], "}"}], ",", " ", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{"i", "*", "CCA"}], "-", 
+         RowBox[{"j", "*", "CAA"}], "+", 
+         RowBox[{"l", "*", "CTA"}], "-", 
+         RowBox[{"l", "*", "CAA"}], "+", 
+         RowBox[{"m", "*", "CGA"}], "-", 
+         RowBox[{"n", "*", "CAA"}], "+", 
+         RowBox[{"i", "*", "CAC"}], "-", 
+         RowBox[{"j", "*", "CAA"}], "+", 
+         RowBox[{"l", "*", "CAT"}], "-", 
+         RowBox[{"l", "*", "CAA"}], "+", 
+         RowBox[{"m", "*", "CAG"}], "-", 
+         RowBox[{"n", "*", "CAA"}]}], "\[Equal]", "0"}], ",", "\n", "       ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"i", "*", "CCC"}], "-", 
+         RowBox[{"j", "*", "CAC"}], "+", 
+         RowBox[{"l", "*", "CTC"}], "-", 
+         RowBox[{"l", "*", "CAC"}], "+", 
+         RowBox[{"m", "*", "CGC"}], "-", 
+         RowBox[{"n", "*", "CAC"}], "+", 
+         RowBox[{"j", "*", "CAA"}], "-", 
+         RowBox[{"i", "*", "CAC"}], "+", 
+         RowBox[{"n", "*", "CAT"}], "-", 
+         RowBox[{"m", "*", "CAC"}], "+", 
+         RowBox[{"k", "*", "CAG"}], "-", 
+         RowBox[{"k", "*", "CAC"}]}], "\[Equal]", "0"}], ",", "\n", "      ", 
+       
+       RowBox[{
+        RowBox[{
+         RowBox[{"j", "*", "CAC"}], "-", 
+         RowBox[{"i", "*", "CCC"}], "+", 
+         RowBox[{"n", "*", "CTC"}], "-", 
+         RowBox[{"m", "*", "CCC"}], "+", 
+         RowBox[{"k", "*", "CGC"}], "-", 
+         RowBox[{"k", "*", "CCC"}], "+", 
+         RowBox[{"j", "*", "CCA"}], "-", 
+         RowBox[{"i", "*", "CCC"}], "+", 
+         RowBox[{"n", "*", "CCT"}], "-", 
+         RowBox[{"m", "*", "CCC"}], "+", 
+         RowBox[{"k", "*", "CCG"}], "-", 
+         RowBox[{"k", "*", "CCC"}]}], "\[Equal]", "0"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"i", ",", "j", ",", "k", ",", "l", ",", "m", ",", "n"}], 
+         "}"}], ">", 
+        RowBox[{
+         RowBox[{"0", "\n", "        ", "CAA"}], "+", "CAC", "+", "CAG", "+", 
+         "CAT", "+", "CCA", "+", "CCC", "+", "CCG", "+", "CCT", "+", "CGA", 
+         "+", "CGC", "+", "CGG", "+", "CGT", "+", "CTA", "+", "CTC", "+", 
+         "CTG", "+", "CTT"}], "\[Equal]", " ", "1"}]}], "}"}]}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.6296486651029577`*^9, 3.629648668251841*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"hc01", "=", 
+  RowBox[{
+   RowBox[{"NSolve", "[", 
+    RowBox[{"$eq", ",", "  ", 
+     RowBox[{"{", 
+      RowBox[{"i", ",", "j", ",", "m", ",", "n"}], "}"}], ",", " ", "Reals"}],
+     "]"}], "//", "FullSimplify"}]}]], "Input",
+ CellChangeTimes->{{3.629648647376686*^9, 3.629648652071063*^9}, 
+   3.6296486909108562`*^9}],
+
+Cell[BoxData[
+ RowBox[{"{", "}"}]], "Output",
+ CellChangeTimes->{{3.629648657570853*^9, 3.629648694490057*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"CAA", "=", 
+  RowBox[{"134408249", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CAC", "=", 
+  RowBox[{"67825715", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CAG", "=", 
+  RowBox[{"96146324", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CAT", "=", 
+  RowBox[{"108265406", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CCA", "=", 
+  RowBox[{"97345439", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CCC", "=", 
+  RowBox[{"69625606", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CCG", "=", 
+  RowBox[{"13066878", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CCT", "=", 
+  RowBox[{"96176526", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CGA", "=", 
+  RowBox[{"81863001", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CGC", "=", 
+  RowBox[{"56875422", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CGG", "=", 
+  RowBox[{"69709260", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CGT", "=", 
+  RowBox[{"68024076", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CTA", "=", 
+  RowBox[{"93207971", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CTC", "=", 
+  RowBox[{"81851281", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CTG", "=", 
+  RowBox[{"97573424", "/", "1366670324"}]}], "\n", 
+ RowBox[{"CTT", "=", 
+  RowBox[{"134705746", "/", "1366670324"}]}]}], "Input",
+ CellChangeTimes->{{3.6276492903588457`*^9, 3.6276492915006533`*^9}}],
+
+Cell[BoxData[
+ FractionBox["134408249", "1366670324"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432955262*^9}],
+
+Cell[BoxData[
+ FractionBox["67825715", "1366670324"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432957993*^9}],
+
+Cell[BoxData[
+ FractionBox["24036581", "341667581"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432959592*^9}],
+
+Cell[BoxData[
+ FractionBox["54132703", "683335162"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432960911*^9}],
+
+Cell[BoxData[
+ FractionBox["97345439", "1366670324"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432962233*^9}],
+
+Cell[BoxData[
+ FractionBox["34812803", "683335162"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432963423*^9}],
+
+Cell[BoxData[
+ FractionBox["6533439", "683335162"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432965276*^9}],
+
+Cell[BoxData[
+ FractionBox["48088263", "683335162"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.6276484329671173`*^9}],
+
+Cell[BoxData[
+ FractionBox["81863001", "1366670324"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432968129*^9}],
+
+Cell[BoxData[
+ FractionBox["28437711", "683335162"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.6276484329691*^9}],
+
+Cell[BoxData[
+ FractionBox["17427315", "341667581"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432970071*^9}],
+
+Cell[BoxData[
+ FractionBox["17006019", "341667581"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432971143*^9}],
+
+Cell[BoxData[
+ FractionBox["93207971", "1366670324"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432972188*^9}],
+
+Cell[BoxData[
+ FractionBox["81851281", "1366670324"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432973171*^9}],
+
+Cell[BoxData[
+ FractionBox["24393356", "341667581"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.62764843297416*^9}],
+
+Cell[BoxData[
+ FractionBox["67352873", "683335162"]], "Output",
+ CellChangeTimes->{3.6276483524450407`*^9, 3.627648432975152*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"CTT", "*", "2"}], "\[IndentingNewLine]"}]], "Input",
+ CellChangeTimes->{{3.627649277329006*^9, 3.6276492787482758`*^9}}],
+
+Cell[BoxData[
+ FractionBox["67352873", "341667581"]], "Output",
+ CellChangeTimes->{3.627649280674138*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"n", "=", "0.5"}], "\[IndentingNewLine]", 
+ RowBox[{"m", "=", " ", "1"}], "\n", 
+ RowBox[{"j", " ", "=", " ", "0.17"}], "\[IndentingNewLine]", 
+ RowBox[{"i", " ", "=", "0.25"}], "\[IndentingNewLine]", 
+ RowBox[{"l", " ", "=", " ", "0.3"}], "\[IndentingNewLine]", 
+ RowBox[{"k", " ", "=", " ", "0.14"}]}], "Input",
+ CellChangeTimes->{{3.627649701763362*^9, 3.627649734384801*^9}, {
+  3.627650386555197*^9, 3.62765041605903*^9}}],
+
+Cell[BoxData["0.5`"], "Output",
+ CellChangeTimes->{
+  3.62764975630128*^9, {3.627650407324209*^9, 3.627650418709386*^9}}],
+
+Cell[BoxData["1"], "Output",
+ CellChangeTimes->{
+  3.62764975630128*^9, {3.627650407324209*^9, 3.627650418714005*^9}}],
+
+Cell[BoxData["0.17`"], "Output",
+ CellChangeTimes->{
+  3.62764975630128*^9, {3.627650407324209*^9, 3.627650418716859*^9}}],
+
+Cell[BoxData["0.25`"], "Output",
+ CellChangeTimes->{
+  3.62764975630128*^9, {3.627650407324209*^9, 3.6276504187193747`*^9}}],
+
+Cell[BoxData["0.3`"], "Output",
+ CellChangeTimes->{
+  3.62764975630128*^9, {3.627650407324209*^9, 3.627650418721593*^9}}],
+
+Cell[BoxData["0.14`"], "Output",
+ CellChangeTimes->{
+  3.62764975630128*^9, {3.627650407324209*^9, 3.627650418723772*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"hc02", "=", 
+  RowBox[{
+   RowBox[{"Solve", "[", "\[IndentingNewLine]", "  ", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCA"}], "-", 
+        RowBox[{"j", "*", "CAA"}], "+", 
+        RowBox[{"l", "*", "CTA"}], "-", 
+        RowBox[{"l", "*", "CAA"}], "+", 
+        RowBox[{"m", "*", "CGA"}], "-", 
+        RowBox[{"n", "*", "CAA"}], "+", 
+        RowBox[{"i", "*", "CAC"}], "-", 
+        RowBox[{"j", "*", "CAA"}], "+", 
+        RowBox[{"l", "*", "CAT"}], "-", 
+        RowBox[{"l", "*", "CAA"}], "+", 
+        RowBox[{"m", "*", "CAG"}], "-", 
+        RowBox[{"n", "*", "CAA"}]}], "\[Equal]", "0"}], "&&", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCC"}], "-", 
+        RowBox[{"j", "*", "CAC"}], "+", 
+        RowBox[{"l", "*", "CTC"}], "-", 
+        RowBox[{"l", "*", "CAC"}], "+", 
+        RowBox[{"m", "*", "CGC"}], "-", 
+        RowBox[{"n", "*", "CAC"}], "+", 
+        RowBox[{"j", "*", "CAA"}], "-", 
+        RowBox[{"i", "*", "CAC"}], "+", 
+        RowBox[{"n", "*", "CAT"}], "-", 
+        RowBox[{"m", "*", "CAC"}], "+", 
+        RowBox[{"k", "*", "CAG"}], "-", 
+        RowBox[{"k", "*", "CAC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCG"}], "-", 
+        RowBox[{"j", "*", "CAG"}], "+", 
+        RowBox[{"l", "*", "CTG"}], "-", 
+        RowBox[{"l", "*", "CAG"}], "+", 
+        RowBox[{"m", "*", "CGG"}], "-", 
+        RowBox[{"n", "*", "CAG"}], "+", 
+        RowBox[{"n", "*", "CAA"}], "-", 
+        RowBox[{"m", "*", "CAG"}], "+", 
+        RowBox[{"k", "*", "CAC"}], "-", 
+        RowBox[{"k", "*", "CAG"}], "+", 
+        RowBox[{"j", "*", "CAT"}], "-", 
+        RowBox[{"i", "*", "CAG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"i", "*", "CCT"}], "-", 
+        RowBox[{"j", "*", "CAT"}], "+", 
+        RowBox[{"l", "*", "CTT"}], "-", 
+        RowBox[{"l", "*", "CAT"}], "+", 
+        RowBox[{"m", "*", "CGT"}], "-", 
+        RowBox[{"n", "*", "CAT"}], "+", 
+        RowBox[{"l", "*", "CAA"}], "-", 
+        RowBox[{"l", "*", "CAT"}], "+", 
+        RowBox[{"m", "*", "CAC"}], "-", 
+        RowBox[{"n", "*", "CAT"}], "+", 
+        RowBox[{"i", "*", "CAG"}], "-", 
+        RowBox[{"j", "*", "CAT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAA"}], "-", 
+        RowBox[{"i", "*", "CCA"}], "+", 
+        RowBox[{"n", "*", "CTA"}], "-", 
+        RowBox[{"m", "*", "CCA"}], "+", 
+        RowBox[{"k", "*", "CGA"}], "-", 
+        RowBox[{"k", "*", "CCA"}], "+", 
+        RowBox[{"i", "*", "CCC"}], "-", 
+        RowBox[{"j", "*", "CCA"}], "+", 
+        RowBox[{"l", "*", "CCT"}], "-", 
+        RowBox[{"l", "*", "CCA"}], "+", 
+        RowBox[{"m", "*", "CCG"}], "-", 
+        RowBox[{"n", "*", "CCA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAC"}], "-", 
+        RowBox[{"i", "*", "CCC"}], "+", 
+        RowBox[{"n", "*", "CTC"}], "-", 
+        RowBox[{"m", "*", "CCC"}], "+", 
+        RowBox[{"k", "*", "CGC"}], "-", 
+        RowBox[{"k", "*", "CCC"}], "+", 
+        RowBox[{"j", "*", "CCA"}], "-", 
+        RowBox[{"i", "*", "CCC"}], "+", 
+        RowBox[{"n", "*", "CCT"}], "-", 
+        RowBox[{"m", "*", "CCC"}], "+", 
+        RowBox[{"k", "*", "CCG"}], "-", 
+        RowBox[{"k", "*", "CCC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAG"}], "-", 
+        RowBox[{"i", "*", "CCG"}], "+", 
+        RowBox[{"n", "*", "CTG"}], "-", 
+        RowBox[{"m", "*", "CCG"}], "+", 
+        RowBox[{"k", "*", "CGG"}], "-", 
+        RowBox[{"k", "*", "CCG"}], "+", 
+        RowBox[{"n", "*", "CCA"}], "-", 
+        RowBox[{"m", "*", "CCG"}], "+", 
+        RowBox[{"k", "*", "CCC"}], "-", 
+        RowBox[{"k", "*", "CCG"}], "+", 
+        RowBox[{"j", "*", "CCT"}], "-", 
+        RowBox[{"i", "*", "CCG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"j", "*", "CAT"}], "-", 
+        RowBox[{"i", "*", "CCT"}], "+", 
+        RowBox[{"n", "*", "CTT"}], "-", 
+        RowBox[{"m", "*", "CCT"}], "+", 
+        RowBox[{"k", "*", "CGT"}], "-", 
+        RowBox[{"k", "*", "CCT"}], "+", 
+        RowBox[{"l", "*", "CCA"}], "-", 
+        RowBox[{"l", "*", "CCT"}], "+", 
+        RowBox[{"m", "*", "CCC"}], "-", 
+        RowBox[{"n", "*", "CCT"}], "+", 
+        RowBox[{"i", "*", "CCG"}], "-", 
+        RowBox[{"j", "*", "CCT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAA"}], "-", 
+        RowBox[{"m", "*", "CGA"}], "+", 
+        RowBox[{"k", "*", "CCA"}], "-", 
+        RowBox[{"k", "*", "CGA"}], "+", 
+        RowBox[{"j", "*", "CTA"}], "-", 
+        RowBox[{"i", "*", "CGA"}], "+", 
+        RowBox[{"i", "*", "CGC"}], "-", 
+        RowBox[{"j", "*", "CGA"}], "+", 
+        RowBox[{"l", "*", "CGT"}], "-", 
+        RowBox[{"l", "*", "CGA"}], "+", 
+        RowBox[{"m", "*", "CGG"}], "-", 
+        RowBox[{"n", "*", "CGA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAC"}], "-", 
+        RowBox[{"m", "*", "CGC"}], "+", 
+        RowBox[{"k", "*", "CCC"}], "-", 
+        RowBox[{"k", "*", "CGC"}], "+", 
+        RowBox[{"j", "*", "CTC"}], "-", 
+        RowBox[{"i", "*", "CGC"}], "+", 
+        RowBox[{"j", "*", "CGA"}], "-", 
+        RowBox[{"i", "*", "CGC"}], "+", 
+        RowBox[{"n", "*", "CGT"}], "-", 
+        RowBox[{"m", "*", "CGC"}], "+", 
+        RowBox[{"k", "*", "CGG"}], "-", 
+        RowBox[{"k", "*", "CGC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAG"}], "-", 
+        RowBox[{"m", "*", "CGG"}], "+", 
+        RowBox[{"k", "*", "CCG"}], "-", 
+        RowBox[{"k", "*", "CGG"}], "+", 
+        RowBox[{"j", "*", "CTG"}], "-", 
+        RowBox[{"i", "*", "CGG"}], "+", 
+        RowBox[{"n", "*", "CGA"}], "-", 
+        RowBox[{"m", "*", "CGG"}], "+", 
+        RowBox[{"k", "*", "CGC"}], "-", 
+        RowBox[{"k", "*", "CGG"}], "+", 
+        RowBox[{"j", "*", "CGT"}], "-", 
+        RowBox[{"i", "*", "CGG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"n", "*", "CAT"}], "-", 
+        RowBox[{"m", "*", "CGT"}], "+", 
+        RowBox[{"k", "*", "CCT"}], "-", 
+        RowBox[{"k", "*", "CGT"}], "+", 
+        RowBox[{"j", "*", "CTT"}], "-", 
+        RowBox[{"i", "*", "CGT"}], "+", 
+        RowBox[{"l", "*", "CGA"}], "-", 
+        RowBox[{"l", "*", "CGT"}], "+", 
+        RowBox[{"m", "*", "CGC"}], "-", 
+        RowBox[{"n", "*", "CGT"}], "+", 
+        RowBox[{"i", "*", "CGG"}], "-", 
+        RowBox[{"j", "*", "CGT"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAA"}], "-", 
+        RowBox[{"l", "*", "CTA"}], "+", 
+        RowBox[{"m", "*", "CCA"}], "-", 
+        RowBox[{"n", "*", "CTA"}], "+", 
+        RowBox[{"i", "*", "CGA"}], "-", 
+        RowBox[{"j", "*", "CTA"}], "+", 
+        RowBox[{"i", "*", "CTC"}], "-", 
+        RowBox[{"j", "*", "CTA"}], "+", 
+        RowBox[{"l", "*", "CTT"}], "-", 
+        RowBox[{"l", "*", "CTA"}], "+", 
+        RowBox[{"m", "*", "CTG"}], "-", 
+        RowBox[{"n", "*", "CTA"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAC"}], "-", 
+        RowBox[{"l", "*", "CTC"}], "+", 
+        RowBox[{"m", "*", "CCC"}], "-", 
+        RowBox[{"n", "*", "CTC"}], "+", 
+        RowBox[{"i", "*", "CGC"}], "-", 
+        RowBox[{"j", "*", "CTC"}], "+", 
+        RowBox[{"j", "*", "CTA"}], "-", 
+        RowBox[{"i", "*", "CTC"}], "+", 
+        RowBox[{"n", "*", "CTT"}], "-", 
+        RowBox[{"m", "*", "CTC"}], "+", 
+        RowBox[{"k", "*", "CTG"}], "-", 
+        RowBox[{"k", "*", "CTC"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAG"}], "-", 
+        RowBox[{"l", "*", "CTG"}], "+", 
+        RowBox[{"m", "*", "CCG"}], "-", 
+        RowBox[{"n", "*", "CTG"}], "+", 
+        RowBox[{"i", "*", "CGG"}], "-", 
+        RowBox[{"j", "*", "CTG"}], "+", 
+        RowBox[{"n", "*", "CTA"}], "-", 
+        RowBox[{"m", "*", "CTG"}], "+", 
+        RowBox[{"k", "*", "CTC"}], "-", 
+        RowBox[{"k", "*", "CTG"}], "+", 
+        RowBox[{"j", "*", "CTT"}], "-", 
+        RowBox[{"i", "*", "CTG"}]}], "\[Equal]", "0"}], "&&", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"l", "*", "CAT"}], "-", 
+        RowBox[{"l", "*", "CTT"}], "+", 
+        RowBox[{"m", "*", "CCT"}], "-", 
+        RowBox[{"n", "*", "CTT"}], "+", 
+        RowBox[{"i", "*", "CGT"}], "-", 
+        RowBox[{"j", "*", "CTT"}], "+", 
+        RowBox[{"l", "*", "CTA"}], "-", 
+        RowBox[{"l", "*", "CTT"}], "+", 
+        RowBox[{"m", "*", "CTC"}], "-", 
+        RowBox[{"n", "*", "CTT"}], "+", 
+        RowBox[{"i", "*", "CTG"}], "-", 
+        RowBox[{"j", "*", "CTT"}]}], "\[Equal]", "0"}], "&&", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+       "CAA", "+", "CAC", "+", "CAG", "+", "CAT", "+", "CCA", "+", "CCC", "+",
+         "CCG", "+", "CCT", "+", "CGA", "+", "CGC", "+", "CGG", "+", "CGT", 
+        "+", "CTA", "+", "CTC", "+", "CTG", "+", "CTT"}], "\[Equal]", " ", 
+       "1"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "CAA", ",", "CAC", ",", "CAG", ",", "CAT", ",", "CCA", ",", "CCC", ",", 
+       "CCG", ",", "CCT", ",", "CGA", ",", "CGC", ",", "CGG", ",", "CGT", ",",
+        "CTA", ",", "CTC", ",", "CTG", ",", "CTT"}], "}"}]}], "]"}], "//", 
+   "FullSimplify"}]}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"CAA", "\[Rule]", "0.10596381293402772`"}], ",", 
+    RowBox[{"CAC", "\[Rule]", "0.056796603732638916`"}], ",", 
+    RowBox[{"CAG", "\[Rule]", "0.05679660373263888`"}], ",", 
+    RowBox[{"CAT", "\[Rule]", "0.1059638129340278`"}], ",", 
+    RowBox[{"CCA", "\[Rule]", "0.05679660373263885`"}], ",", 
+    RowBox[{"CCC", "\[Rule]", "0.0304429796006945`"}], ",", 
+    RowBox[{"CCG", "\[Rule]", "0.030442979600694437`"}], ",", 
+    RowBox[{"CCT", "\[Rule]", "0.05679660373263891`"}], ",", 
+    RowBox[{"CGA", "\[Rule]", "0.05679660373263889`"}], ",", 
+    RowBox[{"CGC", "\[Rule]", "0.030442979600694458`"}], ",", 
+    RowBox[{"CGG", "\[Rule]", "0.03044297960069445`"}], ",", 
+    RowBox[{"CGT", "\[Rule]", "0.05679660373263888`"}], ",", 
+    RowBox[{"CTA", "\[Rule]", "0.1059638129340277`"}], ",", 
+    RowBox[{"CTC", "\[Rule]", "0.05679660373263891`"}], ",", 
+    RowBox[{"CTG", "\[Rule]", "0.0567966037326389`"}], ",", 
+    RowBox[{"CTT", "\[Rule]", "0.10596381293402778`"}]}], "}"}], 
+  "}"}]], "Output",
+ CellChangeTimes->{3.6276497609851427`*^9, 3.6276504218918753`*^9}]
+}, Open  ]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"AA", "-", "AC"}], " ", "=", " ", 
+   RowBox[{"TT", " ", "-", " ", "GT"}]}], " "}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"A", "-", "C"}], " ", "=", " ", 
+  RowBox[{"T", "-", "G"}]}]}], "Input",
+ CellChangeTimes->{{3.627652037722341*^9, 3.627652076455357*^9}}]
+},
+WindowSize->{1240, 683},
+WindowMargins->{{Automatic, 91}, {Automatic, 10}},
+FrontEndVersion->"10.0 for Mac OS X x86 (32-bit, 64-bit Kernel) (September 9, \
+2014)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 1363, 30, 80, "Input"],
+Cell[1924, 52, 226, 5, 30, "Text"],
+Cell[2153, 59, 9912, 248, 335, "Input"],
+Cell[12068, 309, 10058, 251, 335, "Input"],
+Cell[CellGroupData[{
+Cell[22151, 564, 1037, 22, 46, "Input"],
+Cell[23191, 588, 808, 20, 28, "Output"]
+}, Open  ]],
+Cell[24014, 611, 9650, 240, 352, "Input"],
+Cell[33667, 853, 15330, 379, 335, "Input"],
+Cell[49000, 1234, 87, 1, 46, "Input"],
+Cell[49090, 1237, 1777, 53, 301, "Input"],
+Cell[CellGroupData[{
+Cell[50892, 1294, 887, 29, 114, "Input"],
+Cell[51782, 1325, 101, 1, 28, "Output"],
+Cell[51886, 1328, 104, 1, 28, "Output"],
+Cell[51993, 1331, 115, 1, 28, "Output"],
+Cell[52111, 1334, 103, 1, 28, "Output"],
+Cell[52217, 1337, 115, 1, 28, "Output"],
+Cell[52335, 1340, 115, 1, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[52487, 1346, 9062, 238, 318, "Input"],
+Cell[61552, 1586, 508, 10, 24, "Message"],
+Cell[62063, 1598, 1969, 56, 111, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[64069, 1659, 9424, 241, 335, "Input"],
+Cell[73496, 1902, 188, 4, 28, "Output"]
+}, Open  ]],
+Cell[73699, 1909, 3048, 76, 114, "Input"],
+Cell[CellGroupData[{
+Cell[76772, 1989, 345, 9, 28, "Input"],
+Cell[77120, 2000, 111, 2, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[77268, 2007, 1275, 33, 284, "Input"],
+Cell[78546, 2042, 131, 2, 48, "Output"],
+Cell[78680, 2046, 130, 2, 48, "Output"],
+Cell[78813, 2050, 129, 2, 48, "Output"],
+Cell[78945, 2054, 129, 2, 48, "Output"],
+Cell[79077, 2058, 130, 2, 48, "Output"],
+Cell[79210, 2062, 129, 2, 48, "Output"],
+Cell[79342, 2066, 128, 2, 48, "Output"],
+Cell[79473, 2070, 131, 2, 48, "Output"],
+Cell[79607, 2074, 130, 2, 48, "Output"],
+Cell[79740, 2078, 127, 2, 48, "Output"],
+Cell[79870, 2082, 129, 2, 48, "Output"],
+Cell[80002, 2086, 129, 2, 48, "Output"],
+Cell[80134, 2090, 130, 2, 48, "Output"],
+Cell[80267, 2094, 130, 2, 48, "Output"],
+Cell[80400, 2098, 128, 2, 48, "Output"],
+Cell[80531, 2102, 129, 2, 48, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[80697, 2109, 155, 3, 46, "Input"],
+Cell[80855, 2114, 105, 2, 48, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[80997, 2121, 451, 8, 114, "Input"],
+Cell[81451, 2131, 121, 2, 28, "Output"],
+Cell[81575, 2135, 118, 2, 28, "Output"],
+Cell[81696, 2139, 122, 2, 28, "Output"],
+Cell[81821, 2143, 124, 2, 28, "Output"],
+Cell[81948, 2147, 121, 2, 28, "Output"],
+Cell[82072, 2151, 122, 2, 28, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[82231, 2158, 9518, 243, 335, "Input"],
+Cell[91752, 2403, 1139, 21, 46, "Output"]
+}, Open  ]],
+Cell[92906, 2427, 313, 8, 46, "Input"]
+}
+]
+*)
+
+(* End of internal cache information *)
