@@ -1,11 +1,3 @@
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(gridExtra))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
-colfun = colorRampPalette(c("white","blue","skyblue",
-                            "chartreuse3","green","yellow",
-                            "orange","red","darkred"))
-
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
 save.as <- as.character(args[2])
@@ -17,8 +9,21 @@ minimal <- as.character(args[6])
 minimal <- as.logical(minimal)
 setwd(my_path)
 
-load(paste0("../../data/Main_Simulation/Non_Symmetric-",dist,
-            "/Non_Symmetric-",dist,"-scaling-",scaling,".Rdata"))
+if(!scale.fac %in% c(0,1,2,5,10)){
+  stop("To reproduce the results in the paper, please use scale.fac = c(0,1,2,5,10).")
+}
+
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(gridExtra))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
+
+colfun = colorRampPalette(c("white","blue","skyblue",
+                            "chartreuse3","green","yellow",
+                            "orange","red","darkred"))
+
+sim.run <- readRDS(file = paste0("../../data/Main_Simulation/Non_Symmetric-",dist,
+"/Non_Symmetric-",dist,"-scaling-",scaling,".Rdata"))
 sim.run$nC <- (sim.run$GC/100)/(1+sim.run$GCratio)
 sim.run$nG <- (sim.run$GC/100)-sim.run$nC
 sim.run$nT <- (1-(sim.run$GC/100)) / (1+sim.run$ATratio)
@@ -176,7 +181,7 @@ if(save.as == "pdf"){
   ratio.plot(sim.run, paste0("Scaling = ", scaling), xlim=c(0,10), ylim=c(0,10))
   pic.saved <- dev.off()
 } else {
-  png(width = 850, height = 550,
+  png(width = 850, height = 850,
       paste0(file="../../figures/Main_Simulation/Non_Symmetric-",dist,"/scaling_",
              scaling,"/GC-ratio_vs_AT-ratio.", save.as))
   ratio.plot(sim.run, paste0("Scaling = ", scaling))
@@ -255,14 +260,20 @@ rate.con.plots <- function(
   # Chargaff compliance
   if(Tolerance){
     if(species == "Prokaryotes"){
-      tolerance  <- read.csv(file = "../../../01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv",
-                             header = TRUE)
+      tolerance  <- read.csv(
+        file = "../../../01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv",
+        header = TRUE
+      )
     } else if(species == "Eukaryotes"){
-      tolerance  <- read.csv(file = "../../../01-genome_composition/data/02-Eukaryotes/PR2_compliance/PR2_fluctuations.csv", 
-                             header = TRUE)
+      tolerance  <- read.csv(
+        file = "../../../01-genome_composition/data/02-Eukaryotes/PR2_compliance/PR2_fluctuations.csv", 
+        header = TRUE
+      )
     } else if(species == "Viruses"){
-      tolerance  <- read.csv(file = "../../../01-genome_composition/data/03-Viruses/PR2_compliance/PR2_fluctuations.csv", 
-                             header = TRUE)
+      tolerance  <- read.csv(
+        file = "../../../01-genome_composition/data/03-Viruses/PR2_compliance/PR2_fluctuations.csv", 
+        header = TRUE
+      )
     }
     at.tol <- tolerance[tolerance$metadata == "AT_skew", "st.dev"]
     gc.tol <- tolerance[tolerance$metadata == "GC_skew", "st.dev"]

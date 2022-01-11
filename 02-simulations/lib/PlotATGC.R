@@ -17,8 +17,7 @@ PlotATGC <- function(atgc=atgc, time.unit="byr", xlim=c(0,5), ylim=c(0,60)){
   suppressPackageStartupMessages(library(ggplot2))
   suppressPackageStartupMessages(library(dplyr))
   
-  as.data.frame(atgc$out) %>%
-    as_tibble() %>%
+  as_tibble(atgc$out) %>%
     mutate(across(.cols = c(Ca, Cg, Ct, Cc), ~.*100)) %>%
     ggplot(aes(x = time,
                y = Ca)) + 
@@ -75,7 +74,7 @@ PlotATGC <- function(atgc=atgc, time.unit="byr", xlim=c(0,5), ylim=c(0,60)){
                   label = annotateText,
                   angle = 0), size = 2) + 
     geom_text(data = data.frame(
-      xpos = max(xlim)-2,
+      xpos = max(xlim)-1,
       ypos = max(ylim), 
       annotateText = paste(
         "t = ",round(atgc$inp$span,2)," ",time.unit,"\n",

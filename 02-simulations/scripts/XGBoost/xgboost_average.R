@@ -1,51 +1,15 @@
-suppressPackageStartupMessages(library(tidyverse))
+args <- commandArgs(trailingOnly = TRUE)
+my_path <- as.character(args[1])
+ncpu <- as.numeric(args[3])
+setwd(my_path)
+
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(caret))
 suppressPackageStartupMessages(library(ggplot2))
 suppressPackageStartupMessages(library(doParallel))
 suppressPackageStartupMessages(library(pbapply))
 pbo = pboptions(type="txt")
-
-args <- commandArgs(trailingOnly = TRUE)
-my_path <- as.character(args[1])
-ncpu <- as.numeric(args[3])
-setwd(my_path)
-
-# load data as tibble
-load.data <- function(file.path, scaling = 1){
-
-  # Function to load the dataset as tibble class
-
-  # Flag       Format        Description
-  # file.path  <character>   Path to file for the dataset
-  # scaling    <numeric>     Scaling factor for the standard deviation of the 
-  #                          random drawing of mutation rate constants
-
-  print(paste0("Loading scaling ",scaling,"..."), quote = FALSE)
-  if(file.exists(file.path)){
-    # load file
-    if(grepl(pattern = ".csv", x = file.path, fixed = TRUE)){
-      sim.run <- read.csv(file = file.path, header = TRUE)
-    } else if (grepl(pattern = ".Rdata", x = file.path, fixed = TRUE)){
-      load(file.path)
-    }
-    
-    sim.run$nC <- (sim.run$GC/100)/(1+sim.run$GCratio)
-    sim.run$nG <- (sim.run$GC/100)-sim.run$nC
-    sim.run$nT <- (1-(sim.run$GC/100)) / (1+sim.run$ATratio)
-    sim.run$nA <- (1-(sim.run$GC/100)) - sim.run$nT
-    
-    # obtain k-values from rhombus plot that fall within the 
-    # "tolerance" values obtained from experimental values
-    sim.run$A_minus_T <- sim.run$nA-sim.run$nT
-    sim.run$G_minus_C <- sim.run$nG-sim.run$nC
-    
-    # return data
-    return(sim.run)
-  } else {
-    stop("File does not exist!")
-  }
-}
+source("../../lib/LoadData.R")
 
 filter.df <- function(dataset, species = "eukaryotes"){
 
@@ -59,11 +23,11 @@ filter.df <- function(dataset, species = "eukaryotes"){
   #                      "prokaryotes", "eukaryotes" or "viruses" organisms
 
   if(species == "prokaryotes"){
-    file.name <- "../../../01-genome_composition/data/01-Prokaryotes/PR_compliance/PR2_fluctuations.csv"
+    file.name <- "../../../01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv"
   } else if(species == "eukaryotes"){
-    file.name <- "../../../01-genome_composition/data/02-Eukaryotes/data/PR_compliance/PR2_fluctuations.csv"
+    file.name <- "../../../01-genome_composition/data/02-Eukaryotes/PR2_compliance/PR2_fluctuations.csv"
   } else if(species == "viruses"){
-    file.name <- "../../../01-genome_composition/data/03-Viruses/data/PR_compliance/PR2_fluctuations.csv"
+    file.name <- "../../../01-genome_composition/data/03-Viruses/PR2_compliance/PR2_fluctuations.csv"
   }
   
   if(file.exists(file.name)){
@@ -85,7 +49,7 @@ filter.df <- function(dataset, species = "eukaryotes"){
                        1, 0)) %>%
       relocate(Label, .before = kag) %>%
       mutate(Label = as.factor(as.numeric(Label)),
-             Label = fct_recode(Label, 
+             Label = forcats::fct_recode(Label, 
                                 "NO" = "0", 
                                 "YES" = "1"))
     
@@ -142,30 +106,20 @@ non.compliant.sampling <- function(dataset, seed = 123){
   return(df.train)
 }
 
-xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel = FALSE){
+xgb.train <- function(dataset, best.model, ncpu = 4, seed = 123){
 
   # Train the xgboost model
 
   # Flag      Format     Description
   # dataset  <Rdata>     Dataset of the equilibrium outputs from the
-  #                      numerically solved kinetic mutation rate
-  #                      equations.
-  # cv       <numeric>   Number of cross-validation processes
-  # cvrep    <numeric>   Number of times to repeat the cross-validation processes
+  #                      numerically solved kinetic mutation rate equations
   # seed     <numeric>   Random number generator, useful for reproducible random objects
-  # parallel <boolean>   Run xgboost training process in parallel execution 
 
   # check if classes are correct
-  if(ncpu%%1!=0){
+  if(ncpu%%1!=0 | ncpu<=0){
     stop("Number of cores must be a positive integer.")
   }
-  if(cv%%1!=0){
-    stop("Cross-validation must be a positive integer.")
-  }
-  if(cvrep%%1!=0){
-    stop("cvrep must be a positive integer.")
-  }
-  if(seed%%1!=0){
+  if(seed%%1!=0 | seed<=0){
     stop("Seed must be a positive integer.")
   }
 
@@ -176,41 +130,20 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel
   data <- dataset %>% 
     mutate(across(where(is.numeric), normalize))
   
-  # set random seed
   set.seed(seed)
-  
-  # set up parallel processing
-  if(parallel){
-    cl = makeCluster(ncpu)
-    registerDoParallel(cl)
-    print(paste0("Running with ", ncpu, " cores..."), quote = F)
-  }
-  
-  # Message output
-  print(paste0("Validation scheme: ", cv, "-fold CV"), quote = F)
   
   # hyper-parameter search
   xgb.grid <- expand.grid(
-    nrounds = c(1000), # boosting iterations
-    max_depth = c(6), # max tree depth
-    colsample_bytree = c(1), # subsample ratio of columns
-    eta = c(0.1), # shrinkage
-    gamma = c(0.1), # min loss reduction
-    min_child_weight = c(1), # min sum of instance weight
-    subsample = c(0.4) # subsample percentage
+    nrounds = best.model$nrounds, # boosting iterations
+    max_depth = best.model$max_depth, # max tree depth
+    colsample_bytree = best.model$colsample_bytree, # subsample ratio of columns
+    eta = best.model$eta, # shrinkage
+    gamma = best.model$gamma, # min loss reduction
+    min_child_weight = best.model$min_child_weight, # min sum of instance weight
+    subsample = best.model$subsample # subsample percentage
   )
   
-  # define seeds for each CV process
-  seeds <- lapply(1:((cv*cvrep)+1), FUN = function(x){
-    sample.int(n = 50000, dim(xgb.grid)[1])
-  })
-  
-  # create train control
   xgb.trcontrol <- trainControl(
-    method = "repeatedcv",
-    repeats = cvrep,
-    number = cv,
-    seeds = seeds,
     classProbs = TRUE,
     summaryFunction = twoClassSummary,
     returnData = TRUE,
@@ -220,7 +153,6 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel
   )
   
   # train model
-  print("Model fitting...", quote = F)
   xgb.model <- train(
     Label ~ ., 
     data = data,
@@ -228,13 +160,8 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel
     trControl = xgb.trcontrol,
     tuneGrid = xgb.grid,
     metric = "ROC",
-    verbose = FALSE
+    verbose = TRUE
   )
-  
-  # stop cluster
-  if(parallel){
-    stopCluster(cl)
-  }
   
   # best model
   best.model <- xgb.model$results %>% 
@@ -245,15 +172,21 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel
 }
 
 # Run multiple iterations to obtain average feature importance
+# load xgboost model file
+xgbmodel <- readRDS(file = paste0("../../data/XGBoost/xgbtree.model"))
+best.model <- xgbmodel$results %>% filter(ROC == max(ROC))
+rm(xgbmodel)
+
 # load data
-sim.run <- load.data(file.path = "../../data/Main_Simulation/Non_Symmetric-uniform-scaling-1.Rdata", 
+sim.run <- LoadData(file.path = "../../data/Main_Simulation/Non_Symmetric-uniform/Non_Symmetric-uniform-scaling-1.Rdata", 
                     scaling = 1)
 
 # obtain compliant cases
 df <- filter.df(dataset = sim.run, 
-                species = "viruses")
-  
+                species = "eukaryotes")
+
 df[[2]] %>%
+  select(-Label) %>%  
   write.csv(file = "../../../03-symbolic_regression/data/Training/simulation_batches_compliant.csv",
             row.names = FALSE)
 
@@ -268,11 +201,9 @@ df.samples <- pblapply(rng, function(x){
   
   # train model with optimised hyper-parameters
   model <- xgb.train(data = df.train, 
-                     ncpu = 4, 
-                     cv = 5, 
-                     cvrep = 1, 
-                     seed = 123, 
-                     parallel = FALSE)
+                     best.model = best.model, 
+                     ncpu = ncpu, 
+                     seed = 123)
   
   # return feature importance as data frame
   return(varImp(model[[1]])$importance %>%
@@ -287,7 +218,7 @@ featImp.all <- do.call(cbind, df.samples)
 # rename columns
 colnames(featImp.all) <- paste0(
   "output_", seq(from = 1, to = dim(featImp.all)[2], by = 1)
-  )
+)
 
 # sort rate constants alphabetically
 rates.sorted <- sort(colnames(df[[1]])[2:ncol(df[[1]])])
@@ -296,8 +227,8 @@ rates.sorted <- sort(colnames(df[[1]])[2:ncol(df[[1]])])
 featImp.all <- featImp.all %>%
   as_tibble() %>%
   rownames_to_column() %>%
-  pivot_longer(-rowname) %>%
-  pivot_wider(names_from = rowname,
+  tidyr::pivot_longer(-rowname) %>%
+  tidyr::pivot_wider(names_from = rowname,
               values_from = value) %>%
   select(-name) %>%
   rename_with(~ rates.sorted)
@@ -313,7 +244,7 @@ data <- rates.sorted %>%
 
 # plot average feature importance
 data.plot <- data %>%
-  arrange(max) %>%
+  arrange(mean) %>%
   mutate(rate = forcats::fct_inorder(rate)) %>%
   ggplot() + 
   geom_bar(aes(x = rate, y = mean),
@@ -327,4 +258,3 @@ data.plot <- data %>%
 
 ggsave(filename = "../../figures/XGBoost/xgbtree_featimport_average_plots.pdf",
        plot = data.plot)
-  

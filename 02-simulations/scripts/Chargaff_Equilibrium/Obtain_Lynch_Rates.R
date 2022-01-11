@@ -1,11 +1,12 @@
-# Load required supplementary functions and packages
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(Biostrings))
-
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
 setwd(my_path)
+
+# Load required supplementary functions and packages
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(stringr))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(Biostrings))
 
 # obtain mutation rates from Table 1 in the following paper
 # https://www.pnas.org/content/107/3/961
@@ -68,21 +69,43 @@ cat("Converted mutation rates to time domain for simulation!", "\n")
 
 # fasta files to download 
 species.names <- c(
+  "Homo_sapiens", 
   "Arabidopsis_thaliana", 
   "Caenorhabditis_elegans", 
   "Drosophila_melanogaster",
   "Escherichia_coli", 
-  "Homo_sapiens", 
-  "Saccharomyces_cerevisiae"
+  "Saccharomyces_cerevisiae",
+  "Photorhabdus_luminescens",
+  "Teredinibacter_turnerae",
+  "Mycobacterium_smegmatis",
+  "Pseudomonas_fluorescens",
+  "Rhodosporidium_toruloides",
+  "Mus_musculus",
+  "Daphnia_pulex",
+  "Pristionchus_pacificus",
+  "Daphnia_magna",
+  "Pan_troglodytes",
+  "Aotus_nancymaae"
 )
 
 download.files.url <- c(
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.fna.gz",
   "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/735/GCF_000001735.4_TAIR10.1/GCF_000001735.4_TAIR10.1_genomic.fna.gz",
   "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/002/985/GCF_000002985.6_WBcel235/GCF_000002985.6_WBcel235_genomic.fna.gz",
   "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/215/GCF_000001215.4_Release_6_plus_ISO1_MT/GCF_000001215.4_Release_6_plus_ISO1_MT_genomic.fna.gz",
   "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/157/115/GCF_000157115.1_ASM15711v1/GCF_000157115.1_ASM15711v1_genomic.fna.gz",
-  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.39_GRCh38.p13/GCF_000001405.39_GRCh38.p13_genomic.fna.gz",
-  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/756/235/GCA_000756235.1_ASM75623v1/GCA_000756235.1_ASM75623v1_genomic.fna.gz"
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/756/235/GCA_000756235.1_ASM75623v1/GCA_000756235.1_ASM75623v1_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/900/102/985/GCF_900102985.1_IMG-taxon_2597490348_annotated_assembly/GCF_900102985.1_IMG-taxon_2597490348_annotated_assembly_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/964/255/GCF_000964255.1_ASM96425v1/GCF_000964255.1_ASM96425v1_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/013/349/145/GCF_013349145.1_ASM1334914v1/GCF_013349145.1_ASM1334914v1_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/001/414/285/GCF_001414285.1_ATCC948-1/GCF_001414285.1_ATCC948-1_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/320/785/GCF_000320785.1_RHOziaDV1.0/GCF_000320785.1_RHOziaDV1.0_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/635/GCF_000001635.27_GRCm39/GCF_000001635.27_GRCm39_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/911/175/335/GCA_911175335.1_PA42_4.2/GCA_911175335.1_PA42_4.2_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/180/635/GCA_000180635.4_El_Paco_v._4/GCA_000180635.4_El_Paco_v._4_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/020/631/705/GCF_020631705.1_ASM2063170v1.1/GCF_020631705.1_ASM2063170v1.1_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/880/755/GCF_002880755.1_Clint_PTRv2/GCF_002880755.1_Clint_PTRv2_genomic.fna.gz",
+  "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/952/055/GCF_000952055.2_Anan_2.0/GCF_000952055.2_Anan_2.0_genomic.fna.gz"
 )
 
 valid_url <- function(url_in, t = 300){
@@ -153,7 +176,7 @@ cat("Done!", "\n")
 # read fasta files
 files <- list.files(path = "../../data/Raw/Michael_Lynch/", 
                     pattern = ".fna$")
-files <- sort(files)
+files <- str_sort(files, numeric = TRUE)
 
 # obtain mean GC content from species
 cat("Obtaining mean GC content from species...")
@@ -164,17 +187,20 @@ GC.average <- sapply(files, function(x){
   genome_length <- width(fai)
   
   # extract base contents
-  all.letters <- letterFrequency(fai, letters="ACGT", OR=0)/genome_length
+  all.letters <- letterFrequency(fai, letters="ACGT", OR=0)
   
-  # obtain other metadata of each species
-  G_plus_C  <- all.letters[,"G"]+all.letters[,"C"]
-  mean(G_plus_C)
+  # obtain GC average
+  all.letters <- cbind(all.letters,genome_length)
+  all.letters <- colSums(all.letters)
+  G_plus_C  <- (all.letters["G"]+all.letters["C"])/all.letters["genome_length"]
+
+  return(G_plus_C)
 })
 
-as.data.frame(GC.average) %>%
+other.species.gc.avg <- as.data.frame(GC.average)
+other.species.gc.avg %>% 
   write.csv(file = "../../data/Raw/Michael_Lynch/GC_average.csv",
             row.names = TRUE)
-other.species.gc.avg <- GC.average[c(5,3,2,1,6,4)]
 cat("Done!", "\n")
 
 lynch.rates <- lynch.rates %>%
@@ -190,16 +216,15 @@ ind.i <- which(lynch.rates$RATES == "i")
 
 # assign new GC contents
 rate.constant.ratios <- sapply(4:length(lynch.rates), function(x){
-  (lynch.rates[ind.n, x]+lynch.rates[ind.j, x])/
-    (lynch.rates[ind.m, x]+lynch.rates[ind.i, x])
+  sum(lynch.rates[ind.n, x],lynch.rates[ind.j, x])/
+    sum(lynch.rates[ind.i, x],lynch.rates[ind.m, x])
 })
-rate.constant.ratios <- unname(unlist(rate.constant.ratios))
 
 # assign ratios to new column 
 other.species.gc.avg <- data.frame(
   Species = colnames(lynch.rates)[4:length(lynch.rates)],
   Rates = rate.constant.ratios,
-  GC.average = unname(other.species.gc.avg)*100
+  GC.average = other.species.gc.avg$GC.average*100
 )
 
 # save new data frame as csv

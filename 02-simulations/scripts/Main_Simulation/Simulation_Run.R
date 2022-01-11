@@ -1,11 +1,3 @@
-# Load required supplementary functions and packages
-suppressPackageStartupMessages(library(deSolve))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(truncnorm))
-suppressPackageStartupMessages(library(doRNG))
-suppressPackageStartupMessages(library(doParallel))
-suppressPackageStartupMessages(library(foreach))
-
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
 ncpu <- as.numeric(args[2])
@@ -17,10 +9,18 @@ sim.evol <- as.character(args[7])
 sim.evol <- as.logical(sim.evol)
 setwd(my_path)
 
-# source dependencies
+# Load required supplementary functions and packages
+suppressPackageStartupMessages(library(deSolve))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(truncnorm))
+suppressPackageStartupMessages(library(doRNG))
+suppressPackageStartupMessages(library(doParallel))
+suppressPackageStartupMessages(library(foreach))
+
 source("../../lib/SolveATGC.R")
-source("../../lib/InputChecking.R")
+source("../../lib/CheckInput.R")
 source("../../lib/Simulation.R")
+source("../../lib/States.R")
 
 # Import calculated mutation rates from trek paper
 note.one   <- read.csv("../../data/Raw/Trek-paper-Note-1-mutation-rates.csv", 
@@ -30,7 +30,8 @@ note.two   <- read.csv("../../data/Raw/Trek-paper-Note-2-mutation-rates.csv",
 note.three <- read.csv("../../data/Raw/Trek-paper-Note-3-mutation-rates.csv", 
                        header = TRUE)
 
-solsym(Acont      = 0.25, # %
+Simulation(
+       Acont      = 0.25, # %
        Gcont      = 0.25, # %
        Ccont      = 0.25, # %
        span       = 4.28, # byr
@@ -44,4 +45,5 @@ solsym(Acont      = 0.25, # %
        tol.return = "NONE",
        sim.evol   = sim.evol,
        NCPU       = ncpu, 
-       seed       = 1)
+       seed       = 1
+)

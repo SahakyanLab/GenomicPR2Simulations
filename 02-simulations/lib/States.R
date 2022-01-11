@@ -1,5 +1,5 @@
 ################################################################################
-states <- function(iterations = 10, seed = 2021, NCPU = 6){
+States <- function(iterations = 10, seed = 2021, NCPU = 6){
   # Function to obtain min and max single nucleotide content from real-life species
 
   # Dependencies

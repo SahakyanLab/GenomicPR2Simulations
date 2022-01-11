@@ -1,50 +1,14 @@
-suppressPackageStartupMessages(library(tidyverse))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(caret))
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(doParallel))
-suppressPackageStartupMessages(library(MLeval))
-
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
 ncpu <- as.numeric(args[3])
 setwd(my_path)
 
-# load data as tibble
-load.data <- function(file.path, scaling = 1){
-
-  # Function to load the dataset as tibble class
-
-  # Flag       Format        Description
-  # file.path  <character>   Path to file for the dataset
-  # scaling    <numeric>     Scaling factor for the standard deviation of the 
-  #                          random drawing of mutation rate constants
-
-  print(paste0("Loading scaling ",scaling,"..."), quote = FALSE)
-  if(file.exists(file.path)){
-    # load file
-    if(grepl(pattern = ".csv", x = file.path, fixed = TRUE)){
-      sim.run <- read.csv(file = file.path, header = TRUE)
-    } else if (grepl(pattern = ".Rdata", x = file.path, fixed = TRUE)){
-      load(file.path)
-    }
-    
-    sim.run$nC <- (sim.run$GC/100)/(1+sim.run$GCratio)
-    sim.run$nG <- (sim.run$GC/100)-sim.run$nC
-    sim.run$nT <- (1-(sim.run$GC/100)) / (1+sim.run$ATratio)
-    sim.run$nA <- (1-(sim.run$GC/100)) - sim.run$nT
-    
-    # obtain k-values from rhombus plot that fall within the 
-    # "tolerance" values obtained from experimental values
-    sim.run$A_minus_T <- sim.run$nA-sim.run$nT
-    sim.run$G_minus_C <- sim.run$nG-sim.run$nC
-    
-    # return data
-    return(sim.run)
-  } else {
-    stop("File does not exist!")
-  }
-}
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(caret))
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(doParallel))
+suppressPackageStartupMessages(library(MLeval))
+source("../../lib/LoadData.R")
 
 filtered.df <- function(dataset, seed = 123, species = "eukaryotes"){
 
@@ -61,9 +25,9 @@ filtered.df <- function(dataset, seed = 123, species = "eukaryotes"){
   if(species == "prokaryotes"){
     file.name <- "../../../01-genome_composition/data/01-Prokaryotes/PR_compliance/PR2_fluctuations.csv"
   } else if(species == "eukaryotes"){
-    file.name <- "../../../01-genome_composition/data/02-Eukaryotes/data/PR_compliance/PR2_fluctuations.csv"
+    file.name <- "../../../01-genome_composition/data/02-Eukaryotes/PR_compliance/PR2_fluctuations.csv"
   } else if(species == "viruses"){
-    file.name <- "../../../01-genome_composition/data/03-Viruses/data/PR_compliance/PR2_fluctuations.csv"
+    file.name <- "../../../01-genome_composition/data/03-Viruses/PR_compliance/PR2_fluctuations.csv"
   }
   
   if(file.exists(file.name)){
@@ -85,7 +49,7 @@ filtered.df <- function(dataset, seed = 123, species = "eukaryotes"){
                        1, 0)) %>%
       relocate(Label, .before = kag) %>%
       mutate(Label = as.factor(as.numeric(Label)),
-             Label = fct_recode(Label, 
+             Label = forcats::fct_recode(Label, 
                                 "NO" = "0", 
                                 "YES" = "1"))
     
@@ -125,7 +89,7 @@ filtered.df <- function(dataset, seed = 123, species = "eukaryotes"){
   }
 }
 
-xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel = FALSE){
+xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123){
 
   # Train the xgboost model
 
@@ -136,19 +100,18 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel
   # cv       <numeric>   Number of cross-validation processes
   # cvrep    <numeric>   Number of times to repeat the cross-validation processes
   # seed     <numeric>   Random number generator, useful for reproducible random objects
-  # parallel <boolean>   Run xgboost training process in parallel execution 
 
   # check if classes are correct
-  if(ncpu%%1!=0){
+  if(ncpu%%1!=0 | ncpu<=0){
     stop("Number of cores must be a positive integer.")
   }
-  if(cv%%1!=0){
+  if(cv%%1!=0 | cv<=0){
     stop("Cross-validation must be a positive integer.")
   }
-  if(cvrep%%1!=0){
+  if(cvrep%%1!=0 | cvrep<=0){
     stop("cvrep must be a positive integer.")
   }
-  if(seed%%1!=0){
+  if(seed%%1!=0 | seed<=0){
     stop("Seed must be a positive integer.")
   }
 
@@ -162,23 +125,13 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel
   data <- data %>% 
     mutate(across(where(is.numeric), normalize))
   
-  # set random seed
   set.seed(seed)
-  
-  # set up parallel processing
-  if(parallel){
-    cl = makeCluster(ncpu)
-    registerDoParallel(cl)
-    print(paste0("Running with ", ncpu, " cores..."), quote = F)
-  }
-  
-  # Message output
-  print(paste0("Validation scheme: ", cv, "-fold CV"), quote = F)
+  cat("Validation scheme:", cv, "-fold CV", "\n")
   
   # hyper-parameter search
   xgb.grid <- expand.grid(
-    nrounds = c(200, 500, 1000, 2000, 3000, 4000, 5000, 7000, 9000,
-                11000, 13000, 15000, 17000, 20000), # boosting iterations
+    nrounds = c(200, 400, 700, 900, 
+                1000, 3000, 4000, 5000), # boosting iterations
     max_depth = c(5, 6, 8, 10), # max tree depth
     colsample_bytree = 1, # subsample ratio of columns
     eta = c(0.005, 0.01, 0.02, 0.1), # shrinkage
@@ -207,7 +160,7 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel
   )
   
   # train model
-  print("Model fitting...", quote = F)
+  cat("Model fitting...", "\n")
   xgb.model <- train(
     Label ~ ., 
     data = data,
@@ -215,7 +168,7 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel
     trControl = xgb.trcontrol,
     tuneGrid = xgb.grid,
     metric = "ROC",
-    verbose = FALSE
+    verbose = TRUE
   )
   
   # save AUC ROC curve
@@ -246,11 +199,6 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel
   # save best model
   saveRDS(xgb.model, file = paste0("../../data/XGBoost/xgbtree.model"))
 
-  # stop cluster
-  if(parallel){
-    stopCluster(cl)
-  }
-  
   # best model
   best.model <- xgb.model$results %>% 
     filter(ROC == max(ROC))
@@ -259,10 +207,10 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123, parallel
   return(list(xgb.model, best.model))
 }
 
-sim.run <- load.data(file.path = "../../data/Main_Simulation/Non_Symmetric-uniform-scaling-1.Rdata", 
+sim.run <- LoadData(file.path = "../../data/Main_Simulation/Non_Symmetric-uniform-scaling-1.Rdata", 
                     scaling = 1)
-df.train <- filtered.df(dataset = sim.run, seed = 2021, species = "eukaryotes")
-model <- xgb.train(dataset = df.train, ncpu = ncpu, cv = 6, cvrep = 1, seed = 123)
+df.train <- filtered.df(dataset = sim.run, seed = 2022, species = "eukaryotes")
+model <- xgb.train(dataset = df.train, ncpu = ncpu, cv = 6, cvrep = 1, seed = 1234)
 
 # save model results plot
 trellis.device(
@@ -271,4 +219,4 @@ trellis.device(
   device = "pdf",
   file = "../../figures/XGBoost/xgbtree_roc-hyperparams_plots.pdf")
 plot(model[[1]])
-dev.off()
+plot.save <- dev.off()

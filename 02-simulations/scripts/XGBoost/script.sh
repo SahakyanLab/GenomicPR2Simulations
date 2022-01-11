@@ -1,7 +1,7 @@
 #!/bins/
 
 # obtain working directory
-pwd=$(pwd)
+pwd="$(pwd)/"
 ncpu=2
 
 # make directories for saving files

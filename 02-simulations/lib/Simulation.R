@@ -1,18 +1,19 @@
 ################################################################################
-solsym <- function(
+Simulation <- function(
   Acont      = 0.25,
   Gcont      = 0.25,
   Ccont      = 0.25,
   span       = 4.28,
   step       = 0.001,
   max.runs   = 5, 
-  muttype    = "Strand_Symmetric",
-  dist       = "normal", 
+  muttype    = "Non_Symmetric",
+  dist       = "uniform", 
   species    = "NONE", 
   scale.fac  = 1,
   tolerance  = FALSE,
   tol.return = "NONE",
   sim.evol   = FALSE, 
+  sy.reg.run = FALSE,
   NCPU       = 6,
   seed       = 1 
   ){
@@ -43,7 +44,7 @@ solsym <- function(
   #                        general simulation, use default parameter of: "NONE"
   # scale.fac  <numeric>   Scaling factor for the standard deviation of the 
   #                        random drawing of mutation rate constants
-  # tolerance  <character> Chargaff tolerance for the simulation. 
+  # tolerance  <boolean>   Chargaff tolerance for the simulation. 
   #                        If general simulation, use default parameter of FALSE. If
   #                        simulation for time periods to reach chargaff compliance
   #                        and genome equilibration, use TRUE boolean
@@ -54,20 +55,22 @@ solsym <- function(
   #                        mean and standard deviation fluctuation of the 
   #                        absolute difference in the base content. Use "fluctuation"
   #                        when results for "equil_time" are obtained
-  # sim.evol   <character> Capture the 1 billion year time evolution of the change
+  # sim.evol   <boolean>   Capture the 1 billion year time evolution of the change
   #                        of base content and meta-data. 
+  # sy.reg.run <boolean>   Simulation run for obtaining the test results for the
+  #                        symbolic regression run. Default is FALSE.
   # NCPU       <numeric>   Number of cores to use for parallel execution. 
   # seed       <numeric>   Random number generator, useful for reproducible random objects
 
   # check input classes
-  inputchecking(Acont, Gcont, Ccont, span, step, max.runs, 
-                muttype, dist, species, scale.fac, tolerance, 
-                tol.return, sim.evol, NCPU, seed)
+  CheckInput(Acont, Gcont, Ccont, span, step, max.runs, 
+             muttype, dist, species, scale.fac, tolerance, 
+             tol.return, sim.evol, NCPU, seed)
   
   # obtain states 
   if(tolerance){
     # obtain states 
-    all.states <- states(iterations = max.runs, seed = seed, NCPU = NCPU)
+    all.states <- States(iterations = max.runs, seed = seed, NCPU = NCPU)
   } else {
     Tcont <- 1 - Acont - Gcont - Ccont
     state <- c(Ca=Acont, Cg=Gcont, Ct=Tcont, Cc=Ccont) 
@@ -76,7 +79,7 @@ solsym <- function(
   # set-up cluster for parallel computation
   cl <- makeCluster(NCPU)
   registerDoParallel(cl)
-  cat(paste("Running with ", NCPU, " cores...", sep="", "\n"))
+  cat("Running with ", NCPU, " cores...", "\n")
   
   # Declare that parallel RNG should be used for in a parallel foreach() call.
   # %dorng% will still result in parallel processing; uses %dopar% internally.
@@ -84,7 +87,7 @@ solsym <- function(
 
   # checks before simulation commences
   if((muttype == "Strand_Symmetric") & (dist == "uniform")){
-    cat("Symmetry-constrained mutation rates only works with normal distribution. Automatically changing...", "\n")
+    cat("Symmetry-constrained mutation rates only works with normal distribution.", "\n")
     dist = "normal"
     cat("Running strand symmetric model with normal distribution...", "\n")
   }
@@ -266,11 +269,15 @@ solsym <- function(
   } %>% 
   suppressWarnings() # ignore 'already exporting variables' warning from foreach 
   ### end of foreach ######################################
-  if(tolerance == FALSE){
-    save(sim.run, file=paste0("../../data/Main_Simulation/",muttype,"-",dist,"/",
-                              muttype,"-",dist,"-scaling-",scale.fac,".Rdata"))
-  } else {
+  if(tolerance){
     return(sim.run)
+  } else {
+    if(sy.reg.run){
+      return(sim.run)
+    } else {
+      saveRDS(sim.run, file=paste0("../../data/Main_Simulation/",muttype,"-",dist,"/",
+      muttype,"-",dist,"-scaling-",scale.fac,".Rdata"))
+    }
   }
   stopImplicitCluster()
   stopCluster(cl)

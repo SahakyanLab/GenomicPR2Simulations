@@ -1,19 +1,25 @@
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(gridExtra))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(stringr))
-suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
-colfun = colorRampPalette(c("white","blue","skyblue",
-                            "chartreuse3","green","yellow",
-                            "orange","red","darkred"))
-
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
 scaling <- as.numeric(args[2])
 setwd(my_path)
 
+if(!scale.fac %in% c(0,1,2,5,10)){
+  stop("To reproduce the results in the paper, please use scale.fac = c(0,1,2,5,10).")
+}
+
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(gridExtra))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(stringr))
+suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
+
+colfun = colorRampPalette(c("white","blue","skyblue",
+                            "chartreuse3","green","yellow",
+                            "orange","red","darkred"))
+
 # load simulation data set
-load(paste0("../../data/Main_Simulation/Strand_Symmetric-normal/Strand_Symmetric-normal-scaling-",scaling,".Rdata"))
+sim.run <- readRDS(file = paste0("../../data/Main_Simulation/Strand_Symmetric-normal/Strand_Symmetric-normal-scaling-",
+scaling,".Rdata"))
 to.keep <- which(!is.na(str_extract(string = names(sim.run), pattern = "skew")))
 sim.run <- sim.run[,to.keep]
 sim.run <- sim.run[,c(3:10, 1:2)]
@@ -56,7 +62,7 @@ for(i in 1:length(bn.years)){
       paste0(file="../../figures/Main_Simulation/Strand_Symmetric-normal/scaling_",
              scaling,"/evolution_GC-skew_vs_AT-skew_", bn.years[i], "bn.png"))  
   skew.plot.evolution(sim.run, paste0("Scaling = ", scaling))
-  dev.off()
+  pic.saved <- dev.off()
 }
 
 

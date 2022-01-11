@@ -113,7 +113,7 @@ SolveATGC <- function(parameters=parameters, state=state, step=step, span=span,
   }
 
   # Genome Equilibrium tolerance
-  if(EQtolerance != FALSE){
+  if(EQtolerance){
     dif <- abs(diff(out[,c("Ca","Cg","Ct","Cc")]))
     dif.max.min <- apply(dif, 1, function(x){max(x) - min(x)})
     Eq.time <- times[which(dif.max.min <= EQtolerance)[1]]

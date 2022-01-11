@@ -1,12 +1,3 @@
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(gridExtra))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(stringr))
-suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
-colfun = colorRampPalette(c("white","blue","skyblue",
-                            "chartreuse3","green","yellow",
-                            "orange","red","darkred"))
-
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
 save.as <- as.character(args[2])
@@ -15,7 +6,22 @@ Tolerance <- as.character(args[4])
 Tolerance <- as.logical(Tolerance)
 setwd(my_path)
 
-load(paste0("../../data/Main_Simulation/Strand_Symmetric-normal/Strand_Symmetric-normal-scaling-",scaling,".Rdata"))
+if(!scale.fac %in% c(0,1,2,5,10)){
+  stop("To reproduce the results in the paper, please use scale.fac = c(0,1,2,5,10).")
+}
+
+suppressPackageStartupMessages(library(ggplot2))
+suppressPackageStartupMessages(library(gridExtra))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(stringr))
+suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
+
+colfun = colorRampPalette(c("white","blue","skyblue",
+                            "chartreuse3","green","yellow",
+                            "orange","red","darkred"))
+
+sim.run <- readRDS(file = paste0("../../data/Main_Simulation/Strand_Symmetric-normal/Strand_Symmetric-normal-scaling-",
+scaling,".Rdata"))
 sim.run$nC <- (sim.run$GC/100)/(1+sim.run$GCratio)
 sim.run$nG <- (sim.run$GC/100)-sim.run$nC
 sim.run$nT <- (1-(sim.run$GC/100)) / (1+sim.run$ATratio)

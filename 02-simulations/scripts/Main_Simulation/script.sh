@@ -3,6 +3,8 @@
 # obtain working directory
 pwd=$(pwd)
 parallel="TRUE"
+save_file="png" # png or pdf
+minimal="FALSE" # hide elements of plots (I used it for some PowerPoint slides)
 ncpu=2
 runs=25000000
 
@@ -55,11 +57,7 @@ if [ "$parallel" == "TRUE" ]
         done
 fi
 
-# obtain all plots for the main simulations
-
-save_file="png" # png or pdf
-minimal="FALSE" # hide elements of plots (I used it for some PowerPoint slides)
-
+# plots for the main simulations
 for scaling in 1 2 5 10
 do
    echo "Obtaining meta-data plots for scaling" $scaling "..."
