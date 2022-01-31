@@ -12,6 +12,19 @@ Download the source code from the [GitHub](https://github.com/SahakyanLab/ATGCNe
 git clone https://github.com/SahakyanLab/ATGCNetworkResearch
 ```
 
+## Requirements
+
+* [deSolve](https://cran.r-project.org/web/packages/deSolve/index.html) >= 1.30
+* [dplyr](https://cran.r-project.org/web/packages/dplyr/index.html) >= 1.0.7
+* [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) >= 3.3.5
+* [gridExtra](https://cran.r-project.org/web/packages/gridExtra/index.html) >= 2.3
+* [foreach](https://cran.r-project.org/web/packages/foreach/index.html) >= 1.5.1
+* [doParallel](https://cran.r-project.org/web/packages/doParallel/index.html)  >= 1.0.16
+* [doRNG](https://cran.r-project.org/web/packages/doRNG/index.html) >= 1.8.2
+* [truncnorm](https://cran.r-project.org/web/packages/truncnorm/index.html) >= 1.0-8
+* [caret](https://cran.r-project.org/web/packages/caret/index.html) >= 6.0-90
+* [MLeval](https://cran.r-project.org/web/packages/MLeval/index.html) >= 0.3
+
 ## Workflow to get similar plots in the publication
 
 Execute the `submit.sh` file for sequential execution of the complete workflow. Change the parameters as follows:
