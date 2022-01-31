@@ -5,8 +5,7 @@ runs <- as.numeric(args[3])
 muttype <- as.character(args[4])
 dist <- as.character(args[5])
 scale.fac <- as.numeric(args[6])
-sim.evol <- as.character(args[7])
-sim.evol <- as.logical(sim.evol)
+sim.evol <-  as.logical(as.character(args[7]))
 setwd(my_path)
 
 # Load required supplementary functions and packages
@@ -21,6 +20,11 @@ source("../../lib/SolveATGC.R")
 source("../../lib/CheckInput.R")
 source("../../lib/Simulation.R")
 source("../../lib/States.R")
+
+prokaryotes.df <- read.csv(file = "../../../01-genome_composition/data/01-Prokaryotes/All/all_filtered_dataframe.csv", 
+                           header=TRUE)
+eukaryotes.df  <- read.csv(file = "../../../01-genome_composition/data/02-Eukaryotes/All/all_filtered_dataframe.csv", 
+                           header=TRUE)
 
 # Import calculated mutation rates from trek paper
 note.one   <- read.csv("../../data/Raw/Trek-paper-Note-1-mutation-rates.csv", 

@@ -3,14 +3,11 @@ my_path <- as.character(args[1])
 save.as <- as.character(args[2])
 scaling <- as.numeric(args[3])
 dist <- as.character(args[4])
-Tolerance <- as.character(args[5])
-Tolerance <- as.logical(Tolerance)
-minimal <- as.character(args[6])
-minimal <- as.logical(minimal)
+Tolerance <- as.logical(as.character(args[5]))
 setwd(my_path)
 
-if(!scale.fac %in% c(0,1,2,5,10)){
-  stop("To reproduce the results in the paper, please use scale.fac = c(0,1,2,5,10).")
+if(!scaling %in% c(0,1,2,5,10)){
+  stop("To reproduce the results in the paper, please use scaling = c(0,1,2,5,10).")
 }
 
 suppressPackageStartupMessages(library(ggplot2))
@@ -237,8 +234,7 @@ EQtolerance <- mean(Fluc.tol$Mean)*((1/100)*25)
 rate.con.plots <- function(
   dataset = sim.run,
   species = "Prokaryotes", 
-  Tolerance = FALSE, 
-  minimal = FALSE
+  Tolerance = FALSE
   ){
 
   # Plot of the mutation rate constants as ratio distribution plots
@@ -250,8 +246,6 @@ rate.con.plots <- function(
   # species   <character> Apply the PR-2 tolerance zone of 
   #                       "Prokaryotes", "Eukaryotes" or "Viruses" organisms
   # Tolerance <boolean>   Apply Chargaff tolerance to range of values if TRUE
-  # minimal   <boolean>   Minimal features on the plots (removes axis labels etc.). 
-  #                       Use this for PowerPoint plots
   
   rates <- data.frame(col1 = c("kag", "kat", "kac", "kct", "kca", "kcg"),
                       col2 = c("ktc", "kta", "ktg", "kga", "kgt", "kgc"))
@@ -279,102 +273,36 @@ rate.con.plots <- function(
     gc.tol <- tolerance[tolerance$metadata == "GC_skew", "st.dev"]
     ind <- which(abs(sim.run$GCskew-0) <= gc.tol & abs(sim.run$ATskew-0) <= at.tol)
     
-    if(minimal){
-      Plots <- lapply(1:6, function(x){
-        to.plot <- sim.run %>%
-          as_tibble() %>%
-          dplyr::slice(ind) %>%
-          dplyr::select(rates$col1[x], rates$col2[x]) %>%
-          setNames(c('rate_1', 'rate_2')) %>%
-          mutate(frac = rate_1/rate_2) %>%
-          dplyr::select(frac) %>%
-          dplyr::filter(frac <= 5)
-        
-        plots <- to.plot %>%
-          ggplot(aes(x = frac, ..density..)) +
-          geom_histogram(fill = "skyblue", 
-                         color = "black",
-                         alpha = 1,
-                         breaks = seq(min(to.plot$frac), 
-                                      max(to.plot$frac), 
-                                      length.out = length.out)) +
-          geom_vline(xintercept = 1,
-                     linetype = "dashed",
-                     size = 1) + 
-          scale_fill_manual(values = c("#69b3a2")) + 
-          {if(dist == "uniform")coord_cartesian(xlim = c(0, 5),
-                                                ylim = c(0, 0.9))} +
-          {if(dist == "normal")coord_cartesian(xlim = c(0, 5),
-                                               ylim = c(0, 1.2))} +
-          labs(x = "",
-               y = "",
-               title = "") + 
-          theme(axis.text = element_blank())
-        return(plots)
-      })
-    } else {
-      Plots <- lapply(1:6, function(x){
-        to.plot <- sim.run %>%
-          as_tibble() %>%
-          dplyr::slice(ind) %>%
-          dplyr::select(rates$col1[x], rates$col2[x]) %>%
-          setNames(c('rate_1', 'rate_2')) %>%
-          mutate(frac = rate_1/rate_2) %>%
-          dplyr::select(frac) %>%
-          dplyr::filter(frac <= 5)
-        
-        plots <- to.plot %>%
-          ggplot(aes(x = frac, ..density..)) +
-          geom_histogram(fill = "skyblue", 
-                         color = "black",
-                         alpha = 1,
-                         breaks = seq(min(to.plot$frac), 
-                                      max(to.plot$frac), 
-                                      length.out = length.out)) +
-          geom_vline(xintercept = 1,
-                     linetype = "dashed",
-                     size = 1) + 
-          scale_fill_manual(values = c("#69b3a2")) + 
-          {if(dist == "uniform")coord_cartesian(xlim = c(0, 5),
-                                                ylim = c(0, 0.9))} +
-          {if(dist == "normal")coord_cartesian(xlim = c(0, 5),
-                                               ylim = c(0, 1.2))} +
-          labs(x = "",
-               y = "",
-               title = paste0(rates$col1[x], "/", rates$col2[x]))
-        return(plots)
-      })
-    }
-  } else if(minimal & (Tolerance == FALSE)){
     Plots <- lapply(1:6, function(x){
       to.plot <- sim.run %>%
-        as_tibble() %>%
-        dplyr::select(rates$col1[x], rates$col2[x]) %>%
-        setNames(c('rate_1', 'rate_2')) %>%
-        mutate(frac = rate_1/rate_2) %>%
-        dplyr::select(frac) %>%
-        dplyr::filter(frac <= 5)
+      as_tibble() %>%
+      dplyr::slice(ind) %>%
+      dplyr::select(rates$col1[x], rates$col2[x]) %>%
+      setNames(c('rate_1', 'rate_2')) %>%
+      mutate(frac = rate_1/rate_2) %>%
+      dplyr::select(frac) %>%
+      dplyr::filter(frac <= 5)
+    
+    plots <- to.plot %>%
+      ggplot(aes(x = frac, ..density..)) +
+      geom_histogram(fill = "skyblue", 
+                      color = "black",
+                      alpha = 1,
+                      breaks = seq(min(to.plot$frac), 
+                                  max(to.plot$frac), 
+                                  length.out = length.out)) +
+      geom_vline(xintercept = 1,
+                  linetype = "dashed",
+                  size = 1) + 
+      scale_fill_manual(values = c("#69b3a2")) + 
+      {if(dist == "uniform")coord_cartesian(xlim = c(0, 5),
+                                            ylim = c(0, 0.9))} +
+      {if(dist == "normal")coord_cartesian(xlim = c(0, 5),
+                                            ylim = c(0, 1.2))} +
+      labs(x = "",
+            y = "",
+            title = paste0(rates$col1[x], "/", rates$col2[x]))
       
-      plots <- to.plot %>%
-        ggplot(aes(x = frac, ..density..)) +
-        geom_histogram(fill = "skyblue", 
-                       color = "black",
-                       alpha = 1,
-                       breaks = seq(min(to.plot$frac), 
-                                    max(to.plot$frac), 
-                                    length.out = length.out)) +
-        geom_vline(xintercept = 1,
-                   linetype = "dashed",
-                   size = 1) + 
-        scale_fill_manual(values = c("#69b3a2")) + 
-        {if(dist == "uniform")coord_cartesian(xlim = c(0, 5),
-                                              ylim = c(0, 0.6))} +
-        {if(dist == "normal")coord_cartesian(xlim = c(0, 5),
-                                             ylim = c(0, 1))} +
-        labs(x = "",
-             y = "",
-             title = "") + 
-        theme(axis.text = element_blank())
       return(plots)
     })
   } else {
@@ -412,30 +340,15 @@ rate.con.plots <- function(
   return(do.call(grid.arrange, c(Plots, nrow = 6)))
 }
 
-p1 <- rate.con.plots(dataset = sim.run, species = "Eukaryotes", 
-                     Tolerance = Tolerance, minimal = minimal)
-p2 <- rate.con.plots(dataset = sim.run, species = "Prokaryotes", 
-                     Tolerance = Tolerance, minimal = minimal)
-p3 <- rate.con.plots(dataset = sim.run, species = "Viruses", 
-                     Tolerance = Tolerance, minimal = minimal)
+p1 <- rate.con.plots(dataset = sim.run, species = "Eukaryotes", Tolerance = Tolerance)
+p2 <- rate.con.plots(dataset = sim.run, species = "Prokaryotes", Tolerance = Tolerance)
+p3 <- rate.con.plots(dataset = sim.run, species = "Viruses", Tolerance = Tolerance)
 
-if(minimal){
-  grid.arrange(p1, p2, p3, ncol = 3) %>%
-    ggsave(width = 18, height = 14, 
-           filename = ifelse(Tolerance,
-                             paste0(file  ="../../figures/Main_Simulation/Non_Symmetric-",dist,"/scaling_",
-                                    scaling,"/tolerance-rate_ratios_minimal.", save.as),
-                             paste0(file  ="../../figures/Main_Simulation/Non_Symmetric-",dist,"/scaling_",
-                                    scaling,"/allind-rate_ratios_minimal.", save.as)))
-} else {
-  grid.arrange(p1, p2, p3, ncol = 3) %>%
-    ggsave(width = 18, height = 14, 
-           filename = ifelse(Tolerance,
-                             paste0(file  ="../../figures/Main_Simulation/Non_Symmetric-",dist,"/scaling_",
-                                    scaling,"/tolerance-rate_ratios.", save.as),
-                             paste0(file  ="../../figures/Main_Simulation/Non_Symmetric-",dist,"/scaling_",
-                                    scaling,"/allind-rate_ratios.", save.as)))
-}
+grid.arrange(p1, p2, p3, ncol = 3) %>%
+  ggsave(width = 18, height = 14, 
+          filename = paste0(file ="../../figures/Main_Simulation/Non_Symmetric-",dist,"/scaling_", 
+          scaling, ifelse(Tolerance, "/tolerance", "/allind"),
+          "-rate_ratios.", save.as))
 
 #----------------------
 # G+C content vs. rates
@@ -479,3 +392,177 @@ if(save.as == "pdf"){
 par(mfcol=c(6,1))
 GC.content.rates(dataset = sim.run, scaling = paste0("Scaling = ", scaling))
 pic.saved <- dev.off()
+
+# # ########################################################################################
+# # import tolerance
+# prok = read.csv("/Users/paddy/Documents/DPhil/01-Chargaff/01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv")
+# euk = read.csv("/Users/paddy/Documents/DPhil/01-Chargaff/01-genome_composition/data/02-Eukaryotes/PR2_compliance/PR2_fluctuations.csv")
+# virus = read.csv("/Users/paddy/Documents/DPhil/01-Chargaff/01-genome_composition/data/03-Viruses/PR2_compliance/PR2_fluctuations.csv")
+
+# other.species <- read.csv("/Users/paddy/Documents/DPhil/01-Chargaff/02-simulations/data/Raw/Michael_Lynch/Trek_scale_GC_AT_skew_vs_Rates.csv")
+# other.species <- other.species[,-2]
+
+# euk.species <- c(
+#   "H.sapiens", "D.melanogaster",	"C.elegans",	"A.thaliana",	
+#   "M.m.domesticus",	"D.pulex",	"P.pacificus",	
+#   "D.magna",	"P.troglodytes",	"A.nancymaae"
+# )
+
+# prok.species <- c(
+#   "E.coli",	"P.luminescens ATCC29999", "T.turnerae", 
+#   "S.cerevisiae", "M.smegmatis",	"P.fluorescens ATCC948",	"R. toruloides"
+# )
+
+# other.species <- other.species %>% 
+#   dplyr::mutate(
+#     kingdom = ifelse(Species %in% euk.species, "eukaryotes", "prokaryotes"),
+#     kingdom.col = ifelse(kingdom == "eukaryotes", "purple", "darkgreen")
+#   )
+
+# #helper function to make transparent ramps
+# alpharamp<-function(alpha) {
+#   stopifnot(alpha>=0 & alpha<=256)
+#   function(n) paste(colorRampPalette(c("white","blue","skyblue",
+#                             "chartreuse3","green","yellow",
+#                             "orange","red","darkred"))(n), format(as.hexmode(alpha), upper.case=T), sep="")
+# }
+
+# skew.plot <- function(dataset, scaling){
+#   smoothScatter(
+#     y=dataset$GCskew,
+#     x=dataset$ATskew,
+#     nrpoints=100, nbin=1000,
+#     xlab="AT skew", ylab="GC skew", main=scaling,
+#     colramp= alpharamp(alpha=20),
+#     cex.axis = 1.2, cex.lab = 1.1,
+#     xlim = c(-0.016, 0.016),
+#     ylim = c(-0.03, 0.03)
+#   )
+
+#   rect(
+#     xleft = euk[euk[, "metadata"] == "AT_skew", "mean"]-euk[euk[, "metadata"] == "AT_skew", "st.dev"],
+#     xright = euk[euk[, "metadata"] == "AT_skew", "mean"]+euk[euk[, "metadata"] == "AT_skew", "st.dev"],
+#     ybottom = euk[euk[, "metadata"] == "GC_skew", "mean"]-euk[euk[, "metadata"] == "GC_skew", "st.dev"],
+#     ytop = euk[euk[, "metadata"] == "GC_skew", "mean"]+euk[euk[, "metadata"] == "GC_skew", "st.dev"],
+#     lty = 3,
+#     lwd = 4,
+#     border = "purple"
+#   )
+
+#   rect(
+#     xleft = prok[prok[, "metadata"] == "AT_skew", "mean"]-prok[prok[, "metadata"] == "AT_skew", "st.dev"],
+#     xright = prok[prok[, "metadata"] == "AT_skew", "mean"]+prok[prok[, "metadata"] == "AT_skew", "st.dev"],
+#     ybottom = prok[prok[, "metadata"] == "GC_skew", "mean"]-prok[prok[, "metadata"] == "GC_skew", "st.dev"],
+#     ytop = prok[prok[, "metadata"] == "GC_skew", "mean"]+prok[prok[, "metadata"] == "GC_skew", "st.dev"],
+#     lty = 3,
+#     lwd = 4,
+#     border = "darkgreen"
+#   )
+
+#   par(new=TRUE)
+#   plot(
+#     x=other.species$AT.skew,
+#     y=other.species$GC.skew,
+#     axes=FALSE,
+#     cex=2,
+#     pch=20,
+#     col=other.species$kingdom.col,
+#     xlim = c(-0.016, 0.016),
+#     ylim = c(-0.03, 0.03),
+#     xlab="", ylab=""
+#   )
+# }
+
+# png(width = 550, height = 550, file ="plot_otherspecies.png")
+# skew.plot(dataset = sim.run, scaling = paste0("Scaling = ", scaling))
+# pic.saved <- dev.off()
+
+# as_tibble(other.species) %>% 
+#   filter(kingdom == "prokaryotes") %>% 
+#   arrange(desc(AT.skew))
+
+# skew.plot <- function(dataset, scaling){
+
+#   # Plot the GC vs. AT skew plots
+
+#   # Flag      Format     Description
+#   # dataset  <Rdata>     Dataset of the equilibrium outputs from the
+#   #                      numerically solved kinetic mutation rate
+#   #                      equations.
+#   # scaling  <numeric>   Scaling factor of the simulation results
+
+#   smoothScatter(
+#     y=dataset$GCskew,
+#     x=dataset$ATskew,
+#     nrpoints=100, nbin=1000,
+#     xlab="AT skew", ylab="GC skew", main=scaling,
+#     colramp= alpharamp(alpha=30),
+#     cex.axis = 1.2, cex.lab = 1.1,
+#     xlim = c(-RANGE, RANGE),
+#     ylim = c(-RANGE, RANGE)
+#   )
+
+#   # plot(
+#   #   x = dataset$ATskew, y = dataset$GCskew, col = "white",
+#   #   xlim = c(-RANGE, RANGE),
+#   #   ylim = c(-RANGE, RANGE)
+#   # )
+
+#   # rect(
+#   #   xleft = -RANGE,
+#   #   xright = RANGE,
+#   #   ybottom = -RANGE,
+#   #   ytop = RANGE,
+#   #   lty = 3,
+#   #   lwd = 6,
+#   #   border = "white"
+#   # )
+
+#   rect(
+#     xleft   = prok[prok$metadata == "AT_skew", "mean"]-
+#               prok[prok$metadata == "AT_skew", "st.dev"],
+#     xright  = prok[prok$metadata == "AT_skew", "mean"]+
+#               prok[prok$metadata == "AT_skew", "st.dev"],
+#     ybottom = prok[prok$metadata == "GC_skew", "mean"]-
+#               prok[prok$metadata == "GC_skew", "st.dev"],
+#     ytop    = prok[prok$metadata == "GC_skew", "mean"]+
+#               prok[prok$metadata == "GC_skew", "st.dev"],
+#     lwd = 3,
+#     border = "black"
+#   )
+
+#   rect(
+#     xleft   = euk[euk$metadata == "AT_skew", "mean"]-
+#               euk[euk$metadata == "AT_skew", "st.dev"],
+#     xright  = euk[euk$metadata == "AT_skew", "mean"]+
+#               euk[euk$metadata == "AT_skew", "st.dev"],
+#     ybottom = euk[euk$metadata == "GC_skew", "mean"]-
+#               euk[euk$metadata == "GC_skew", "st.dev"],
+#     ytop    = euk[euk$metadata == "GC_skew", "mean"]+
+#               euk[euk$metadata == "GC_skew", "st.dev"],
+#     lwd = 3,
+#     border = "black"
+#   )
+
+#   rect(
+#     xleft   = virus[virus$metadata == "AT_skew", "mean"]-
+#               virus[virus$metadata == "AT_skew", "st.dev"],
+#     xright  = virus[virus$metadata == "AT_skew", "mean"]+
+#               virus[virus$metadata == "AT_skew", "st.dev"],
+#     ybottom = virus[virus$metadata == "GC_skew", "mean"]-
+#               virus[virus$metadata == "GC_skew", "st.dev"],
+#     ytop    = virus[virus$metadata == "GC_skew", "mean"]+
+#               virus[virus$metadata == "GC_skew", "st.dev"],
+#     lwd = 3,
+#     border = "black"
+#   )
+
+#   xlim = c(-RANGE, RANGE)
+#   ylim = c(-RANGE, RANGE)
+# }
+
+# png(width = 550, height = 550, file ="plot_zoomed.png")
+# # png(width = 550, height = 550, file ="plot.png")
+# skew.plot(dataset = sim.run, scaling = paste0("Scaling = ", scaling))
+# pic.saved <- dev.off()
+# ########################################################################################

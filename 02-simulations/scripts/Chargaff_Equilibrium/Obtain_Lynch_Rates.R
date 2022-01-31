@@ -1,12 +1,14 @@
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
+TREK.SCALE <- as.logical(as.character(args[2]))
 setwd(my_path)
 
 # Load required supplementary functions and packages
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(Biostrings))
+suppressPackageStartupMessages(suppressWarnings(library(Biostrings)))
+source("../../../01-genome_composition/lib/valid_url.R")
 
 # obtain mutation rates from Table 1 in the following paper
 # https://www.pnas.org/content/107/3/961
@@ -14,10 +16,6 @@ suppressPackageStartupMessages(library(Biostrings))
 # Import calculated mutation rates from trek paper
 note.two <- read.csv("../../data/Raw/Trek-paper-Note-2-mutation-rates.csv",
                      header = TRUE)
-if(!file.exists("../../data/Raw/Michael_Lynch/Lynch-2010-mutation-rates_FREQUENCY.csv")){
-  stop("File does not exist. Please obtain from the paper.")
-} 
-
 lynch.rates <- read.csv("../../data/Raw/Michael_Lynch/Lynch-2010-mutation-rates_FREQUENCY.csv",
                         header = TRUE)
 
@@ -25,8 +23,7 @@ lynch.rates <- lynch.rates[match(note.two$MUT, lynch.rates$MUT),]
 
 # match rate constants from lynch with trek
 lynch.rates <- lynch.rates %>%
-  mutate(MEAN = note.two$MEAN) %>%
-  relocate(MEAN, .after = 1)
+  mutate(MEAN = note.two$MEAN, .after = 1)
 
 lynch.plot <- lynch.rates %>%
   ggplot(aes(x = MEAN)) +
@@ -42,8 +39,7 @@ lynch.plot <- lynch.rates %>%
   labs(x = "Trek (Mean), byr",
        y = "Lynch, 2010")
 
-ggsave("../../figures/Chargaff_Equilibrium/Michael_Lynch/LynchRateFreq.pdf",
-       plot = lynch.plot)
+ggsave("../../figures/Chargaff_Equilibrium/LynchRateFreq.pdf", plot = lynch.plot)
 
 # conversion of rate frequencies to time bound rate constants
 Coef <- lynch.rates %>%
@@ -57,9 +53,11 @@ conversion.formula <- function(x){
 final.rates <- lynch.rates %>%
   select(1:3) %>%
   cbind(apply(lynch.rates[4:length(lynch.rates)], 2, conversion.formula)) %>%
-  mutate(MEDIAN = note.two$MEDIAN,
-         SD = note.two$SD) %>%
-  relocate(c(MEDIAN, SD), .after = MEAN)
+  mutate(
+    MEDIAN = note.two$MEDIAN,
+    SD = note.two$SD,
+    .after = MEAN
+  )
 
 # save converted rate constants as csv
 write.table(x = final.rates, 
@@ -107,20 +105,6 @@ download.files.url <- c(
   "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/880/755/GCF_002880755.1_Clint_PTRv2/GCF_002880755.1_Clint_PTRv2_genomic.fna.gz",
   "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/952/055/GCF_000952055.2_Anan_2.0/GCF_000952055.2_Anan_2.0_genomic.fna.gz"
 )
-
-valid_url <- function(url_in, t = 300){
-
-  # Function to check if a given URL exists or not
-
-  # Flag      Format       Description
-  # url_in   <character>   Character vector of the URL to download
-  # t        <numeric>     Maximum time until timeout reached
-
-  con <- url(url_in)
-  check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = t), silent = T)[1])
-  suppressWarnings(try(close.connection(con), silent = T))
-  ifelse(is.null(check), TRUE, FALSE)
-}
 
 # big files need more time to download
 if(getOption('timeout') < 1000){
@@ -178,9 +162,9 @@ files <- list.files(path = "../../data/Raw/Michael_Lynch/",
                     pattern = ".fna$")
 files <- str_sort(files, numeric = TRUE)
 
-# obtain mean GC content from species
-cat("Obtaining mean GC content from species...")
-GC.average <- sapply(files, function(x){
+# obtain GC content from species
+cat("Obtaining GC content and GC skews from species...")
+base.values <- lapply(files, function(x){
   fai <- readDNAStringSet(paste0("../../data/Raw/Michael_Lynch/", x))
   
   # Initialise data frame for base calculations
@@ -193,20 +177,52 @@ GC.average <- sapply(files, function(x){
   all.letters <- cbind(all.letters,genome_length)
   all.letters <- colSums(all.letters)
   G_plus_C  <- (all.letters["G"]+all.letters["C"])/all.letters["genome_length"]
+  G_minus_C <- (all.letters["G"]-all.letters["C"])/all.letters["genome_length"]
+  GC_skew <- G_minus_C/G_plus_C
 
-  return(G_plus_C)
+  A_plus_T  <- (all.letters["A"]+all.letters["T"])/all.letters["genome_length"]
+  A_minus_T <- (all.letters["A"]-all.letters["T"])/all.letters["genome_length"]
+  AT_skew <- A_minus_T/A_plus_T
+
+  return(
+    list(G_plus_C, GC_skew, AT_skew)
+  )
 })
 
-other.species.gc.avg <- as.data.frame(GC.average)
+GC.content <- sapply(base.values, `[[`, 1)
+GC.skew <- sapply(base.values, `[[`, 2)
+AT.skew <- sapply(base.values, `[[`, 3)
+
+other.species.gc.avg <- data.frame(
+  species = files,
+  GC.content = unlist(GC.content),
+  GC.skew = unlist(GC.skew),
+  AT.skew = unlist(AT.skew)
+)
+
 other.species.gc.avg %>% 
-  write.csv(file = "../../data/Raw/Michael_Lynch/GC_average.csv",
+  dplyr::select(-AT.skew) %>% 
+  write.csv(file = "../../data/Raw/Michael_Lynch/GC_values.csv",
             row.names = TRUE)
 cat("Done!", "\n")
 
-lynch.rates <- lynch.rates %>%
-  as_tibble() %>%
-  mutate(RATES = c("n", "m", "l", "i", "j", "k")) %>%
-  relocate(RATES, .after = MUT)
+if(TREK.SCALE){
+  lynch.rates <- lynch.rates %>% 
+    dplyr::select(1:3) %>% 
+    cbind(apply(lynch.rates[4:length(lynch.rates)], 2, conversion.formula)) %>% 
+    as_tibble() %>% 
+    mutate(
+      RATES = c("j", "n", "l", "i", "k", "m"),
+      .after = MUT
+    )
+} else {
+  lynch.rates <- lynch.rates %>% 
+    as_tibble() %>% 
+    mutate(
+      RATES = c("j", "n", "l", "i", "k", "m"),
+      .after = MUT
+    )
+}
 
 # calculate rate constant ratios
 ind.n <- which(lynch.rates$RATES == "n")
@@ -224,10 +240,36 @@ rate.constant.ratios <- sapply(4:length(lynch.rates), function(x){
 other.species.gc.avg <- data.frame(
   Species = colnames(lynch.rates)[4:length(lynch.rates)],
   Rates = rate.constant.ratios,
-  GC.average = other.species.gc.avg$GC.average*100
+  GC.average = other.species.gc.avg$GC.content*100,
+  GC.skew = other.species.gc.avg$GC.skew,
+  AT.skew = other.species.gc.avg$AT.skew
 )
 
 # save new data frame as csv
 other.species.gc.avg %>%
-  write.csv(file = "../../data/Raw/Michael_Lynch/GC_vs_Rates.csv",
-            row.names = FALSE)
+  dplyr::select(-c(GC.skew, AT.skew)) %>% 
+  write.csv(
+    file = paste0("../../data/Raw/Michael_Lynch", 
+    ifelse(TREK.SCALE, "/Trek_scale_", "/"), 
+    "GC_vs_Rates.csv"),
+    row.names = FALSE
+  )
+
+other.species.gc.avg %>%
+  dplyr::select(-GC.average) %>% 
+  write.csv(
+    file = paste0("../../data/Raw/Michael_Lynch", 
+    ifelse(TREK.SCALE, "/Trek_scale_", "/"), 
+    "GC_AT_skew_vs_Rates.csv"),
+    row.names = FALSE
+  )
+  
+# save new data frame as csv
+if(TREK.SCALE){
+  lynch.rates %>%
+  select(-c(2:3)) %>%
+    write.csv(
+      file = "../../data/Raw/Michael_Lynch/Trek_scale_Lynch-2010-mutation-rates_FREQUENCY.csv", 
+      row.names = FALSE
+    )
+}

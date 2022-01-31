@@ -1,28 +1,22 @@
-##############################################################################################
-# This file downloads the text file of all bacteria species in the Ensembl Genome database,  
-# filters the data by omitting duplication to avoid skewing the analysis and figures,        
-# downloads each species one by one.                                                         
-# Calculations are made per species:                                                         
-#   G+C, G-C, A+T, A-T, GC skews, AT skews, genome length, base content of G, C, A and T.    
-#############################################################################################
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
 species <- as.character(args[2])
-setwd(paste0(my_path, "/", species, "/"))
+setwd(my_path)
 
 suppressPackageStartupMessages(library(stringr))
-suppressPackageStartupMessages(library(Biostrings))
+suppressPackageStartupMessages(suppressWarnings(library(Biostrings)))
+source("../lib/valid_url.R")
 
 # Download bacteria genome name file obtained from:
 # ftp://ftp.ensemblgenomes.org/pub/bacteria/release-48
 if(!file.exists(paste0("../../data/", species, "/Raw/species_EnsemblBacteria.txt"))){
-  print("Downloading text file of all Ensembl Bacteria names...", quote = F)
+  cat("Downloading text file of all Ensembl Bacteria names...", "\n")
   
   download.file(paste0("ftp://ftp.ensemblgenomes.org/pub/bacteria/release-48/",
                        "species_EnsemblBacteria.txt"),
                 paste0("../../data/", species, "/Raw/species_EnsemblBacteria.txt"))
 } else {
-  print("species_EnsemblBacteria.txt file exists!", quote = F)
+  cat("species_EnsemblBacteria.txt file exists!", "\n")
 }
 
 f <- read.delim(paste0("../../data/", species, "/Raw/species_EnsemblBacteria.txt"), sep = "\t", header = T)
@@ -56,51 +50,60 @@ for(i in 0:183){
 
 #-----------------------------
 # filter the ~44k species names to omit duplicates
-###########################################################################
-###### CAUTION: THE BELOW IS NOT OPTIMISED - THIS TAKES HOURS TO RUN ######
-###########################################################################
-df <- data.frame("f.rownames"    = f.rownames,
-                 "species.names" = species.names,
-                 "taxonomy.id"   = taxonomy.id,
-                 "assembly"      = assembly,
-                 "address.all"   = address.all
-                 )
+df <- data.frame(
+  "f.rownames"    = f.rownames,
+  "species.names" = species.names,
+  "taxonomy.id"   = taxonomy.id,
+  "assembly"      = assembly,
+  "address.all"   = address.all
+)
 
-print("Cleaning up all files...", quote = FALSE)
+cat("Cleaning up all files...", "\n")
 sorted.df <- sort(df$species.names)
 sorted.df <- str_replace(string = sorted.df, pattern = "^(^_)", replacement = "")
-filtered.species <- character()
+filtered.species <- rep(NA, length(species.names))
 pb  <- txtProgressBar(min = 1, max = length(species.names), style=3) 
 i <- 1
-while(i<=length(species.names)){
+j <- 1
+
+while(i <= length(species.names)){
   split.string <- strsplit(sorted.df[i], split = "_")[[1]]
   
   if(length(split.string)>1){
-    pos <- which(grepl(pattern = split.string[1], x = sorted.df) & 
-                   grepl(pattern = split.string[2], x = sorted.df))
+    pos <- which(
+      grepl(pattern = split.string[1], x = sorted.df) & 
+      grepl(pattern = split.string[2], x = sorted.df)
+    )
   } else {
     pos <- which(grepl(pattern = split.string[1], x = sorted.df))
   }
-  compare.integer <- sort(table(sapply(pos, function(i) nchar(i))), decreasing = TRUE)
+
+  compare.integer <- sort(table(nchar(pos)), decreasing = TRUE)
+  compare.integer <- as.integer(names(compare.integer))
   
   final.pos <- tail(pos, n=1) # default is the final element of list 
-  if(length(names(compare.integer))>1){
-    if((max(as.integer(names(compare.integer)))-min(as.integer(names(compare.integer))))>1){
+
+  if(length(compare.integer)>1){
+    if(diff(compare.integer)>1){
       # take most frequently occurring element
-      freq.integer <- as.integer(names(compare.integer)[1])
-      final.pos <- tail(which(nchar(pos)==freq.integer), n=1) 
+      final.pos <- tail(which(nchar(pos)==compare.integer[[1]]), n=1) 
     }
+
     if(max(diff(pos))-min(diff(pos))>100){
       # check that differences aren't big
       final.pos <- pos[which.max(diff(pos))]
     }
   }
-  filtered.species <- c(filtered.species, sorted.df[pos[1]])
+
+  filtered.species[j] <- sorted.df[pos[1]]
   i <- final.pos+1
+  j <- j+1
   
   setTxtProgressBar(pb, i)
 }
 close(pb)
+
+filtered.species <- as.character(na.omit(filtered.species))
 
 # re-insert underscore in front of strings starting with lower case letters
 filtered.species <- gsub("^([a-z])", "\\_\\1", filtered.species,  perl = TRUE)
@@ -117,7 +120,7 @@ sorted.df        <- str_replace(string = sorted.df, pattern = "^(^_)", replaceme
 split.string     <- strsplit(sorted.df, split = "_")
 filtered.species <- character()
 
-pb  <- txtProgressBar(min = 1, max = length(split.string), style=3) 
+pb  <- txtProgressBar(min = 1, max = length(split.string), style = 3) 
 for(i in 1:length(split.string)){
   check <- agrep(pattern = split.string[i], split.string, max.distance = 0.1)
   filtered.species <- c(filtered.species, df$species.names[check])
@@ -129,35 +132,50 @@ for(i in 1:length(split.string)){
 }
 close(pb)
 
-###########################################################################
-###### CAUTION: THE ABOVE IS NOT OPTIMISED - THIS TAKES HOURS TO RUN ######
-###########################################################################
-
 # re-define data frame
 filtered.species <- gsub("^([a-z])", "\\_\\1", filtered.species,  perl = TRUE)
-df <- df[match(filtered.species, df$species.names),]
-df <- df[-which(duplicated(df$species.names)==TRUE),]
+df <- df[match(filtered.species, df$species.names), ]
+df <- df[-which(duplicated(df$species.names)==TRUE), ]
 
 # removing special cases which occurred a few times 
-df <- df[-grep("unidentified|uncultured|unknown|untyped|
-                                 |cloning|clones|patent|Treatment|Oligonucleotide|
-                                 |methods|involving|vectors|means|event|initiation|
-                                 |improvements|relating|identification|highly|
-                                 |procedure|treating|amplification|joining|
-                                 |complementing|comprising|predict|
-                                 |\\bleft\\b|\\bright\\b|\\bwith\\b|\\bspecific\\b|
-                                 |\\.{3}|\\=", 
-                                 df$Species_name, ignore.case = TRUE), ]
+df <- df[-grep(
+  "unidentified|uncultured|unknown|untyped|
+  |cloning|clones|patent|Treatment|Oligonucleotide|
+  |methods|involving|vectors|means|event|initiation|
+  |improvements|relating|identification|highly|
+  |procedure|treating|amplification|joining|
+  |complementing|comprising|predict|
+  |\\bleft\\b|\\bright\\b|\\bwith\\b|\\bspecific\\b|
+  |\\.{3}|\\=", 
+  df$species.name, ignore.case = TRUE), ]
 
 # remove demonstrative pronouns which occurred a few times
-df <- df[-grep("this|that|these|those|such|here|there|thereof|
-                                 |\\buse\\b|\\bit\\b", 
-                                 df$Species_name, ignore.case = TRUE), ]
+df <- df[-grep(
+  "this|that|these|those|such|here|there|thereof|
+  |\\buse\\b|\\bit\\b", 
+  df$species.name, ignore.case = TRUE), ]
 
 # removing any possible NAs
-df <- df[-which(is.na(df$genome_length)),]
+df <- df[complete.cases(df),]
+
+# manual replacement of species
+original.df <- data.frame(
+  "f.rownames"    = f.rownames,
+  "species.names" = species.names,
+  "taxonomy.id"   = taxonomy.id,
+  "assembly"      = assembly,
+  "address.all"   = address.all
+)
+
+to.remove <- c(2033, 2238, 4022)
+df <- df[-to.remove, ]
+
+to.include <- c(42765, 4794, 19055, 22319, 20170, 17076)
+df <- rbind(df, original.df[to.include, ])
+df <- df[order(df$species.names), ]
+
 write.csv(df, file = paste0("../../data/", species, "/All/all_download_dataframe.csv"), row.names = FALSE)
-print("Cleaned up all files!", quote = FALSE)
+cat("Cleaned up all files!", "\n")
 
 #-----------------------------
 # Initialise content vectors
@@ -171,30 +189,15 @@ A_plus_T      <- numeric()
 A_minus_T     <- numeric()
 genome_length <- numeric()
 
-# Function to check if a given URL exists or not
-valid_url <- function(url_in, t = 300){
-
-  # Function to check if a given URL exists or not
-
-  # Flag      Format       Description
-  # url_in   <character>   Character vector of the URL to download
-  # t        <numeric>     Maximum time until timeout reached
-
-  con <- url(url_in)
-  check <- suppressWarnings(try(open.connection(con, open = "rt", timeout = t), silent = T)[1])
-  suppressWarnings(try(close.connection(con), silent = T))
-  ifelse(is.null(check), TRUE, FALSE)
-}
-
 # big files need more time to download
 if(getOption('timeout') < 1000){
-  options(timeout = 2000)
+  options(timeout = 3000)
 }
 
 for(i in 1:length(df$species.names)){
   # ----------------------------------------------
-  print("Loading the toplevel assembly from the following address:", quote=F)
-  print(df$address.all[i], quote = F)
+  cat("Loading the toplevel assembly from the following address:", "\n")
+  cat(df$address.all[i], "\n")
   
   # ----------------------------------------------
   # First, check if a given URL exists or not;
@@ -208,7 +211,7 @@ for(i in 1:length(df$species.names)){
                                   ".",
                                   df$taxonomy.id[i],
                                   ".dna.toplevel.fa.gz"))
-    print(paste0("URL Test: ", url.test), quote = F)
+    cat("URL Test: ", url.test, "\n")
     
     if(isTRUE(url.test)){
       try(download.file(paste0("ftp://ftp.ensemblgenomes.org/pub/bacteria/release-48/fasta/",
@@ -266,11 +269,11 @@ for(i in 1:length(df$species.names)){
   }
 
   # ----------------------------------------------
-  print("Unpacking the toplevel combined fasta file...", quote=F)
+  cat("Unpacking the toplevel combined fasta file...", "\n")
   system(paste0("gunzip ", df$species.names[i], ".dna.toplevel.fa.gz"))
 
   # ----------------------------------------------
-  print("File unpacked. Now calculating...", quote=F)
+  cat("File unpacked. Now calculating...", "\n")
   
   # More memory efficient to request a small subset of sequences per iteration
   fai <- fasta.index(paste0(df$species.names[i], ".dna.toplevel.fa"))
@@ -293,9 +296,9 @@ for(i in 1:length(df$species.names)){
   A_minus_T     <- c(A_minus_T, sum(all.letters[,"A"]-all.letters[,"T"])/sum(vec.length))
   genome_length <- c(genome_length, sum(vec.length))
   
-  print(paste0("G+C content:   ", G_plus_C[i]), quote = F)
-  print(paste0("A+T content:   ", A_plus_T[i]), quote = F)
-  print(paste0("Genome length: ", genome_length[i]), quote = F)
+  cat("G+C content:   ", G_plus_C[i], "\n")
+  cat("A+T content:   ", A_plus_T[i], "\n")
+  cat("Genome length: ", genome_length[i], "\n")
   
   # ----------------------------------------------
   # Save space on the active memory and hard disk
@@ -304,14 +307,14 @@ for(i in 1:length(df$species.names)){
   file.remove(paste0(df$species.names[i], ".dna.toplevel.fa"))
 
   # ----------------------------------------------
-  cat(paste0("\n\033[0;", 32, "m", "Loaded ", i, "/",
-             length(df$species.names), " prokaryotes","\033[0m","\n\n"))
+  cat("\n\033[0;", 32, "m", "Loaded ", i, "/",
+      length(df$species.names), " prokaryotes","\033[0m","\n\n")
 
   # ----------------------------------------------
   # Prevent excessive server querying breakdown
   Sys.sleep(3)
 }
-print("All fasta files downloaded and meta-data obtained!", quote = FALSE)
+cat("All fasta files downloaded and meta-data obtained!", "\n")
 
 #-----------------------------
 # Calculate skews and ratios
@@ -321,30 +324,36 @@ GC_ratio <- G_content/C_content
 AT_ratio <- A_content/T_content
 
 # Combine all vectors into a new data frame
-filtered.df <- data.frame("rowname"           = df$f.rownames,
-                          "Species_name"      = df$species.names,
-                          "G_content"         = G_content,
-                          "C_content"         = C_content,
-                          "A_content"         = A_content,
-                          "T_content"         = T_content,
-                          "G_plus_C"          = G_plus_C,
-                          "G_minus_C"         = G_minus_C,
-                          "GC_skew"           = GC_skew,
-                          "A_plus_T"          = A_plus_T,
-                          "A_minus_T"         = A_minus_T,
-                          "AT_skew"           = AT_skew,
-                          "GC_ratio"          = GC_ratio,
-                          "AT_ratio"          = AT_ratio,
-                          "genome_length"     = genome_length
-                          )
+filtered.df <- data.frame(
+  "rowname"           = df$f.rownames,
+  "Species_name"      = df$species.names,
+  "G_content"         = G_content,
+  "C_content"         = C_content,
+  "A_content"         = A_content,
+  "T_content"         = T_content,
+  "G_plus_C"          = G_plus_C,
+  "G_minus_C"         = G_minus_C,
+  "GC_skew"           = GC_skew,
+  "A_plus_T"          = A_plus_T,
+  "A_minus_T"         = A_minus_T,
+  "AT_skew"           = AT_skew,
+  "GC_ratio"          = GC_ratio,
+  "AT_ratio"          = AT_ratio,
+  "genome_length"     = genome_length
+)
 
 # If any NAs in the vectors, indices to download saved in vector
 # input vector in the for-loop in "download_files.R
 if(dim(filtered.df[rowSums(is.na(filtered.df))!=0,])[1]!=0){
   to.download <- as.numeric(row.names(filtered.df[rowSums(is.na(filtered.df))!=0,]))
 } else {
-  print("No NAs in the data frame!", quote = F)
+  cat("No NAs in the data frame!", "\n")
 }
 
-write.csv(filtered.df, file = paste0("../../data/", species, "/All/all_filtered_dataframe.csv"), row.names = FALSE)
-print("Dataframe of species names and associated meta-data saved!", quote = FALSE)
+write.csv(
+  filtered.df, 
+  file = paste0("../../data/", species, "/All/all_filtered_dataframe.csv"), 
+  row.names = FALSE
+)
+
+cat("Dataframe of species names and associated meta-data saved!", "\n")

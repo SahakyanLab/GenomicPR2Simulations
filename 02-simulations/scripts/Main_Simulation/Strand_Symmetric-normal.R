@@ -2,12 +2,11 @@ args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
 save.as <- as.character(args[2])
 scaling <- as.numeric(args[3])
-Tolerance <- as.character(args[4])
-Tolerance <- as.logical(Tolerance)
+Tolerance <- as.logical(as.character(args[4]))
 setwd(my_path)
 
-if(!scale.fac %in% c(0,1,2,5,10)){
-  stop("To reproduce the results in the paper, please use scale.fac = c(0,1,2,5,10).")
+if(!scaling %in% c(0,1,2,5,10)){
+  stop("To reproduce the results in the paper, please use scaling = c(0,1,2,5,10).")
 }
 
 suppressPackageStartupMessages(library(ggplot2))

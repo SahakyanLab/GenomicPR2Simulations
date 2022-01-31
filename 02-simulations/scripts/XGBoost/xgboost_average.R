@@ -1,6 +1,6 @@
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
-ncpu <- as.numeric(args[3])
+ncpu <- as.numeric(args[2])
 setwd(my_path)
 
 suppressPackageStartupMessages(library(dplyr))
@@ -55,7 +55,7 @@ filter.df <- function(dataset, species = "eukaryotes"){
     
     # select only columns of Label and all rate constants
     sim.run.rates <- y %>%
-      select(7:(dim(dataset)[2]-5)) %>%
+      dplyr::select(7:(dim(dataset)[2]-5)) %>%
       na.omit()
     
     # filter out all compliant cases
@@ -116,17 +116,14 @@ xgb.train <- function(dataset, best.model, ncpu = 4, seed = 123){
   # seed     <numeric>   Random number generator, useful for reproducible random objects
 
   # check if classes are correct
-  if(ncpu%%1!=0 | ncpu<=0){
-    stop("Number of cores must be a positive integer.")
-  }
-  if(seed%%1!=0 | seed<=0){
-    stop("Seed must be a positive integer.")
-  }
+  if(ncpu%%1!=0 | ncpu<=0) stop("Number of cores must be a positive integer.")
+  if(seed%%1!=0 | seed<=0) stop("Seed must be a positive integer.")
 
   # min / max normalisation
   normalize <- function(x, na.rm = TRUE) {
     return((x - min(x))/(max(x)-min(x)))
   }
+
   data <- dataset %>% 
     mutate(across(where(is.numeric), normalize))
   
@@ -147,7 +144,7 @@ xgb.train <- function(dataset, best.model, ncpu = 4, seed = 123){
     classProbs = TRUE,
     summaryFunction = twoClassSummary,
     returnData = TRUE,
-    verboseIter = TRUE,
+    verboseIter = FALSE,
     allowParallel = TRUE,
     savePredictions = TRUE
   )
@@ -160,7 +157,7 @@ xgb.train <- function(dataset, best.model, ncpu = 4, seed = 123){
     trControl = xgb.trcontrol,
     tuneGrid = xgb.grid,
     metric = "ROC",
-    verbose = TRUE
+    verbose = FALSE
   )
   
   # best model
@@ -182,12 +179,11 @@ sim.run <- LoadData(file.path = "../../data/Main_Simulation/Non_Symmetric-unifor
                     scaling = 1)
 
 # obtain compliant cases
-df <- filter.df(dataset = sim.run, 
-                species = "eukaryotes")
+df <- filter.df(dataset = sim.run, species = "eukaryotes")
 
 df[[2]] %>%
   select(-Label) %>%  
-  write.csv(file = "../../../03-symbolic_regression/data/Training/simulation_batches_compliant.csv",
+  write.csv(file = "../../../03-symbolic_regression/data/Train/simulation_batches_compliant.csv",
             row.names = FALSE)
 
 # set up random number generator

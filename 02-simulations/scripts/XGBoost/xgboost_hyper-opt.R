@@ -1,6 +1,6 @@
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
-ncpu <- as.numeric(args[3])
+ncpu <- as.numeric(args[2])
 setwd(my_path)
 
 suppressPackageStartupMessages(library(dplyr))
@@ -23,11 +23,11 @@ filtered.df <- function(dataset, seed = 123, species = "eukaryotes"){
   #                      "prokaryotes", "eukaryotes" or "viruses" organisms
 
   if(species == "prokaryotes"){
-    file.name <- "../../../01-genome_composition/data/01-Prokaryotes/PR_compliance/PR2_fluctuations.csv"
+    file.name <- "../../../01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv"
   } else if(species == "eukaryotes"){
-    file.name <- "../../../01-genome_composition/data/02-Eukaryotes/PR_compliance/PR2_fluctuations.csv"
+    file.name <- "../../../01-genome_composition/data/02-Eukaryotes/PR2_compliance/PR2_fluctuations.csv"
   } else if(species == "viruses"){
-    file.name <- "../../../01-genome_composition/data/03-Viruses/PR_compliance/PR2_fluctuations.csv"
+    file.name <- "../../../01-genome_composition/data/03-Viruses/PR2_compliance/PR2_fluctuations.csv"
   }
   
   if(file.exists(file.name)){
@@ -55,7 +55,7 @@ filtered.df <- function(dataset, seed = 123, species = "eukaryotes"){
     
     # select only columns of Label and all rate constants
     sim.run.rates <- y %>%
-      select(7:(dim(dataset)[2]-5)) %>%
+      dplyr::select(7:(dim(dataset)[2]-5)) %>%
       as_tibble() %>%
       na.omit()
     
@@ -102,18 +102,10 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123){
   # seed     <numeric>   Random number generator, useful for reproducible random objects
 
   # check if classes are correct
-  if(ncpu%%1!=0 | ncpu<=0){
-    stop("Number of cores must be a positive integer.")
-  }
-  if(cv%%1!=0 | cv<=0){
-    stop("Cross-validation must be a positive integer.")
-  }
-  if(cvrep%%1!=0 | cvrep<=0){
-    stop("cvrep must be a positive integer.")
-  }
-  if(seed%%1!=0 | seed<=0){
-    stop("Seed must be a positive integer.")
-  }
+  if(ncpu%%1!=0 | ncpu<=0) stop("Number of cores must be a positive integer.")
+  if(cv%%1!=0 | cv<=0) stop("Cross-validation must be a positive integer.")
+  if(cvrep%%1!=0 | cvrep<=0) stop("cvrep must be a positive integer.")
+  if(seed%%1!=0 | seed<=0) stop("Seed must be a positive integer.")
 
   # extract only the sampled data set
   data <- dataset[[1]]
@@ -122,16 +114,18 @@ xgb.train <- function(dataset, ncpu = 4, cv = 6, cvrep = 1, seed = 123){
   normalize <- function(x, na.rm = TRUE) {
     return((x- min(x)) /(max(x)-min(x)))
   }
+  
   data <- data %>% 
     mutate(across(where(is.numeric), normalize))
   
   set.seed(seed)
   cat("Validation scheme:", cv, "-fold CV", "\n")
-  
+
   # hyper-parameter search
   xgb.grid <- expand.grid(
-    nrounds = c(200, 400, 700, 900, 
-                1000, 3000, 4000, 5000), # boosting iterations
+    nrounds = c(200, 500, 1000, 2000, 3000, 
+                4000, 5000, 7000, 9000, 11000, 
+                13000, 15000, 17000, 20000), # boosting iterations
     max_depth = c(5, 6, 8, 10), # max tree depth
     colsample_bytree = 1, # subsample ratio of columns
     eta = c(0.005, 0.01, 0.02, 0.1), # shrinkage

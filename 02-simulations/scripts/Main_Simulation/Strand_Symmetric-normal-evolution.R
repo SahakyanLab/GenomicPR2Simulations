@@ -3,8 +3,8 @@ my_path <- as.character(args[1])
 scaling <- as.numeric(args[2])
 setwd(my_path)
 
-if(!scale.fac %in% c(0,1,2,5,10)){
-  stop("To reproduce the results in the paper, please use scale.fac = c(0,1,2,5,10).")
+if(!scaling %in% c(0,1,2,5,10)){
+  stop("To reproduce the results in the paper, please use scaling = c(0,1,2,5,10).")
 }
 
 suppressPackageStartupMessages(library(ggplot2))

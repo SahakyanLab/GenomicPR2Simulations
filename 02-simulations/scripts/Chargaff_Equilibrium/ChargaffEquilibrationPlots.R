@@ -1,10 +1,7 @@
 args <- commandArgs(trailingOnly = TRUE)
 my_path <- as.character(args[1])
 save.as <- as.character(args[2])
-minimal <- as.character(args[3])
-minimal <- as.logical(minimal)
-other.species <- as.character(args[4])
-other.species <- as.logical(other.species)
+other.species <- as.logical(as.character(args[3]))
 setwd(my_path)
 
 # load dependencies
@@ -58,9 +55,9 @@ plots <- lapply(1:length(file.name), function(i){
     geom_vline(xintercept = 4.28, linetype = "dashed") + 
     scale_fill_manual(values = c("#69b3a2", "#404080")) + 
     coord_cartesian(xlim = c(0, 10)) + 
-    labs(x = ifelse(minimal,"","Years (Billion)"),
-          y = "",
-          title = ifelse(minimal,"",paste0(ifelse(other.species, "", "Scaling: "), file.name[[i]])))
+    labs(x = "Years (Billion)",
+         y = "",
+         title = paste0(ifelse(other.species, "", "Scaling: "), file.name[[i]]))
   
   plot.diff <- data.sets[[i]] %>%
     as_tibble() %>%
@@ -70,9 +67,9 @@ plots <- lapply(1:length(file.name), function(i){
                     bins = 70, show.legend = FALSE) + 
     scale_fill_manual(values = c("#69b3a2")) + 
     coord_cartesian(xlim = c(-3, 3)) + 
-    labs(x = ifelse(minimal,"","Years (Billion)"),
-          y = "",
-          title = ifelse(minimal,"",paste0(ifelse(other.species, "", "Scaling: "), file.name[[i]])))
+    labs(x = "Years (Billion)",
+         y = "",
+         title = paste0(ifelse(other.species, "", "Scaling: "), file.name[[i]]))
 
   return(
     grid.arrange(plot.both, plot.diff, ncol = 2)
@@ -81,15 +78,10 @@ plots <- lapply(1:length(file.name), function(i){
 
 do.call(grid.arrange, c(plots, ncol = 1)) %>%
   ggsave(
-    width = 16, 
-    height = 14,
-    file = ifelse(
-      minimal,
-      paste0("../../figures/Chargaff_Equilibrium/minimal-ChargaffEquilibrium", ifelse(
-        other.species, "_OtherSpecies.","Distribution."
-      ), save.as),
-      paste0("../../figures/Chargaff_Equilibrium/ChargaffEquilibrium", ifelse(
+    width = 15, 
+    height = 16,
+    file = paste0("../../figures/Chargaff_Equilibrium/ChargaffEquilibrium", 
+    ifelse(
         other.species, "_OtherSpecies.", "Distribution."
-      ), save.as)
-    )
+    ), save.as)
   )

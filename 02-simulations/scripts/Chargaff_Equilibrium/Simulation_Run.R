@@ -29,7 +29,7 @@ note.two   <- read.csv("../../data/Raw/Trek-paper-Note-2-mutation-rates.csv",
 note.three <- read.csv("../../data/Raw/Trek-paper-Note-3-mutation-rates.csv", 
                        header = TRUE)
 CHtolerance  <- read.csv(file = "../../../01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv", 
-                       header = TRUE)
+                         header = TRUE)
 
 cat("Obtaining average fluctuation tolerance data...", "\n")
 sim.results <- Simulation(
@@ -50,8 +50,10 @@ sim.results <- Simulation(
   seed       = 1
 )
 
-saveRDS(sim.results, 
-file = "../../data/Chargaff_Equilibrium/ChargaffEquilibrium.Rdata")
+saveRDS(
+  sim.results, 
+  file = "../../data/Chargaff_Equilibrium/ChargaffEquilibrium.Rdata"
+)
 cat("Done!", "\n")
 
 Fluc.tol <- readRDS(file = "../../data/Chargaff_Equilibrium/ChargaffEquilibrium.Rdata")
@@ -62,6 +64,7 @@ scaling.factor <- c(0,1,2,5,10)
 scaling.factor.name <- c("zero", "one", "two", "five", "ten")
 for(i in 1:length(scaling.factor)){
   cat("Obtaining Chargaff tolerance and genome equilibration for scaling", scaling.factor[i],"...", "\n")
+  
   sim.results <- Simulation(
     Acont      = 0.25, # %
     Gcont      = 0.25, # %
@@ -86,7 +89,9 @@ for(i in 1:length(scaling.factor)){
     rownames(sim.results) <- NULL
   }
 
-  saveRDS(sim.results, 
-  file = paste0("../../data/Chargaff_Equilibrium/ChargaffEquilibriumDistribution_scaling_", 
-  scaling.factor.name[i],".Rdata"))
+  saveRDS(
+    sim.results, 
+    file = paste0("../../data/Chargaff_Equilibrium/ChargaffEquilibriumDistribution_scaling_", 
+                  scaling.factor.name[i],".Rdata")
+  )
 }
