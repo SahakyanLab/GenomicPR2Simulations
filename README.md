@@ -6,7 +6,7 @@ Simulation-based models are constructed based on the presence of natural equalit
 
 ## Installation
 
-Download the source code from the [GitHub](https://github.com/SahakyanLab/ATGCNetworkResearch) repository. You can also do that via a Linux/Unix/OSX command line, given that git is installed, by typing the following:
+Download the source code from the [GitHub](https://github.com/SahakyanLab/ATGCNetworkResearch) repository. You can also do that *via* a Linux/Unix/OSX command line, given that git is installed, by typing the following:
 
 ```
 git clone https://github.com/SahakyanLab/ATGCNetworkResearch
@@ -16,8 +16,8 @@ git clone https://github.com/SahakyanLab/ATGCNetworkResearch
 
 Execute the `submit.sh` file for sequential execution of the complete workflow. Change the parameters as follows:
 
-* parallel = FALSE (default) or TRUE for parallel execution of simulations
-* pca = FALSE (default) or TRUE for PCA performance
+* parallel = FALSE (default) or TRUE for parallel execution of simulations.
+* pca = FALSE (default) or TRUE for PCA performance.
 * ncpu = 4 (default). Input any positive integer for processes requiring multiple central processing units.
 
 ### [01-genome_composition](https://github.com/SahakyanLab/ATGCNetworkResearch/tree/master/01-genome_composition)
