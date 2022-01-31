@@ -5,8 +5,57 @@ setwd(my_path)
 
 suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(suppressWarnings(library(Biostrings)))
+source("../../lib/valid_url.R")
 
 #-----------------------------
+# download raw sequences in fasta format
+# big files need more time to download
+if(getOption('timeout') < 10000){
+  options(timeout = 10000)
+}
+
+to.download <- "https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=%7B!tag=VirusLineage_ss%7DVirusLineage_ss:(%22DNA%20viruses%22)&cmd=download&sort=SourceDB_s%20desc,CreateDate_dt%20desc,id%20asc&dlfmt=fasta&fl=AccVer_s,Definition_s,Nucleotide_seq"
+
+cat("Downloading fasta files...")
+# allow several attempts to donwload fasta files
+# as internet disruptions may cause failure
+attempt <- 1
+while(attempt <= 3){
+    url.test <- valid_url(to.download)
+    cat("URL Test: ", url.test, "\n")
+
+    if(isTRUE(url.test)){
+        try(download.file(to.download, paste0("../../data/", species,"/Raw/sequences.fasta")))
+        
+        # If file doesn't exist, it'll likely be a server problem so allow it to retry up to 3 times
+        # If it requires >3 times, likely problems are:
+        #   (1) no internet connection
+        #   (2) another pattern that's unaccounted for
+        if(!file.exists(paste0("../../data/", species,"/Raw/sequences.fasta"))){
+            Sys.sleep(3)
+            attempt <- attempt + 1
+        } else {
+            break
+        }
+    } 
+    if(isFALSE(url.test)){
+        try(download.file(to.download, paste0("../../data/", species,"/Raw/sequences.fasta")))
+        
+        if(!file.exists(paste0("../../data/", species,"/Raw/sequences.fasta"))){
+            Sys.sleep(3)
+            attempt <- attempt + 1
+        } else { 
+            break
+        }
+    }
+}
+cat("Done!", "\n")
+
+# unzip all files if needed
+cat("Unzipping fasta file...")
+system("gunzip ../../data/03-viruses/Raw/*")
+cat("Done!", "\n")
+
 # More memory efficient to request a small subset of sequences per iteration
 fai <- fasta.index(paste0("../../data/", species,"/Raw/sequences.fasta"))
 fai <- readDNAStringSet(fai)
