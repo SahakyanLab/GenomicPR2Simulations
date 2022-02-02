@@ -1,5 +1,5 @@
 #!/bins/
-pwd=$(pwd)
+pwd="$(pwd)/"
 ncpu=$1
 save_file="pdf"
 trek_scale="FALSE"

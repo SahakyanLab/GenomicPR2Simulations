@@ -1,7 +1,7 @@
 #!/bins/
 
 # obtain working directory
-pwd=$(pwd)
+pwd="$(pwd)/"
 ncpu=$1
 parallel=$2
 save_file="png" # png or pdf

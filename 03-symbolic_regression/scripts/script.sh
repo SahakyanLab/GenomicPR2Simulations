@@ -1,6 +1,6 @@
 #!/bins/
 
-pwd=$(pwd)
+pwd="$(pwd)/"
 ncpu=$1
 runs=10000000
 trek_scale="TRUE"

@@ -1,6 +1,6 @@
 #!/bins/
 
-pwd=$(pwd)
+pwd="$(pwd)/"
 save_file="png"
 
 # create folders for storage
