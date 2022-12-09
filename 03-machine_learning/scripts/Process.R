@@ -14,16 +14,8 @@ suppressPackageStartupMessages(suppressWarnings(library(caret)))
 suppressPackageStartupMessages(suppressWarnings(library(ggplot2)))
 suppressPackageStartupMessages(suppressWarnings(library(MLeval)))
 
-my.path="/Users/paddy/Documents/DPhil/01-Chargaff/03-machine_learning/scripts"
 setwd(my.path)
 source("../lib/xgboostModel.R")
-
-species="eukaryotes"
-seed=2022
-cv=6
-cvrep=1
-ml_seed=1234
-avg_ml_seed=123
 
 train_model <- xgboostModel$new(
     species = species,
