@@ -21,7 +21,6 @@ viruses.df     <- read.csv(file = "../../data/03-Viruses/All/all_filtered_datafr
 #-----------------------------
 # Mean/St.dev values for fluctuations from 2nd parity rule 
 for(species in c("01-Prokaryotes", "02-Eukaryotes", "03-Viruses")){
-
   df <- read.csv(
     file = paste0("../../data/", species, "/All/all_filtered_dataframe.csv"), 
     header=TRUE
@@ -42,7 +41,19 @@ for(species in c("01-Prokaryotes", "02-Eukaryotes", "03-Viruses")){
                    sd(df$AT_skew),
                    sd(df$GC_skew),
                    sd(df$AT_ratio),
-                   sd(df$GC_ratio))
+                   sd(df$GC_ratio)),
+    "ci_95_lower"    = c(t.test(df$A_minus_T, conf.level = 0.95)$conf.int[1],
+                         t.test(df$G_minus_C, conf.level = 0.95)$conf.int[1],
+                         t.test(df$AT_skew, conf.level = 0.95)$conf.int[1],
+                         t.test(df$GC_skew, conf.level = 0.95)$conf.int[1],
+                         t.test(df$AT_ratio, conf.level = 0.95)$conf.int[1],
+                         t.test(df$GC_ratio, conf.level = 0.95)$conf.int[1]),
+    "ci_95_upper"    = c(t.test(df$A_minus_T, conf.level = 0.95)$conf.int[2],
+                         t.test(df$G_minus_C, conf.level = 0.95)$conf.int[2],
+                         t.test(df$AT_skew, conf.level = 0.95)$conf.int[2],
+                         t.test(df$GC_skew, conf.level = 0.95)$conf.int[2],
+                         t.test(df$AT_ratio, conf.level = 0.95)$conf.int[2],
+                         t.test(df$GC_ratio, conf.level = 0.95)$conf.int[2])
   )
 
   write.csv(
@@ -248,6 +259,44 @@ skew.plot(prokaryotes.df, "Prokaryotes")
 skew.plot(viruses.df, "Viruses")
 plot.save <- dev.off()
 cat("GC vs. AT skew done!", "\n")
+
+# st.dev for each kingdom
+sd(eukaryotes.df$GC_skew, na.rm = TRUE)
+sd(eukaryotes.df$AT_skew, na.rm = TRUE)
+
+sd(prokaryotes.df$GC_skew, na.rm = TRUE)
+sd(prokaryotes.df$AT_skew, na.rm = TRUE)
+
+sd(viruses.df$GC_skew, na.rm = TRUE)
+sd(viruses.df$AT_skew, na.rm = TRUE)
+
+# prokaryotes low GC content GC vs. AT skew
+avg.gc.prokaryotes <- mean(prokaryotes.df$G_plus_C, na.rm = TRUE)
+below.avg.gc <- as_tibble(prokaryotes.df) %>% 
+  dplyr::filter(G_plus_C < avg.gc.prokaryotes) %>% 
+  dplyr::select(c(GC_skew, AT_skew))
+above.avg.gc <- as_tibble(prokaryotes.df) %>% 
+  dplyr::filter(G_plus_C > avg.gc.prokaryotes) %>% 
+  dplyr::select(c(GC_skew, AT_skew))
+
+png("../../figures/00-All_Species/PROKARYOTES-LOW-GC_GC-ratio_vs_AT-ratio.png")
+smoothScatter(y=below.avg.gc$GC_skew, 
+              x=below.avg.gc$AT_skew,
+              nrpoints=100, nbin=1000,
+              xlab="AT skew", ylab="GC skew", main="Prokaryotes",
+              colramp=colfun,
+              cex.lab=1.5, cex.axis=1.5, cex.main=1.5)
+save.plot <- dev.off()
+
+# prokaryotes high GC content GC vs. AT skew
+png("../../figures/00-All_Species/PROKARYOTES-HIGH-GC_GC-ratio_vs_AT-ratio.png")
+smoothScatter(y=above.avg.gc$GC_skew, 
+              x=above.avg.gc$AT_skew,
+              nrpoints=100, nbin=1000,
+              xlab="AT skew", ylab="GC skew", main="Prokaryotes",
+              colramp=colfun,
+              cex.lab=1.5, cex.axis=1.5, cex.main=1.5)
+save.plot <- dev.off()
 
 #-----------------------------
 # GC-skew
