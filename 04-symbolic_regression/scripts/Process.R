@@ -7,7 +7,6 @@ suppressPackageStartupMessages(suppressWarnings(library(dplyr)))
 suppressPackageStartupMessages(suppressWarnings(library(stringr)))
 suppressPackageStartupMessages(suppressWarnings(library(ggplot2)))
 
-my.path="/Users/paddy/Documents/DPhil/01-Chargaff/04-symbolic_regression/scripts"
 setwd(my.path)
 source("../lib/AnalyseSR.R")
 
