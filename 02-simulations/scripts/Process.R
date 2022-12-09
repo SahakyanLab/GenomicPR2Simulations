@@ -17,10 +17,6 @@ suppressPackageStartupMessages(suppressWarnings(library(gridExtra)))
 suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
 suppressPackageStartupMessages(suppressWarnings(library(Biostrings)))
 
-my.path="/Users/paddy/Documents/DPhil/01-Chargaff/02-simulations/scripts/"
-ncpu=1
-save_as="png"
-
 setwd(my.path)
 source("../lib/Simulation.R")
 source("../lib/Plots.R")
