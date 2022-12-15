@@ -208,7 +208,8 @@ Simulation <- R6::R6Class(
             )
             if(private$species != "NONE"){
                 private$lynch_rates <- read.csv(
-                    file = "../data/Raw/Michael_Lynch/Lynch-2010-converted-mutation-rates.csv",
+                    file = paste0("../data/Raw/Michael_Lynch/", 
+                                  "Lynch-2010-converted-mutation-rates.csv"),
                     header = TRUE
                 )
                 private$notes$note_two <- private$notes$note_two %>% 
@@ -221,7 +222,8 @@ Simulation <- R6::R6Class(
             )
 
             private$CHtolerance <- read.csv(
-                file = "../../01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv",
+                file = paste0("../../01-genome_composition/data/01-Prokaryotes/", 
+                              "PR2_compliance/PR2_fluctuations.csv"),
                 header = TRUE
             )
         },
@@ -253,7 +255,12 @@ Simulation <- R6::R6Class(
                 all.states <- private$get_states()
             } else {
                 private$Tcont <- 1-private$Acont-private$Gcont-private$Ccont
-                state <- c(Ca=private$Acont, Cg=private$Gcont, Ct=private$Tcont, Cc=private$Ccont) 
+                state <- c(
+                    Ca=private$Acont, 
+                    Cg=private$Gcont, 
+                    Ct=private$Tcont, 
+                    Cc=private$Ccont
+                ) 
             }
 
             if(private$NCPU > 1){

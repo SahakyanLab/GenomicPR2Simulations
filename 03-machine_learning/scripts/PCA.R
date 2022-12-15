@@ -33,13 +33,11 @@ sim.run$G_minus_C <- sim.run$nG-sim.run$nC
 #'  "compliance": apply PR-2 tolerance zone of the species
 #'  "pca": for principal component analysis
 filtered.df <- function(dataset, species, analysis = "compliance"){
-  if(species == "prokaryotes"){
-    file.name <- "../../01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv"
-  } else if(species == "eukaryotes"){
-    file.name <- "../../01-genome_composition/data/02-Eukaryotes/PR2_compliance/PR2_fluctuations.csv"
-  } else if(species == "viruses"){
-    file.name <- "../../01-genome_composition/data/03-Viruses/PR2_compliance/PR2_fluctuations.csv"
-  }
+  file.name <- switch(species,
+    "prokaryotes" = "../../01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv",
+    "eukaryotes" = "../../01-genome_composition/data/02-Eukaryotes/PR2_compliance/PR2_fluctuations.csv",
+    "viruses" = "../../01-genome_composition/data/03-Viruses/PR2_compliance/PR2_fluctuations.csv"
+  )
   
   if(file.exists(file.name)){
     # import chargaff compliancy region

@@ -94,19 +94,22 @@ Rates <- R6::R6Class(
             cat(paste0(cur.msg, l))
 
             private$species_tolerance$prokaryotes <- read.csv(
-                file = "../../01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv",
+                file = paste0("../../01-genome_composition/data/01-Prokaryotes/", 
+                              "PR2_compliance/PR2_fluctuations.csv"),
                 header = TRUE
             )
             private$species_tolerance$eukaryotes <- read.csv(
-                file = "../../01-genome_composition/data/02-Eukaryotes/PR2_compliance/PR2_fluctuations.csv",
+                file = paste0("../../01-genome_composition/data/02-Eukaryotes/", 
+                              "PR2_compliance/PR2_fluctuations.csv"),
                 header = TRUE
             )
             private$species_tolerance$viruses <- read.csv(
-                file = "../../01-genome_composition/data/03-Viruses/PR2_compliance/PR2_fluctuations.csv",
+                file = paste0("../../01-genome_composition/data/03-Viruses/", 
+                              "PR2_compliance/PR2_fluctuations.csv"),
                 header = TRUE
             )
             private$species_gc <- read.csv(
-                file = "../data/Raw/Michael_Lynch/GC_vs_Rates.csv",
+                file = paste0("../data/Raw/Michael_Lynch/GC_vs_Rates.csv"),
                 header = TRUE
             )
 
@@ -537,10 +540,11 @@ Rates <- R6::R6Class(
             })
             eucl.df <- cbind(private$species_gc, eucl.dist)
 
-            as_tibble(eucl.df) %>% 
-                dplyr::arrange(eucl.dist) %>% 
-                dplyr::group_by(kingdom) %>% 
-                dplyr::summarise(avg.dist = mean(eucl.dist))
+            # average G+C distance away from theoretical curve
+            # as_tibble(eucl.df) %>% 
+            #     dplyr::arrange(eucl.dist) %>% 
+            #     dplyr::group_by(kingdom) %>% 
+            #     dplyr::summarise(avg.dist = mean(eucl.dist))
 
             p.den <- as_tibble(eucl.df) %>% 
                 dplyr::arrange(eucl.dist) %>% 
@@ -602,23 +606,26 @@ Rates <- R6::R6Class(
                 )
 
             p1 <- p + ggrepel::geom_text_repel(
-                data = subset(df, Species != "Theoretical"),
-                aes(x = GC.average, y = Rates, label = Species),
-                box.padding = 1, 
-                max.overlaps = Inf,
-                min.segment.length = unit(0.1, "lines"),
-                size = 3) + 
+                    data = subset(df, Species != "Theoretical"),
+                    aes(x = GC.average, y = Rates, label = Species),
+                    box.padding = 1.1, 
+                    max.overlaps = Inf,
+                    min.segment.length = unit(0.1, "lines"),
+                    segment.size = 0.5,
+                    segment.color = "grey",
+                    size = 6) + 
                 coord_cartesian(
                     xlim = c(0, 100), 
                     ylim = c(-1.5, 12)
                 )
 
+            private$save_as="png"
             ggsave(
                 filename = paste0("../figures/Chargaff_Equilibrium/", 
                                   "Theoretical_GC/GCcontenthist_other", 
                                   "species_withlabels.", private$save_as),
                 plot = p1,
-                height = 8, width = 10
+                height = 8, width = 12
             )
 
             p2 <- p + 

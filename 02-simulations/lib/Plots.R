@@ -87,11 +87,13 @@ Plots <- R6::R6Class(
                     )
                     file.name <- stringr::str_remove(
                         string = files,
-                        pattern = "../data/Chargaff_Equilibrium/ChargaffEquilibriumDistribution_|.Rdata"
+                        pattern = paste0("../data/Chargaff_Equilibrium/", 
+                                         "ChargaffEquilibriumDistribution_|.Rdata")
                     )
                     file.name <- c("H_sapiens", file.name)
                     files <- c(
-                        "../data/Chargaff_Equilibrium/ChargaffEquilibriumDistribution_scaling_zero.Rdata", 
+                        paste0("../data/Chargaff_Equilibrium/", 
+                               "ChargaffEquilibriumDistribution_scaling_zero.Rdata"), 
                         files
                     )
                 } else {
@@ -138,15 +140,18 @@ Plots <- R6::R6Class(
 
                 # get PR-2 compliance values for each kingdom
                 private$species_tolerance$prokaryotes <- read.csv(
-                    file = "../../01-genome_composition/data/01-Prokaryotes/PR2_compliance/PR2_fluctuations.csv",
+                    file = paste0("../../01-genome_composition/data/01-Prokaryotes/", 
+                                  "PR2_compliance/PR2_fluctuations.csv"),
                     header = TRUE
                 )
                 private$species_tolerance$eukaryotes <- read.csv(
-                    file = "../../01-genome_composition/data/02-Eukaryotes/PR2_compliance/PR2_fluctuations.csv",
+                    file = paste0("../../01-genome_composition/data/02-Eukaryotes/", 
+                                  "PR2_compliance/PR2_fluctuations.csv"),
                     header = TRUE
                 )
                 private$species_tolerance$viruses <- read.csv(
-                    file = "../../01-genome_composition/data/03-Viruses/PR2_compliance/PR2_fluctuations.csv",
+                    file = paste0("../../01-genome_composition/data/03-Viruses/", 
+                                  "PR2_compliance/PR2_fluctuations.csv"),
                     header = TRUE
                 )
             }
