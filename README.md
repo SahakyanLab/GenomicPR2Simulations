@@ -1,4 +1,4 @@
-# ATGC Network Research
+# Genomic PR-2 Simulations
 
 ## R&D pipeline for: Generalised interrelations among mutation rates drive the genomic compliance of Chargaff’s second parity rule.
 
@@ -6,10 +6,10 @@ Chargaff’s second parity rule (PR-2), where the complementary base (and k-mer)
 
 ## Installation
 
-Download the source code from the [GitHub](https://github.com/SahakyanLab/ATGCNetworkResearch) repository. You can also do that *via* a Linux/Unix/OSX command line, given that git is installed, by typing the following:
+Download the source code from the [GitHub](https://github.com/SahakyanLab/GenomicPR2Simulations) repository. You can also do that *via* a Linux/Unix/OSX command line, given that git is installed, by typing the following:
 
 ```
-git clone https://github.com/SahakyanLab/ATGCNetworkResearch
+git clone https://github.com/SahakyanLab/GenomicPR2Simulations
 ```
 
 ## Requirements
@@ -28,20 +28,20 @@ git clone https://github.com/SahakyanLab/ATGCNetworkResearch
 ## Workflow to get similar plots in the publication
 Execute the `submit.sh` file for sequential execution of the complete workflow.
 
-### [01-genome_composition](https://github.com/SahakyanLab/ATGCNetworkResearch/tree/master/01-genome_composition)
+### [01-genome_composition](https://github.com/SahakyanLab/GenomicPR2Simulations/tree/master/01-genome_composition)
 
 Downloads, filters and plots various meta-data of the species for the prokaryotes, eukaryotes and DNA virus kingdoms. Please note that the DNA Virus sequences are automatically downloaded from the latest updated list on NCBI, whereas the publication worked with a list of viruses released until Dec 2020.
 
-### [02-simulations](https://github.com/SahakyanLab/ATGCNetworkResearch/tree/master/02-simulations)
+### [02-simulations](https://github.com/SahakyanLab/GenomicPR2Simulations/tree/master/02-simulations)
 Numerical simulations to produce the time evolution of genomic base content within 4.28-byr period. 
 
-### [03-machine_learning](https://github.com/SahakyanLab/ATGCNetworkResearch/tree/master/03-machine_learning)
+### [03-machine_learning](https://github.com/SahakyanLab/GenomicPR2Simulations/tree/master/03-machine_learning)
 Performs the machine learning strategy for classification of compliance and non-compliance with the second parity rule solutions. 
 
-### [04-symbolic_regression](https://github.com/SahakyanLab/ATGCNetworkResearch/tree/master/04-symbolic_regression)
+### [04-symbolic_regression](https://github.com/SahakyanLab/GenomicPR2Simulations/tree/master/04-symbolic_regression)
 
 Symbolic regression of mutation rate constants under the tolerance region of the second parity rule compliance. Equations were generated with the Eureqa modelling engine.
 
 ## Interactive web application
 
-The interactive ATGC dynamics solver web application is accessible on [ATGCsolver GitHub](https://github.com/SahakyanLab/ATGCsolver) repository.
+The corresponding interactive web application for demonstration purposes is accessible on [GenomicPR2SimulationsShiny GitHub](https://github.com/SahakyanLab/GenomicPR2SimulationsShiny) repository.
