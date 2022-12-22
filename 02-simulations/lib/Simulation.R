@@ -212,8 +212,14 @@ Simulation <- R6::R6Class(
                                   "Lynch-2010-converted-mutation-rates.csv"),
                     header = TRUE
                 )
-                private$notes$note_two <- private$notes$note_two %>% 
-                    dplyr::mutate(lynch.rates[,5:length(lynch.rates)])
+                private$lynch_rates <- private$lynch_rates[c(
+                    "MUT", "MEAN", "MEDIAN", "SD", private$species
+                )]
+                private$notes$note_two <- dplyr::left_join(
+                    private$notes$note_two,
+                    private$lynch_rates,
+                    by = c("MUT", "MEAN", "MEDIAN", "SD")
+                )
             }
 
             private$notes$note_three <- read.csv(

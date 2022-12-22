@@ -89,6 +89,7 @@ Rates <- R6::R6Class(
         #' Get PR-2 compliance values for each kingdom.
         #' @return None.
         get_pr2_compliance_values = function(){
+            t1 <- Sys.time()
             cur.msg <- "Loading in PR-2 compliance values"
             l <- paste0(rep(".", 70-nchar(cur.msg)), collapse = "")
             cat(paste0(cur.msg, l))
@@ -130,12 +131,14 @@ Rates <- R6::R6Class(
             lynch.plot <- private$lynch_rates %>%
                 ggplot(aes(x = MEAN)) +
                 geom_point(aes(y = H.sapiens, color = "H.sapiens")) +
-                geom_line(aes(y = H.sapiens, color = "H.sapiens")) +
                 geom_point(aes(y = D.melanogaster, color = "D.melanogaster")) +
                 geom_point(aes(y = C.elegans, color = "C.elegans")) +
                 geom_point(aes(y = A.thaliana, color = "A.thaliana")) +
                 geom_point(aes(y = S.cerevisiae, color = "S.cerevisiae")) +
                 geom_point(aes(y = E.coli, color = "E.coli")) +
+                geom_smooth(
+                    aes(x = MEAN, y = H.sapiens),
+                    method = 'lm', formula = y~x-1) +
                 xlim(0, 1.2) + 
                 ylim(0, 0.6) + 
                 labs(

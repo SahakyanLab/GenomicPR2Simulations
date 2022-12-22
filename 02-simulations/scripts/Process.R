@@ -17,6 +17,10 @@ suppressPackageStartupMessages(suppressWarnings(library(gridExtra)))
 suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
 suppressPackageStartupMessages(suppressWarnings(library(Biostrings)))
 
+my.path="/Users/paddy/Documents/DPhil/01-Chargaff/02-simulations/scripts/"
+ncpu=1
+save_as="png"
+
 setwd(my.path)
 source("../lib/Simulation.R")
 source("../lib/Plots.R")
@@ -55,7 +59,7 @@ saveRDS(
 EQtolerance <- mean(sim.results$Mean, na.rm = TRUE)*((1/100)*25)
 
 # run 1M simulations to obtain Chargaff tolerance and genome equilibrium
-scaling <- c("zero" = 0, "one" = 1, "two" = 2, "five" = 5, "ten" = 10)
+scaling <- c("one" = 1, "two" = 2, "five" = 5, "ten" = 10)
 for(x in 1:length(scaling)){
     run_sims <- Simulation$new(
         Acont        = 0.25, # %
@@ -176,7 +180,7 @@ lynch.rates <- read.csv(
                   "2010-converted-mutation-rates.csv"),
     header = TRUE
 )
-species <- names(lynch.rates[,6:length(lynch.rates)])
+species <- c("A.thaliana", "C.elegans", "D.melanogaster", "E.coli", "S.cerevisiae")
 for(i in 1:length(species)){
     # run simulation
     run_sims <- Simulation$new(

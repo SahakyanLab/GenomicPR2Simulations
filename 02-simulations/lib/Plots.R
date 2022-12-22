@@ -88,12 +88,16 @@ Plots <- R6::R6Class(
                     file.name <- stringr::str_remove(
                         string = files,
                         pattern = paste0("../data/Chargaff_Equilibrium/", 
-                                         "ChargaffEquilibriumDistribution_|.Rdata")
+                                         "ChargaffEquilibriumDistribution_Other_")
+                    )
+                    file.name <- stringr::str_remove(
+                        string = file.name, 
+                        pattern = ".Rdata"
                     )
                     file.name <- c("H_sapiens", file.name)
                     files <- c(
                         paste0("../data/Chargaff_Equilibrium/", 
-                               "ChargaffEquilibriumDistribution_scaling_zero.Rdata"), 
+                               "ChargaffEquilibriumDistribution_scaling_one.Rdata"), 
                         files
                     )
                 } else {
@@ -102,7 +106,9 @@ Plots <- R6::R6Class(
                         pattern = "^ChargaffEquilibriumDistribution_scaling.*\\.Rdata",
                         full.names = TRUE
                     )
-                    files <- files[c(5,2,4,1,3)]
+                    # files <- files[c(5,2,4,1,3)]
+                    files <- files[c(2,4,1,3)]
+                    scaling <- c("one" = 1, "two" = 2, "five" = 5, "ten" = 10)
                     file.name <- as.character(unname(scaling))
                 }
 
@@ -117,10 +123,15 @@ Plots <- R6::R6Class(
                     return(res)
                 })
                 data.sets <- do.call(rbind, data.sets)
+                if(other_species){
+                    level.labels <- file.name
+                } else {
+                    level.labels <- paste0("scaling_", file.name)
+                }
                 self$sim_run <- as_tibble(data.sets) %>% 
                     dplyr::mutate(scalings = factor(
                             scalings, 
-                            levels = paste0("scaling_", file.name))) %>% 
+                            levels = level.labels)) %>% 
                     tidyr::gather(key, value, -scalings)
             } else {
                 self$sim_run <- readRDS(
@@ -165,6 +176,11 @@ Plots <- R6::R6Class(
         #' Generates all plots for the equilibration runs.
         #' @return None.
         plot_equilibrations = function(other_species){
+            t1 <- Sys.time()
+            cur.msg <- "Generating equilibration plots"
+            l <- paste0(rep(".", 70-nchar(cur.msg)), collapse = "")
+            cat(paste0(cur.msg, l))
+
             p1 <- self$sim_run %>% 
                 dplyr::filter(key != "Difference") %>% 
                 ggplot(aes(x = value, fill = key)) + 
@@ -177,7 +193,7 @@ Plots <- R6::R6Class(
                 geom_vline(
                     xintercept = 4.28, 
                     linetype = "dashed") +
-                facet_wrap(vars(scalings), ncol = 1) + 
+                facet_wrap(vars(scalings), ncol = 1, scales = "free_y") + 
                 scale_fill_manual(values = c("#69b3a2", "#404080")) + 
                 coord_cartesian(xlim = c(0, 10)) + 
                 labs(
@@ -194,7 +210,7 @@ Plots <- R6::R6Class(
                     position = 'identity', 
                     bins = 70, 
                     show.legend = FALSE) +
-                facet_wrap(vars(scalings), ncol = 1) + 
+                facet_wrap(vars(scalings), ncol = 1, scales = "free_y") + 
                 scale_fill_manual(values = c("#69b3a2")) + 
                 coord_cartesian(xlim = c(-3, 3)) + 
                 labs(
@@ -217,6 +233,10 @@ Plots <- R6::R6Class(
             }
             gridExtra::grid.arrange(p1, p2, ncol = 2)
             pic.saved <- dev.off()
+
+            total.time <- Sys.time() - t1
+            cat("DONE! --", signif(total.time[[1]], 2), 
+                attr(total.time, "units"), "\n")
         },
 
         #' @description
