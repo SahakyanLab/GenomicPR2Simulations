@@ -1,8 +1,8 @@
 # ATGC Network Research
 
-## R&D pipeline for the simulation-based explanation for the Chargaff's second parity rule phenomenon.
+## R&D pipeline for: Generalised interrelations among mutation rates drive the genomic compliance of Chargaff’s second parity rule.
 
-Simulation-based models are constructed based on the presence of natural equalities of mutation rates in the double stranded DNA. The models express the individual base contents through the underlying mutation rate constants.
+Chargaff’s second parity rule (PR-2), where the complementary base (and k-mer) contents are matching within the same strand of a double stranded DNA (dsDNA), is a phenomenon that invited many elaborations for its explanation. The strict compliance of nearly all nuclear dsDNA genomes to PR-2 implies that the explanation should also be similarly strict and constraining. In this work, we revisited the possibility of mutation rates being the drivers behind PR-2. Starting from the assumption-free approach, we constructed a set of kinetic equations for unconstrained simulations. The results were analysed in terms of their PR-2 compliance by employing symbolic regression and machine learning techniques.
 
 ## Installation
 
