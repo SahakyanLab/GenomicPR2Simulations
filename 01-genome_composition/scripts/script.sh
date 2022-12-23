@@ -13,24 +13,24 @@ mkdir -p ../figures/{01-Prokaryotes,02-Eukaryotes,03-Viruses}
 ###############################################
 ##### warning - this takes days to finish #####
 ###############################################
-for species in "01-Prokaryotes" "02-Eukaryotes" "03-Viruses"
-do
-    echo "Running script for $species..."
-    if [ "$species" == "03-Viruses" ]
-        then
-            cd "./$species/"
-            Rscript Download_files.R $pwd $species
-            Rscript CleanData.R $pwd $species
-            cd ../
+# for species in "01-Prokaryotes" "02-Eukaryotes" "03-Viruses"
+# do
+#     echo "Running script for $species..."
+#     if [ "$species" == "03-Viruses" ]
+#         then
+#             cd "./$species/"
+#             Rscript Download_files.R $pwd $species
+#             Rscript CleanData.R $pwd $species
+#             cd ../
+#         else 
+#             cd "./$species/"
+#             Rscript Download_files.R $pwd $species
+#             cd ../
+#     fi
+# done
 
-            # obtain meta-data plots
-            cd "./00-All_Species/"
-            pwd=$(pwd)
-            Rscript Analysis.R $pwd $save_file
-            cd ../
-        else 
-            cd "./$species/"
-            Rscript Download_files.R $pwd $species
-            cd ../
-    fi
-done
+# obtain meta-data plots
+cd "./00-All_Species/"
+pwd=$(pwd)
+Rscript Analysis.R $pwd $save_file
+cd ../

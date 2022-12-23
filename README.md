@@ -44,4 +44,4 @@ Symbolic regression of mutation rate constants under the tolerance region of the
 
 ## Interactive web application
 
-The corresponding interactive web application for demonstration purposes is accessible on [GenomicPR2SimulationsShiny GitHub](https://github.com/SahakyanLab/GenomicPR2SimulationsShiny) repository.
+The corresponding interactive web application for demonstration purposes is accessible on [GenomicPR2SimsWebApp GitHub](https://github.com/SahakyanLab/GenomicPR2SimsWebApp) repository.

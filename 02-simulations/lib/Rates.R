@@ -28,6 +28,11 @@ Rates <- R6::R6Class(
         #' @field lynch_rates Data.frame of mutation rate constants of real life species.
         lynch_rates = NULL,
 
+        #' @field original_lynch_species Character vector of the species in lynch's paper.
+        original_lynch_species = c("H.sapiens", "A.thaliana", 
+                                   "C.elegans", "D.melanogaster", 
+                                   "E.coli", "S.cerevisiae"),
+
         #' @field species_tolerance Data.frame of the PR-2 compliance values for each kingdom.
         species_tolerance = NULL,
 
@@ -67,7 +72,8 @@ Rates <- R6::R6Class(
             # obtain mutation rates from Table 1 in the following paper
             # https://www.pnas.org/content/107/3/961
             private$lynch_rates <- read.csv(
-                file = "../data/Raw/Michael_Lynch/Lynch-2010-mutation-rates_FREQUENCY.csv",
+                file = paste0("../data/Raw/Other_species/Lynch-2010-", 
+                              "mutation-rates_FREQUENCY.csv"),
                 header = TRUE
             )
             private$lynch_rates <- private$lynch_rates[match(
@@ -110,7 +116,7 @@ Rates <- R6::R6Class(
                 header = TRUE
             )
             private$species_gc <- read.csv(
-                file = paste0("../data/Raw/Michael_Lynch/GC_vs_Rates.csv"),
+                file = paste0("../data/Raw/Other_species/GC_vs_Rates.csv"),
                 header = TRUE
             )
 
@@ -128,16 +134,17 @@ Rates <- R6::R6Class(
             l <- paste0(rep(".", 70-nchar(cur.msg)), collapse = "")
             cat(paste0(cur.msg, l))
 
-            lynch.plot <- private$lynch_rates %>%
-                ggplot(aes(x = MEAN)) +
-                geom_point(aes(y = H.sapiens, color = "H.sapiens")) +
-                geom_point(aes(y = D.melanogaster, color = "D.melanogaster")) +
-                geom_point(aes(y = C.elegans, color = "C.elegans")) +
-                geom_point(aes(y = A.thaliana, color = "A.thaliana")) +
-                geom_point(aes(y = S.cerevisiae, color = "S.cerevisiae")) +
-                geom_point(aes(y = E.coli, color = "E.coli")) +
+            temp <- private$lynch_rates %>% 
+                dplyr::select(c(MUT, MEAN, private$original_lynch_species)) %>% 
+                tidyr::gather(key, value, -MUT, -MEAN) %>% 
+                dplyr::mutate(key = as.factor(key))
+    
+            lynch.plot <- temp %>% 
+                ggplot(aes(x = MEAN, y = value, col = key)) + 
+                geom_point() + 
                 geom_smooth(
-                    aes(x = MEAN, y = H.sapiens),
+                    data = subset(temp, key == "H.sapiens"),
+                    aes(x = MEAN, y = value),
                     method = 'lm', formula = y~x-1) +
                 xlim(0, 1.2) + 
                 ylim(0, 0.6) + 
@@ -174,10 +181,10 @@ Rates <- R6::R6Class(
             }
 
             final.rates <- private$lynch_rates %>%
-                dplyr::select(1:3) %>%
+                dplyr::select(c(MUT, MEAN, H.sapiens)) %>%
                 cbind(apply(
-                    private$lynch_rates[4:length(private$lynch_rates)],
-                    2, conversion.formula)) %>%
+                    dplyr::select(private$lynch_rates, -c(MUT, MEAN, H.sapiens)),
+                    2, conversion.formula)) %>% 
                 dplyr::mutate(
                     MEDIAN = private$notes$note_two$MEDIAN,
                     SD = private$notes$note_two$SD,
@@ -185,12 +192,15 @@ Rates <- R6::R6Class(
                 )
 
             # save converted rate constants as csv
-            write.table(
-                x = final.rates, 
-                file = "../data/Raw/Michael_Lynch/Lynch-2010-converted-mutation-rates.csv", 
-                sep = ",", 
-                row.names = FALSE
-            )
+            check.file <- paste0("../data/Raw/Other_species/Lynch-2010", 
+                                 "-converted-mutation-rates.csv")
+            if(!file.exists(check.file)){
+                write.csv(
+                    x = final.rates, 
+                    file = check.file, 
+                    row.names = FALSE
+                )
+            }
 
             # fasta files to download 
             species.names <- c(
@@ -268,7 +278,7 @@ Rates <- R6::R6Class(
                     if(isTRUE(url.test)){
                         try(download.file(
                             download.files.url[i], 
-                            paste0("../data/Raw/Michael_Lynch/", i, "-", 
+                            paste0("../data/Raw/Other_species/", i, "-", 
                                   species.names[i], ".dna.fna.gz")
                         ))
                         
@@ -277,7 +287,7 @@ Rates <- R6::R6Class(
                         # If it requires >3 times, likely problems are:
                         #   (1) no internet connection
                         #   (2) another pattern that's unaccounted for
-                        if(!file.exists(paste0("../data/Raw/Michael_Lynch/", i, "-", 
+                        if(!file.exists(paste0("../data/Raw/Other_species/", i, "-", 
                                                species.names[i], ".dna.fna.gz"))){
                             Sys.sleep(3)
                             attempt <- attempt + 1
@@ -287,10 +297,10 @@ Rates <- R6::R6Class(
                     } 
                     if(isFALSE(url.test)){
                         try(download.file(download.files.url[i], 
-                                        paste0("../data/Raw/Michael_Lynch/", i, "-", 
+                                        paste0("../data/Raw/Other_species/", i, "-", 
                                                species.names[i], ".dna.fna.gz")))
                     
-                    if(!file.exists(paste0("../data/Raw/Michael_Lynch/", i, "-", 
+                    if(!file.exists(paste0("../data/Raw/Other_species/", i, "-", 
                                            species.names[i], ".dna.fna.gz"))){
                         Sys.sleep(3)
                         attempt <- attempt + 1
@@ -302,11 +312,11 @@ Rates <- R6::R6Class(
             }
 
             # unzip all files if needed
-            system("gunzip ../data/Raw/Michael_Lynch/*")
+            system("gunzip ../data/Raw/Other_species/*")
 
             # read fasta files
             files <- list.files(
-                path = "../../data/Raw/Michael_Lynch", 
+                path = "../../data/Raw/Other_species", 
                 pattern = ".fna$",
                 full.names = TRUE
             )
@@ -339,25 +349,25 @@ Rates <- R6::R6Class(
             GC.skew <- sapply(base.values, `[[`, 2)
             AT.skew <- sapply(base.values, `[[`, 3)
 
-            other.private$species_gc.avg <- data.frame(
+            private$species_gc <- data.frame(
                 species = files,
                 GC.content = unlist(GC.content),
                 GC.skew = unlist(GC.skew),
                 AT.skew = unlist(AT.skew)
             )
 
-            other.private$species_gc.avg %>% 
-                dplyr::select(-AT.skew) %>% 
-                write.csv(
-                    file = "../data/Raw/Michael_Lynch/GC_values.csv",
-                    row.names = TRUE
-                )
+            check.file <- "../data/Raw/Other_species/GC_values.csv"
+            if(!file.exists(check.file)){
+                private$species_gc %>% 
+                    dplyr::select(-AT.skew) %>% 
+                    write.csv(file = check.file, row.names = TRUE)
+            }
 
             if(private$trek_scale){
-                private$lynch_rates <- private$lynch_rates %>% 
-                    dplyr::select(1:3) %>% 
+                private$lynch_rates <- private$lynch_rates %>%
+                    dplyr::select(c(MUT, MEAN, H.sapiens)) %>%
                     cbind(apply(
-                        private$lynch_rates[4:length(private$lynch_rates)], 
+                        dplyr::select(private$lynch_rates, -c(MUT, MEAN, H.sapiens)),
                         2, conversion.formula)) %>% 
                     as_tibble() %>% 
                     dplyr::mutate(
@@ -388,42 +398,52 @@ Rates <- R6::R6Class(
             })
 
             # assign ratios to new column 
-            other.private$species_gc.avg <- data.frame(
-                Species = colnames(private$lynch_rates)[4:length(private$lynch_rates)],
+            private$species_gc <- data.frame(
+                Species = colnames(dplyr::select(private$lynch_rates, -c(MUT, MEAN, H.sapiens))),
                 Rates = rate.constant.ratios,
-                GC.average = other.private$species_gc.avg$GC.content*100,
-                GC.skew = other.private$species_gc.avg$GC.skew,
-                AT.skew = other.private$species_gc.avg$AT.skew
+                GC.average = private$species_gc$GC.content*100,
+                GC.skew = private$species_gc$GC.skew,
+                AT.skew = private$species_gc$AT.skew
             )
 
             # save new data frame as csv
-            other.private$species_gc.avg %>%
-            dplyr::select(-c(GC.skew, AT.skew)) %>% 
-            write.csv(
-                file = paste0("../data/Raw/Michael_Lynch", 
-                ifelse(private$trek_scale, "/Trek_scale_", "/"), 
-                "GC_vs_Rates.csv"),
-                row.names = FALSE
-            )
+            check.file <- paste0("../data/Raw/Other_species", 
+                                 ifelse(private$trek_scale, "/Trek_scale_", "/"), 
+                                 "GC_vs_Rates.csv")
+            if(!file.exists(check.file)){
+                private$species_gc %>%
+                    dplyr::select(-c(GC.skew, AT.skew)) %>% 
+                    write.csv(
+                        file = paste0("../data/Raw/Other_species", 
+                        ifelse(private$trek_scale, "/Trek_scale_", "/"), 
+                        "GC_vs_Rates.csv"),
+                        row.names = FALSE
+                    )
+            }
 
-            other.private$species_gc.avg %>%
-            dplyr::select(-GC.average) %>% 
-            write.csv(
-                file = paste0("../data/Raw/Michael_Lynch", 
-                ifelse(private$trek_scale, "/Trek_scale_", "/"), 
-                "GC_AT_skew_vs_Rates.csv"),
-                row.names = FALSE
-            )
+            check.file <- paste0("../data/Raw/Other_species", 
+                                 ifelse(private$trek_scale, "/Trek_scale_", "/"), 
+                                 "GC_AT_skew_vs_Rates.csv")
+            if(!file.exists(check.file)){
+                private$species_gc %>%
+                    dplyr::select(-GC.average) %>% 
+                    write.csv(
+                        file = paste0("../data/Raw/Other_species", 
+                        ifelse(private$trek_scale, "/Trek_scale_", "/"), 
+                        "GC_AT_skew_vs_Rates.csv"),
+                        row.names = FALSE
+                    )
+            }
             
             # save new data frame as csv
             if(private$trek_scale){
-                private$lynch_rates %>%
-                    select(-c(2:3)) %>%
-                    write.csv(
-                        file = paste0("../data/Raw/Michael_Lynch/Trek_scale_Lynch",
-                                      "-2010-mutation-rates_FREQUENCY.csv"), 
-                        row.names = FALSE
-                    )
+                check.file <- paste0("../data/Raw/Other_species/Trek_scale_Lynch",
+                                      "-2010-mutation-rates_FREQUENCY.csv")
+                if(!file.exists(check.file)){
+                    private$lynch_rates %>%
+                        dplyr::select(-c(MUT, RATES)) %>% 
+                        write.csv(file = check.file, row.names = FALSE)
+                }
             }
 
             total.time <- Sys.time() - t1
@@ -558,6 +578,7 @@ Rates <- R6::R6Class(
                     values = unique(eucl.df$kingdom.col),
                     limits = unique(eucl.df$kingdom)
                 ) + 
+                coord_cartesian(xlim = c(0, 100)) + 
                 theme_bw() + 
                 theme(
                     panel.grid.major = element_blank(),
@@ -622,7 +643,6 @@ Rates <- R6::R6Class(
                     ylim = c(-1.5, 12)
                 )
 
-            private$save_as="png"
             ggsave(
                 filename = paste0("../figures/Chargaff_Equilibrium/", 
                                   "Theoretical_GC/GCcontenthist_other", 
