@@ -23,7 +23,7 @@ git clone https://github.com/SahakyanLab/GenomicPR2Simulations
 * [truncnorm](https://cran.r-project.org/web/packages/truncnorm/index.html) >= 1.0-8
 * [caret](https://cran.r-project.org/web/packages/caret/index.html) >= 6.0-90
 * [MLeval](https://cran.r-project.org/web/packages/MLeval/index.html) >= 0.3
-* [Biostrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html) >= 2.58.0
+* [Biostrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html) >= 2.58.0 (required for processing raw data, but processed versions already deposited here.)
 
 ## Workflow to get similar plots in the publication
 Execute the `submit.sh` file for sequential execution of the complete workflow.
