@@ -16,7 +16,7 @@ git clone https://github.com/SahakyanLab/GenomicPR2Simulations
 
 * [deSolve](https://cran.r-project.org/web/packages/deSolve/index.html) >= 1.30
 * [dplyr](https://cran.r-project.org/web/packages/dplyr/index.html) >= 1.0.7
-* [dplyr](https://cran.r-project.org/web/packages/dplyr/index.html) >= 1.3.2
+* [tidyverse](https://cran.r-project.org/web/packages/tidyverse/index.html) >= 1.3.2
 * [ggplot2](https://cran.r-project.org/web/packages/ggplot2/index.html) >= 3.3.5
 * [gridExtra](https://cran.r-project.org/web/packages/gridExtra/index.html) >= 2.3
 * [foreach](https://cran.r-project.org/web/packages/foreach/index.html) >= 1.5.1
