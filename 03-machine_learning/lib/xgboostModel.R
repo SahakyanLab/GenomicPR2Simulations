@@ -391,6 +391,8 @@ xgboostModel <- R6::R6Class(
         #' @description
         #' Train xgboost model.
         #' @param seed Numeric vector. Random number generator for reproducibility.
+        #' @param hyerptuning Boolean. If TRUE, performs grid-search 
+        #'  approach for hyperparameter tunings.
         #' @return None.
         train_model = function(seed = 123, hypertuning = TRUE){
             # check if classes are correct

@@ -1,7 +1,7 @@
 args <- commandArgs(trailingOnly = TRUE)
-my_path <- as.character(args[1])
+my.path <- as.character(args[1])
 save.as <- as.character(args[2])
-setwd(my_path)
+setwd(my.path)
 
 # load dependencies
 suppressPackageStartupMessages(library(ggplot2))
@@ -14,9 +14,18 @@ colfun = colorRampPalette(c("white","blue","skyblue",
                             "orange","red","darkred"))
 
 # Import data frames of the three species types
-prokaryotes.df <- read.csv(file = "../../data/01-Prokaryotes/All/all_filtered_dataframe.csv", header=TRUE)
-eukaryotes.df  <- read.csv(file = "../../data/02-Eukaryotes/All/all_filtered_dataframe.csv", header=TRUE)
-viruses.df     <- read.csv(file = "../../data/03-Viruses/All/all_filtered_dataframe.csv", header=TRUE)
+prokaryotes.df <- read.csv(
+  file = "../../data/01-Prokaryotes/All/all_filtered_dataframe.csv", 
+  header = TRUE
+)
+eukaryotes.df <- read.csv(
+  file = "../../data/02-Eukaryotes/All/all_filtered_dataframe.csv", 
+  header = TRUE
+)
+viruses.df <- read.csv(
+  file = "../../data/03-Viruses/All/all_filtered_dataframe.csv", 
+  header = TRUE
+)
 
 #-----------------------------
 # Mean/St.dev values for fluctuations from 2nd parity rule 

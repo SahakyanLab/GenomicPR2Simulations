@@ -52,7 +52,7 @@ Plots <- R6::R6Class(
         #'  The type of distribution from which the mutation rate constants to randomly draw from. 
         distribution = "uniform",
 
-        #' @field Numeric vector of c(1,2,5,10), indicating the standard deviation of the
+        #' @field scale_fac Numeric vector of c(1,2,5,10), indicating the standard deviation of the
         #'  random drawing of mutation rate constants.
         scale_fac = 1,
 
@@ -66,11 +66,12 @@ Plots <- R6::R6Class(
         #' @field EQtolerance Numeric vector of the tolerance value for reaching genome equilibration
         EQtolerance = NULL,
 
-        #' @field Character of c("png", "pdf") to save the plots.
+        #' @field save_as Character of c("png", "pdf") to save the plots.
         save_as = "png",
 
         #' @description
         #' Load simulation results.
+        #' @param other_species Boolean. If TRUE, will plot results of human and non-human species.
         #' @return None.
         get_sim_output = function(other_species = FALSE){
             t1 <- Sys.time()
@@ -174,6 +175,7 @@ Plots <- R6::R6Class(
 
         #' @description
         #' Generates all plots for the equilibration runs.
+        #' @param other_species Boolean. If TRUE, will plot results of human and non-human species.
         #' @return None.
         plot_equilibrations = function(other_species){
             t1 <- Sys.time()
@@ -587,7 +589,8 @@ Plots <- R6::R6Class(
 
         #' @description
         #' Plot the mutation rate constants as ratio distribution plots
-        #' @param species Character vector of c("Prokaryotes", "Eukaryotes", "Viruses")
+        #' @param tolerance Boolean. If TRUE, will generate plots with PR-2 compliance 
+        #'  tolerance applied.
         #' @return None.
         plot_ratio_constants = function(tolerance){
             t1 <- Sys.time()
@@ -680,6 +683,10 @@ Plots <- R6::R6Class(
                 attr(total.time, "units"), "\n")               
         },
 
+        #' @description
+        #' Creates a moving-picture of the GC-AT skew evolution for strand-symmetric
+        #' normal distribution simulations.
+        #' @return None.
         plot_skew_evolution = function(){
             # edit simulation data set
             to.keep <- which(!is.na(stringr::str_extract(

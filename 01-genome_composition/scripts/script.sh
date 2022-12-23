@@ -8,7 +8,6 @@ mkdir -p ../figures/00-All_Species
 mkdir -p ../data/{01-Prokaryotes,02-Eukaryotes,03-Viruses}/{All,PR2_compliance,Raw}
 mkdir -p ../figures/{01-Prokaryotes,02-Eukaryotes,03-Viruses}
 
-
 # download species files and analysed meta-data
 ###############################################
 ##### warning - this takes days to finish #####
@@ -31,6 +30,6 @@ mkdir -p ../figures/{01-Prokaryotes,02-Eukaryotes,03-Viruses}
 
 # obtain meta-data plots
 cd "./00-All_Species/"
-pwd=$(pwd)
+pwd="$(pwd)/"
 Rscript Analysis.R $pwd $save_file
 cd ../

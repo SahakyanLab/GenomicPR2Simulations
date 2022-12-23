@@ -1,7 +1,7 @@
 AnalyseSR <- R6::R6Class(
     classname = "AnalyseSR",
     public = list(
-        #' @field df_test Data.frame. Training data from the PR-2 compliant 
+        #' @field df_train Data.frame. Training data from the PR-2 compliant 
         #'  results from simulation.
         df_train = NULL,
 
@@ -57,7 +57,7 @@ AnalyseSR <- R6::R6Class(
 
         #' @description
         #' Obtain mutation rates from Table 1 in the following paper
-        #'  https://www.pnas.org/content/107/3/961
+        #' https://www.pnas.org/content/107/3/961
         #' @return None.
         get_mut_rates = function(){
             private$lynch_rates <- read.csv(
@@ -197,6 +197,7 @@ AnalyseSR <- R6::R6Class(
 
         #' @description
         #' Get plots.
+        #' @param train Boolean. If TRUE, generates plots using training data.
         #' @return None.
         get_plots = function(train = TRUE){
             t1 <- Sys.time()
@@ -285,8 +286,8 @@ AnalyseSR <- R6::R6Class(
 
         #' @description
         #' Calculates r-squared between two variables.
-        #' @x x Numeric vector of mutation rate constant values.
-        #' @y y Numeric vector of mutation rate constant values.
+        #' @param x Numeric vector of mutation rate constant values.
+        #' @param y Numeric vector of mutation rate constant values.
         #' @return Numeric vector of R-squared value.
         calc_r_squared = function(x, y){
             return(signif(summary(lm(x~y))$r.squared, digits=3))

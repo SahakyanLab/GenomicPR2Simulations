@@ -1,7 +1,7 @@
 args <- commandArgs(trailingOnly = TRUE)
-my_path <- as.character(args[1])
+my.path <- as.character(args[1])
 species <- as.character(args[2])
-setwd(my_path)
+setwd(my.path)
 
 suppressPackageStartupMessages(library(stringr))
 suppressPackageStartupMessages(suppressWarnings(library(Biostrings)))
