@@ -30,10 +30,10 @@ Execute the `submit.sh` file for sequential execution of the complete workflow.
 
 ### [01-genome_composition](https://github.com/SahakyanLab/GenomicPR2Simulations/tree/master/01-genome_composition)
 
-Downloads, filters and plots various meta-data of the species for the prokaryotes, eukaryotes and DNA virus kingdoms. Please note that the DNA Virus sequences are automatically downloaded from the latest updated list on NCBI, whereas the publication worked with a list of viruses released until Dec 2020.
+Downloads, filters and plots various meta-data of the species for the prokaryotes, eukaryotes and DNA virus kingdoms. Please note the following. First, the DNA Virus sequences are automatically downloaded from the latest updated list on NCBI, whereas the publication worked with a list of viruses released until Dec 2020. Second, if you execute the main `submit.sh` file, it will only plot the already processed data sets. If you wish to perform the full pipeline for the 3 kingdoms, please uncomment the lines within the `script.sh` file in this folder.
 
 ### [02-simulations](https://github.com/SahakyanLab/GenomicPR2Simulations/tree/master/02-simulations)
-Numerical simulations to produce the time evolution of genomic base content within 4.28-byr period. 
+Numerical simulations to produce the time evolution of genomic base content within 4.28-byr period. Please note, that each simulation run solves an ODE-based system and calculates the associated meta-data. In the main paper, the core simulations were run 25 million times each and took approximately 3-4 weeks each. If you wish to entirely replicate this, please amend the `Process.R` script in this folder so as to run this in parallel. By default, each simulation is run sequentially. Alternatively, for a simple demonstration purpose, please amend the `run` argument within the `script.sh` file in this folder from `25,000,000` to a lower number like `100,000`. Please also note that if the default of `25,000,000` is not used, all the subsequent results below will be different from the main paper.
 
 ### [03-machine_learning](https://github.com/SahakyanLab/GenomicPR2Simulations/tree/master/03-machine_learning)
 Performs the machine learning strategy for classification of compliance and non-compliance with the second parity rule solutions. 

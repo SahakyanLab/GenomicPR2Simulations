@@ -502,7 +502,7 @@ Simulation <- R6::R6Class(
                 if(private$tolerance){
                     if (private$tol_return == "equil_time"){
                         atgc <- private$solveATGC(parameters = parameters, state = state)
-                    } else if (tol_return == "fluctuation") {
+                    } else if (private$tol_return == "fluctuation") {
                         private$EQtolerance = private$CHtolerance = FALSE
                         atgc <- private$solveATGC(parameters = parameters, state = state)
                     }
@@ -571,9 +571,8 @@ Simulation <- R6::R6Class(
                         ))
                     }
                 }
-            } 
-            # %>% 
-            # suppressWarnings() # ignore 'already exporting variables' warning from foreach
+            } %>% 
+            suppressWarnings() # ignore 'already exporting variables' warning from foreach
 
             # return or save results
             if(private$tolerance | private$to_plot){
