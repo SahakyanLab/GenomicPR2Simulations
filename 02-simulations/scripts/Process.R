@@ -17,7 +17,6 @@ suppressPackageStartupMessages(suppressWarnings(library(gridExtra)))
 suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
 suppressPackageStartupMessages(suppressWarnings(library(Biostrings)))
 
-my.path="/Users/paddy/Documents/DPhil/GenomicPR2Simulations/02-simulations/scripts"
 setwd(my.path)
 source("../lib/Simulation.R")
 source("../lib/Plots.R")
@@ -32,7 +31,7 @@ run_sims <- Simulation$new(
     Ccont        = 0.25, # %
     span         = 10, # byr
     step         = 0.001, # byr
-    max_runs     = 1000, 
+    max_runs     = 100000, 
     muttype      = "Strand_Symmetric",
     distribution = "normal",
     species      = "NONE",
@@ -71,6 +70,7 @@ for(x in 1:length(scaling)){
         scale_fac    = unname(scaling[x]),
         tolerance    = TRUE,
         tol_return   = "equil_time",
+        EQtolerance  = EQtolerance,
         sim_evol     = FALSE,
         NCPU         = ncpu, 
         seed         = 2021

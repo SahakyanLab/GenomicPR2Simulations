@@ -3,7 +3,7 @@ Simulation <- R6::R6Class(
     public = list(
         initialize = function(Acont, Gcont, Ccont, span, step, max_runs,
                               muttype, distribution, species, scale_fac,
-                              tolerance, tol_return, sim_evol,
+                              tolerance, tol_return, sim_evol, EQtolerance,
                               sy_reg_run, NCPU, seed){
             if(!missing(Acont)) private$Acont <- Acont
             if(!missing(Gcont)) private$Gcont <- Gcont
@@ -17,6 +17,7 @@ Simulation <- R6::R6Class(
             if(!missing(scale_fac)) private$scale_fac <- scale_fac 
             if(!missing(tolerance)) private$tolerance <- tolerance 
             if(!missing(tol_return)) private$tol_return <- tol_return
+            if(!missing(EQtolerance)) private$EQtolerance <- EQtolerance
             if(!missing(sim_evol)) private$sim_evol <- sim_evol
             if(!missing(sy_reg_run)) private$sy_reg_run <- sy_reg_run
             if(!missing(NCPU)) private$NCPU <- NCPU 
@@ -244,7 +245,6 @@ Simulation <- R6::R6Class(
             cat(cur.msg, l, "\n", sep = "")
 
             # time taken for full processing for this experiment
-            cat(paste(c(rep("-", 70), "\n"), collapse = ""))
             cur.msg <- paste0("\n",
                 "Max. time period (byr):  ", private$span, "\n",
                 "Iterations:              ", private$max_runs, "\n",
@@ -253,6 +253,7 @@ Simulation <- R6::R6Class(
                 "Mutation type:           ", private$muttype, "\n",
                 "CPUs:                    ", private$NCPU
             )
+            cat(paste(c(rep("-", 70), "\n"), collapse = ""))
             cat("Quick infosheet:", "\n", cur.msg, "\n")
             cat(paste(c(rep("-", 70), "\n"), collapse = ""))
 
@@ -273,6 +274,7 @@ Simulation <- R6::R6Class(
                 `%op%` <- `%dopar%`
             } else {
                 `%op%` <- `%do%`
+                pb <- txtProgressBar(min = 1, max = private$max_runs, style = 3) 
             }            
 
             # set-up cluster for parallel computation
@@ -295,6 +297,7 @@ Simulation <- R6::R6Class(
                                 .export=c(ls(globalenv()), "private", "self"),
                                 .packages=c("foreach", "truncnorm", "dplyr", "deSolve", "R6"),
                                 .inorder=FALSE)%op%{
+                if(private$NCPU < 2) setTxtProgressBar(pb,i)
                 Simulation$parent_env <- environment()
                 if(private$tolerance){
                     state <- all.states[i,]
@@ -500,14 +503,12 @@ Simulation <- R6::R6Class(
                                 kca=kca, kcg=kcg, kct=kct) #mut/byr
                 
                 if(private$tolerance){
-                    if (private$tol_return == "equil_time"){
+                    if(private$tol_return == "equil_time"){
                         atgc <- private$solveATGC(parameters = parameters, state = state)
-                    } else if (private$tol_return == "fluctuation") {
-                        private$EQtolerance = private$CHtolerance = FALSE
+                    } else if(private$tol_return == "fluctuation"){
                         atgc <- private$solveATGC(parameters = parameters, state = state)
                     }
                 } else {
-                    private$EQtolerance = private$CHtolerance = FALSE
                     atgc <- private$solveATGC(parameters = parameters, state = state)
                 }
 
@@ -573,6 +574,18 @@ Simulation <- R6::R6Class(
                 }
             } %>% 
             suppressWarnings() # ignore 'already exporting variables' warning from foreach
+            stopImplicitCluster()
+            stopCluster(cl)
+
+            # time taken for full processing for this experiment
+            if(private$NCPU < 2){
+                close(pb)
+                cat(paste(c(rep("-", 70), "\n"), collapse = ""))
+            }
+            final.t <- Sys.time() - start.time
+            cat("Final time taken:", signif(final.t[[1]], digits = 3), 
+                attr(final.t, "units"), "\n")
+            cat(paste(c(rep("-", 70), "\n"), collapse = ""))
 
             # return or save results
             if(private$tolerance | private$to_plot){
@@ -595,14 +608,6 @@ Simulation <- R6::R6Class(
                     )
                 }
             }
-            stopImplicitCluster()
-            stopCluster(cl)
-
-            # time taken for full processing for this experiment
-            final.t <- Sys.time() - start.time
-            cat("Final time taken:", signif(final.t[[1]], digits = 3), 
-                attr(final.t, "units"), "\n")
-            cat(paste(c(rep("-", 70), "\n"), collapse = ""))
         },
 
         #' @description
@@ -675,21 +680,8 @@ Simulation <- R6::R6Class(
 
             length.out <- dim(out)[1]
             length.genome <- sum(state)
-            dif.nucl <- c(sum(out[1,c("Ca","Cg","Ct","Cc")]),
-                          rowSums(abs(diff(out[,c("Ca","Cg","Ct","Cc")])))/4)
-            at.ratio <- out[,"Ca"]/out[,"Ct"]
-            gc.ratio <- out[,"Cg"]/out[,"Cc"]
-            at.content <- (out[,"Ca"] + out[,"Ct"])*100/length.genome
-            gc.content <- (out[,"Cg"] + out[,"Cc"])*100/length.genome
-            at.skew <- ((out[,"Ca"] - out[,"Ct"])/(out[,"Ca"] + out[,"Ct"]))/length.genome
-            gc.skew <- ((out[,"Cg"] - out[,"Cc"])/(out[,"Cg"] + out[,"Cc"]))/length.genome
-            Fin.GC  <- as.vector(gc.content[length.out])
-
-            # 1bn year time intervals
-            when.one.bn <- which(out[,"time"] == 1)
-            when.two.bn <- which(out[,"time"] == 2)
-            when.three.bn <- which(out[,"time"] == 3)
-            when.four.bn <- which(out[,"time"] == 4)
+            dif.nucl <- c(sum(out[1,c("Ca","Cg","Ct","Cc")], na.rm = TRUE),
+                          rowSums(abs(diff(out[,c("Ca","Cg","Ct","Cc")])), na.rm = TRUE)/4)
 
             RESULTS <- NULL
             RESULTS$inp                 <- NULL # input data
@@ -697,45 +689,62 @@ Simulation <- R6::R6Class(
             RESULTS$inp$state           <- state
             RESULTS$inp$step            <- private$step
             RESULTS$inp$span            <- private$span
-            RESULTS$out                 <- out                 # numerical solution to the diff eqs
+            RESULTS$out                 <- out # numerical solution to the diff eqs
             RESULTS$dif.nucl            <- dif.nucl
-            RESULTS$fluctuation.mean    <- mean(dif.nucl[2:length(dif.nucl)]/4) # average fluctuation difference
-            RESULTS$fluctuation.sd      <- sd(dif.nucl[2:length(dif.nucl)]/4) # st.dev. fluctuation difference
-            RESULTS$at.ratio            <- as.vector(at.ratio) # at.ratio dynamics vector
-            RESULTS$gc.ratio            <- as.vector(gc.ratio)
-            RESULTS$gc.ratio            <- as.vector(gc.ratio)
-            RESULTS$at.content          <- as.vector(at.content)
-            RESULTS$gc.content          <- as.vector(gc.content)
-            RESULTS$at.skew             <- as.vector(at.skew)
-            RESULTS$gc.skew             <- as.vector(gc.skew)
-            RESULTS$Fin.GC              <- Fin.GC            # the G+C content at the end of the simulation
-            RESULTS$length.genome       <- length.genome
-            RESULTS$length.out          <- length.out
+            RESULTS$fluctuation.mean    <- mean(dif.nucl[2:length(dif.nucl)]/4, na.rm = TRUE) # average fluctuation difference
+            RESULTS$fluctuation.sd      <- sd(dif.nucl[2:length(dif.nucl)]/4, na.rm = TRUE) # st.dev. fluctuation difference
+
+            if(!private$tolerance){
+                at.ratio <- out[,"Ca"]/out[,"Ct"]
+                gc.ratio <- out[,"Cg"]/out[,"Cc"]
+                at.content <- (out[,"Ca"] + out[,"Ct"])*100/length.genome
+                gc.content <- (out[,"Cg"] + out[,"Cc"])*100/length.genome
+                at.skew <- ((out[,"Ca"] - out[,"Ct"])/(out[,"Ca"] + out[,"Ct"]))/length.genome
+                gc.skew <- ((out[,"Cg"] - out[,"Cc"])/(out[,"Cg"] + out[,"Cc"]))/length.genome
+                Fin.GC  <- as.numeric(gc.content[length.out])
+
+                RESULTS$at.ratio            <- as.numeric(at.ratio) # at.ratio dynamics numeric
+                RESULTS$gc.ratio            <- as.numeric(gc.ratio)
+                RESULTS$gc.ratio            <- as.numeric(gc.ratio)
+                RESULTS$at.content          <- as.numeric(at.content)
+                RESULTS$gc.content          <- as.numeric(gc.content)
+                RESULTS$at.skew             <- as.numeric(at.skew)
+                RESULTS$gc.skew             <- as.numeric(gc.skew)
+                RESULTS$Fin.GC              <- Fin.GC # the G+C content at the end of the simulation
+                RESULTS$length.genome       <- length.genome
+                RESULTS$length.out          <- length.out
+            }
 
             # record each billion year time step to observe evolution
             if(private$sim_evol){
+                # 1bn year time intervals
+                when.one.bn <- which(out[,"time"] == 1)
+                when.two.bn <- which(out[,"time"] == 2)
+                when.three.bn <- which(out[,"time"] == 3)
+                when.four.bn <- which(out[,"time"] == 4)
+
                 # 1bn yrs
-                RESULTS$one.bn              <- NULL # 1bn years
+                RESULTS$one.bn              <- NULL 
                 RESULTS$one.bn$at.content   <- at.content[when.one.bn]
                 RESULTS$one.bn$gc.content   <- gc.content[when.one.bn]
                 RESULTS$one.bn$at.skew      <- at.skew[when.one.bn]
                 RESULTS$one.bn$gc.skew      <- gc.skew[when.one.bn]
                 
                 # 2bn yrs
-                RESULTS$two.bn              <- NULL # 2bn years
+                RESULTS$two.bn              <- NULL 
                 RESULTS$two.bn$at.content   <- at.content[when.two.bn]
                 RESULTS$two.bn$gc.content   <- gc.content[when.two.bn]
                 RESULTS$two.bn$at.skew      <- at.skew[when.two.bn]
                 RESULTS$two.bn$gc.skew      <- gc.skew[when.two.bn]
                 
                 # 3bn yrs
-                RESULTS$three.bn            <- NULL # 3bn years
+                RESULTS$three.bn            <- NULL
                 RESULTS$three.bn$at.content <- at.content[when.three.bn]
                 RESULTS$three.bn$gc.content <- gc.content[when.three.bn]
                 RESULTS$three.bn$at.skew    <- at.skew[when.three.bn]
                 RESULTS$three.bn$gc.skew    <- gc.skew[when.three.bn]
                 # 4bn yrs
-                RESULTS$four.bn             <- NULL # 4bn years
+                RESULTS$four.bn             <- NULL
                 RESULTS$four.bn$at.content  <- at.content[when.four.bn]
                 RESULTS$four.bn$gc.content  <- gc.content[when.four.bn]
                 RESULTS$four.bn$at.skew     <- at.skew[when.four.bn]
@@ -743,7 +752,7 @@ Simulation <- R6::R6Class(
             }
 
             # Genome Equilibrium tolerance
-            if(private$tolerance){
+            if(!is.null(private$EQtolerance)){
                 dif <- abs(diff(out[,c("Ca","Cg","Ct","Cc")]))
                 dif.max.min <- apply(dif, 1, function(x){max(x) - min(x)})
                 Eq.time <- times[which(dif.max.min <= private$EQtolerance)[1]]
