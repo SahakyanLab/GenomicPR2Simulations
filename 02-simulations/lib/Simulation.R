@@ -571,8 +571,9 @@ Simulation <- R6::R6Class(
                         ))
                     }
                 }
-            } %>% 
-            suppressWarnings() # ignore 'already exporting variables' warning from foreach
+            } 
+            # %>% 
+            # suppressWarnings() # ignore 'already exporting variables' warning from foreach
 
             # return or save results
             if(private$tolerance | private$to_plot){

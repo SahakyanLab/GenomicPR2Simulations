@@ -2,7 +2,8 @@
 
 # obtain working directory
 pwd="$(pwd)/"
-runs=25000000
+# runs=25000000
+runs=1000000
 ncpu=4
 save_as="pdf"
 

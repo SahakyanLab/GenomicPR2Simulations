@@ -5,13 +5,12 @@ save_file="png"
 
 # create folders for storage
 mkdir -p ../figures/00-All_Species
-mkdir -p ../data/{01-Prokaryotes,02-Eukaryotes,03-Viruses}/{All,PR2_compliance,Raw}
-mkdir -p ../figures/{01-Prokaryotes,02-Eukaryotes,03-Viruses}
 
 # download species files and analysed meta-data
 ###############################################
 ##### warning - this takes days to finish #####
 ###############################################
+# mkdir -p ../data/{01-Prokaryotes,02-Eukaryotes,03-Viruses}/{All,PR2_compliance,Raw}
 # for species in "01-Prokaryotes" "02-Eukaryotes" "03-Viruses"
 # do
 #     echo "Running script for $species..."

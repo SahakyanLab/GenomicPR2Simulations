@@ -4,14 +4,20 @@ save.as <- as.character(args[2])
 setwd(my.path)
 
 # load dependencies
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(gridExtra))
-suppressPackageStartupMessages(library(dplyr))
-suppressPackageStartupMessages(library(geneplotter))
+suppressPackageStartupMessages(suppressWarnings(library(ggplot2)))
+suppressPackageStartupMessages(suppressWarnings(library(gridExtra)))
+suppressPackageStartupMessages(suppressWarnings(library(dplyr)))
+suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
 
 colfun = colorRampPalette(c("white","blue","skyblue",
                             "chartreuse3","green","yellow",
                             "orange","red","darkred"))
+
+# progress tracker
+t1 <- Sys.time()
+cur.msg <- "Generating plots for all 3 kingdoms"
+l <- paste0(rep(".", 70-nchar(cur.msg)), collapse = "")
+cat(paste0(cur.msg, l))
 
 # Import data frames of the three species types
 prokaryotes.df <- read.csv(
@@ -67,7 +73,8 @@ for(species in c("01-Prokaryotes", "02-Eukaryotes", "03-Viruses")){
 
   write.csv(
     mean.sd.df, 
-    file = paste0("../../data/", species, "/PR2_compliance/PR2_fluctuations.csv"), 
+    file = paste0("../../data/", species, 
+                  "/PR2_compliance/PR2_fluctuations.csv"), 
     row.names = FALSE
   )
 }
@@ -79,8 +86,8 @@ gc <- c(eukaryotes.df$G_plus_C*100,
         prokaryotes.df$G_plus_C*100, 
         viruses.df$G_plus_C*100)
 
-min(viruses.df$G_plus_C*100)
-max(viruses.df$G_plus_C*100)
+# min(viruses.df$G_plus_C*100)
+# max(viruses.df$G_plus_C*100)
 
 GC_hist <- function(dataset, title = ""){
 
@@ -107,10 +114,8 @@ GC_hist <- function(dataset, title = ""){
     labs(x = "",
          y = "",
          title = paste0(title, "\n", 
-                        "Mean = ", format(round(mean(dataset$G_plus_C)*100, 2), 
-                                          nsmall = 2), " ",
-                        "St.Dev = ", format(round(sd(dataset$G_plus_C)*100, 2), 
-                                            nsmall = 2)))
+                        "Mean = ", signif(mean(dataset$G_plus_C, na.rm = TRUE)*100, 2), " ",
+                        "St.Dev = ", signif(sd(dataset$G_plus_C, na.rm = TRUE)*100, 2)))
   return(Plot)
 }
 
@@ -118,8 +123,10 @@ grid.arrange(GC_hist(eukaryotes.df, "Eukaryotes"),
              GC_hist(prokaryotes.df, "Prokaryotes"),
              GC_hist(viruses.df, "Viruses"),
              ncol = 3, nrow = 1) %>%
-  ggsave(width=15, height=8, filename = paste0("../../figures/00-All_Species/GC_hist.", save.as))
-cat("GC histogram plots done!", "\n")
+  ggsave(
+    width=15, height=8, 
+    filename = paste0("../../figures/00-All_Species/GC_hist.", save.as)
+  )
 
 #-----------------------------
 # A+T content 
@@ -145,10 +152,8 @@ AT_hist <- function(dataset, title = ""){
                                 max(dataset$A_plus_T)*100,
                                 length.out = 51)) + 
     labs(x = paste0("A+T content (%)", "\n",
-                    "Mean = ", format(round(mean(dataset$A_plus_T)*100, 2), 
-                                      nsmall = 2), " ",
-                    "St.Dev = ", format(round(sd(dataset$A_plus_T)*100, 2), 
-                                        nsmall = 2)),
+                    "Mean = ", signif(mean(dataset$A_plus_T, na.rm = TRUE)*100, 2), " ",
+                    "St.Dev = ", signif(sd(dataset$A_plus_T, na.rm = TRUE)*100, 2)),
          y = "Density",
          title = title)
   return(Plot)
@@ -158,8 +163,10 @@ grid.arrange(GC_hist(eukaryotes.df, "Eukaryotes"),
              GC_hist(prokaryotes.df, "Prokaryotes"),
              GC_hist(viruses.df, "Viruses"),
              ncol = 3, nrow = 1) %>%
-  ggsave(width=15, height=8, filename = paste0("../../figures/00-All_Species/AT_hist.", save.as))
-cat("AT histogram plots done!", "\n")
+  ggsave(
+    width=15, height=8, 
+    filename = paste0("../../figures/00-All_Species/AT_hist.", save.as)
+  )
 
 #-----------------------------
 # G-C vs. A-T 
@@ -188,16 +195,21 @@ difference.plots <- function(dataset, species){
 }
 
 if(save.as == "pdf"){
-  pdf(width=15, height=8, file="../../figures/00-All_Species/G-C_vs_A-T.pdf")
+  pdf(
+    width=15, height=8, 
+    file="../../figures/00-All_Species/G-C_vs_A-T.pdf"
+  )
 } else {
-  png(width=1200, height=400, file="../../figures/00-All_Species/G-C_vs_A-T.png")
+  png(
+    width=1200, height=400, 
+    file="../../figures/00-All_Species/G-C_vs_A-T.png"
+  )
 }
 par(mfrow=c(1,3))
 difference.plots(eukaryotes.df, "Eukaryotes")
 difference.plots(prokaryotes.df, "Prokaryotes")
 difference.plots(viruses.df, "Viruses")
 plot.save <- dev.off()
-cat("G-C vs. A-T plots done!", "\n")
 
 #-----------------------------
 # GC-ratio vs. AT-ratio
@@ -223,16 +235,21 @@ ratio.plot <- function(dataset, species){
 }
 
 if(save.as == "pdf"){
-  pdf(width=15, height=8, file="../../figures/00-All_Species/GC-ratio_vs_AT-ratio.pdf")
+  pdf(
+    width=15, height=8, 
+    file="../../figures/00-All_Species/GC-ratio_vs_AT-ratio.pdf"
+  )
 } else {
-  png(width=1200, height=400, file="../../figures/00-All_Species/GC-ratio_vs_AT-ratio.png")
+  png(
+    width=1200, height=400, 
+    file="../../figures/00-All_Species/GC-ratio_vs_AT-ratio.png"
+  )
 }
 par(mfrow=c(1,3))
 ratio.plot(eukaryotes.df, "Eukaryotes")
 ratio.plot(prokaryotes.df, "Prokaryotes")
 ratio.plot(viruses.df, "Viruses")
 plot.save <- dev.off()
-cat("GC vs. AT ratio plots done!", "\n")
 
 #-----------------------------
 # GC-skew vs. AT-skew
@@ -258,26 +275,31 @@ skew.plot <- function(dataset, species){
 }
 
 if(save.as == "pdf"){
-  pdf(width=15, height=8, file="../../figures/00-All_Species/GC-skew_vs_AT-skew.pdf")
+  pdf(
+    width=15, height=8, 
+    file="../../figures/00-All_Species/GC-skew_vs_AT-skew.pdf"
+  )
 } else {
-  png(width=1200, height=400, file="../../figures/00-All_Species/GC-skew_vs_AT-skew.png")
+  png(
+    width=1200, height=400, 
+    file="../../figures/00-All_Species/GC-skew_vs_AT-skew.png"
+  )
 }
 par(mfrow=c(1,3))
 skew.plot(eukaryotes.df, "Eukaryotes")
 skew.plot(prokaryotes.df, "Prokaryotes")
 skew.plot(viruses.df, "Viruses")
 plot.save <- dev.off()
-cat("GC vs. AT skew done!", "\n")
 
 # st.dev for each kingdom
-sd(eukaryotes.df$GC_skew, na.rm = TRUE)
-sd(eukaryotes.df$AT_skew, na.rm = TRUE)
+# sd(eukaryotes.df$GC_skew, na.rm = TRUE)
+# sd(eukaryotes.df$AT_skew, na.rm = TRUE)
 
-sd(prokaryotes.df$GC_skew, na.rm = TRUE)
-sd(prokaryotes.df$AT_skew, na.rm = TRUE)
+# sd(prokaryotes.df$GC_skew, na.rm = TRUE)
+# sd(prokaryotes.df$AT_skew, na.rm = TRUE)
 
-sd(viruses.df$GC_skew, na.rm = TRUE)
-sd(viruses.df$AT_skew, na.rm = TRUE)
+# sd(viruses.df$GC_skew, na.rm = TRUE)
+# sd(viruses.df$AT_skew, na.rm = TRUE)
 
 # prokaryotes low GC content GC vs. AT skew
 avg.gc.prokaryotes <- mean(prokaryotes.df$G_plus_C, na.rm = TRUE)
@@ -331,10 +353,8 @@ GC_skew <- function(dataset, species){
                                 max(dataset$GC_skew),
                                 length.out = 51)) + 
     labs(x = paste0("GC skew (%)", "\n",
-                    "Mean = ", format(round(mean(dataset$GC_skew)*100, 2), 
-                                      nsmall = 2), " ",
-                    "St.Dev = ", format(round(sd(dataset$GC_skew)*100, 2), 
-                                        nsmall = 2)),
+                    "Mean = ", signif(mean(dataset$GC_skew, na.rm = TRUE)*100, 2), " ",
+                    "St.Dev = ", signif(sd(dataset$GC_skew, na.rm = TRUE)*100, 2)),
          y = "Density",
          title = species)
   return(Plot)
@@ -344,8 +364,10 @@ grid.arrange(GC_skew(eukaryotes.df, "Eukaryotes"),
              GC_skew(prokaryotes.df, "Prokaryotes"),
              GC_skew(viruses.df, "Viruses"),
              ncol = 3, nrow = 1) %>%
-  ggsave(width=15, height=8, filename = paste0("../../figures/00-All_Species/GC_skew.", save.as))
-cat("GC skew plots done!", "\n")
+  ggsave(
+    width=15, height=8, 
+    filename = paste0("../../figures/00-All_Species/GC_skew.", save.as)
+  )
 
 #-----------------------------
 # AT-skew
@@ -371,10 +393,8 @@ AT_skew <- function(dataset, species){
                                 max(dataset$AT_skew),
                                 length.out = 51)) + 
     labs(x = paste0("AT skew (%)", "\n",
-                    "Mean = ", format(round(mean(dataset$AT_skew)*100, 2), 
-                                      nsmall = 2), " ",
-                    "St.Dev = ", format(round(sd(dataset$AT_skew)*100, 2), 
-                                        nsmall = 2)),
+                    "Mean = ", signif(mean(dataset$AT_skew, na.rm = TRUE)*100, 2), " ",
+                    "St.Dev = ", signif(sd(dataset$AT_skew, na.rm = TRUE)*100, 2)),
          y = "Density",
          title = species)
   return(Plot)
@@ -384,20 +404,17 @@ grid.arrange(AT_skew(eukaryotes.df, "Eukaryotes"),
              AT_skew(prokaryotes.df, "Prokaryotes"),
              AT_skew(viruses.df, "Viruses"),
              ncol = 3, nrow = 1) %>%
-  ggsave(width=15, height=8, filename = paste0("../../figures/00-All_Species/AT_skew.", save.as))
-cat("AT skew plots done!", "\n")
+  ggsave(
+    width=15, height=8, 
+    filename = paste0("../../figures/00-All_Species/AT_skew.", save.as)
+  )
 
 #-----------------------------
 # Base content compliance
 # GC content
 r.squared <- function(x, y){
   return(
-    formatC(
-      signif(summary(lm(x~y))$r.squared, digits=3),
-      digits=3,
-      format="fg",
-      flag="#"
-    )
+      signif(summary(lm(x~y))$r.squared, digits=3)
   )
 }
 
@@ -479,6 +496,13 @@ vir.p2 <- rsq.plots(viruses.df, "Viruses", "AT")
 grid.arrange(euk.p1, prok.p1, vir.p1,
              euk.p2, prok.p2, vir.p2,
              ncol = 3, nrow = 2) %>%
-  ggsave(width=10, height=7, 
-         filename = paste0("../../figures/00-All_Species/content_comparisons.", save.as))
-cat("Base composition plots for all species done!", "\n")
+  ggsave(
+    width=10, height=7, 
+    filename = paste0("../../figures/00-All_Species/content_comparisons.", save.as)
+  )
+
+if(file.exists("./Rplots.pdf")) system("rm ./Rplots.pdf")
+
+total.time <- Sys.time() - t1
+cat("DONE! --", signif(total.time[[1]], 2), 
+    attr(total.time, "units"), "\n") 
