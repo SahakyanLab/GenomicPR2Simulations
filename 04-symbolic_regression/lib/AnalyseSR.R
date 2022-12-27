@@ -1,7 +1,7 @@
 AnalyseSR <- R6::R6Class(
     classname = "AnalyseSR",
     public = list(
-        #' @field df_train Data.frame. Training data from the PR-2 compliant 
+        #' @field df_test Data.frame. Training data from the PR-2 compliant 
         #'  results from simulation.
         df_train = NULL,
 
@@ -57,11 +57,11 @@ AnalyseSR <- R6::R6Class(
 
         #' @description
         #' Obtain mutation rates from Table 1 in the following paper
-        #' https://www.pnas.org/content/107/3/961
+        #'  https://www.pnas.org/content/107/3/961
         #' @return None.
         get_mut_rates = function(){
             private$lynch_rates <- read.csv(
-                file = paste0("../../02-simulations/data/Raw/Michael_Lynch", 
+                file = paste0("../../02-simulations/data/Raw/Other_species/", 
                               ifelse(private$trek_scale, "/Trek_scale_", "/"),
                               "Lynch-2010-mutation-rates_FREQUENCY.csv"),
                 header = TRUE
@@ -79,12 +79,12 @@ AnalyseSR <- R6::R6Class(
 
             for(dataset in c("df_train", "df_test")){
                 for(i in 1:length(self[[dataset]]$rate_const)){
-                    write.table(
+                    write.csv(
                         x = private$equations(
                             data = self[[dataset]]$data,
                             var = self[[dataset]]$rate_const[i]
                         ),
-                        sep = ",",
+                        row.names = FALSE,
                         file = ifelse(dataset == "df_train", 
                             paste0("../data/Train/EUREQA_prediction_", 
                                    self[[dataset]]$rate_const[i],".csv"),
@@ -186,9 +186,73 @@ AnalyseSR <- R6::R6Class(
                 0.797168947756005*data["kag"]
             })
             
+            # simplified 
+            # y_pred <- switch(var,
+            #     "kag" = {
+            #         -0.6*(data["kcg"]-data["kgc"]+data["kat"]-
+            #         data["kta"]+data["kct"]-1.3*data["ktc"]-
+            #         data["kga"]-0.6)
+            #     },
+            #     "kga" = {
+            #         0.7*(data["kcg"]-data["kgc"]+data["kat"]-
+            #         data["kta"]+data["kct"]-data["ktc"]+
+            #         data["kag"]+0.1)
+            #     },
+            #     "ktc" = {
+            #         0.8*(0.7*data["kcg"]-data["kgc"]+0.8*data["kat"]-
+            #         data["kta"]+data["kag"]-0.8*data["kga"]+
+            #         data["kct"]+0.4)
+            #     },
+            #     "kct" = {
+            #         -0.8*(data["kcg"]-data["kgc"]+0.8*data["kat"]-
+            #         data["kta"]+data["kag"]-data["kga"]+0.1*data["kca"]-
+            #         data["ktc"]-0.3)
+            #     },
+            #     "kac" = {
+            #         -0.8*(-data["kcg"]+data["kgc"]+data["kat"]-
+            #         data["kta"]+data["kgt"]-data["ktg"]-
+            #         data["kca"]-0.3)
+            #     },
+            #     "kca" = {
+            #         0.8*(data["kgc"]-data["kcg"]+data["kat"]-
+            #         data["kta"]+data["kgt"]-data["ktg"]+
+            #         data["kac"]+0.2)
+            #     },
+            #     "kgt" = {
+            #         -0.8*(data["kgc"]-data["kcg"]+data["kat"]-
+            #         data["kta"]-data["ktg"]+data["kac"]-
+            #         data["kca"]-0.2)
+            #     },
+            #     "ktg" = {
+            #         0.8*(data["kgc"]-data["kcg"]+data["kat"]-
+            #         data["kta"]+data["kgt"]+data["kac"]-
+            #         data["kca"]+0.1)
+            #     },
+            #     "kat" = {
+            #         -0.5*(-2*data["kta"]+data["kct"]-data["ktc"]+
+            #         data["kag"]-data["kga"]+data["kgt"]-data["ktg"]+
+            #         data["kac"]-data["kca"]-0.5)
+            #     },
+            #     "kta" = {
+            #         0.5*(+2*data["kat"]+data["kct"]-data["ktc"]+
+            #         data["kag"]-data["kga"]+data["kgt"]-data["ktg"]+
+            #         data["kac"]-data["kca"]-0.1)
+            #     },
+            #     "kgc" = {
+            #         -0.4*(-2*data["kcg"]+data["ktc"]-data["kct"]+
+            #         data["kga"]-data["kag"]+data["kgt"]-data["ktg"]+
+            #         data["kac"]-data["kca"]-0.06)
+            #     },
+            #     "kcg" = {
+            #         0.4*(2*data["kgc"]+data["ktc"]-data["kct"]+
+            #         data["kga"]-data["kag"]+data["kgt"]-
+            #         data["ktg"]+data["kac"]-data["kca"]+0.9)
+            #     }
+            # )
+            
             # true values
             results <- data.frame(
-                y_true = data[, var],
+                y_true = as.data.frame(data[, var]),
                 y_pred = y_pred
             )
             colnames(results) <- c("y_true", "y_pred")
@@ -197,12 +261,11 @@ AnalyseSR <- R6::R6Class(
 
         #' @description
         #' Get plots.
-        #' @param train Boolean. If TRUE, generates plots using training data.
         #' @return None.
         get_plots = function(train = TRUE){
             t1 <- Sys.time()
             cur.msg <- paste0("Plotting results for ", ifelse(train, 
-                              "training", "testing"), "dataset")
+                              "training", "testing"), " dataset")
             l <- paste0(rep(".", 70-nchar(cur.msg)), collapse = "")
             cat(paste0(cur.msg, l))
 
@@ -230,6 +293,14 @@ AnalyseSR <- R6::R6Class(
             })
             results <- do.call(rbind, data.sets)
 
+            results <- data.frame(
+                results,
+                xpos = -Inf,
+                ypos =  Inf,
+                hjustvar = 0,
+                vjustvar = 1
+            )
+
             # main plots
             p1 <- results %>% 
                 dplyr::group_by(rates) %>% 
@@ -241,11 +312,17 @@ AnalyseSR <- R6::R6Class(
                     ~rates, 
                     ncol = 3) + 
                 geom_smooth(
-                    method = "loess", 
+                    method = "lm", 
                     formula = y ~ x) +
                 geom_abline(
                     slope = 1, 
                     linetype = "dashed") + 
+                geom_text(aes(x = xpos, 
+                        y = ypos,
+                        hjust = hjustvar,
+                        vjust = vjustvar,
+                        label = R2
+                )) +
                 coord_cartesian(
                     xlim = c(-1, 2.5),
                     ylim = c(-1, 2.5)
@@ -267,6 +344,12 @@ AnalyseSR <- R6::R6Class(
                 showWarnings = FALSE,
                 recursive = TRUE
             )
+            # save_full_name = paste0(
+            #     "../figures/", ifelse(train, 
+            #     "Train/SymbolicRegressionCorrelation_TRAINING_SIMPLIFIED.", 
+            #     "Test/SymbolicRegressionCorrelation_TEST_EUREQA_SIMPLIFIED."),
+            #     "pdf"
+            # )
             save_full_name = paste0(
                 "../figures/", ifelse(train, 
                 "Train/SymbolicRegressionCorrelation_TRAINING.", 
@@ -286,8 +369,8 @@ AnalyseSR <- R6::R6Class(
 
         #' @description
         #' Calculates r-squared between two variables.
-        #' @param x Numeric vector of mutation rate constant values.
-        #' @param y Numeric vector of mutation rate constant values.
+        #' @x x Numeric vector of mutation rate constant values.
+        #' @y y Numeric vector of mutation rate constant values.
         #' @return Numeric vector of R-squared value.
         calc_r_squared = function(x, y){
             return(signif(summary(lm(x~y))$r.squared, digits=3))
