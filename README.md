@@ -2,7 +2,7 @@
 
 ## R&D pipeline for: Generalised interrelations among mutation rates drive the genomic compliance of Chargaff’s second parity rule.
 
-Chargaff’s second parity rule (PR-2), where the complementary base (and k-mer) contents are matching within the same strand of a double stranded DNA (dsDNA), is a phenomenon that invited many elaborations for its explanation. The strict compliance of nearly all nuclear dsDNA genomes to PR-2 implies that the explanation should also be similarly strict and constraining. In this work, we revisited the possibility of mutation rates being the drivers behind PR-2. Starting from the assumption-free approach, we constructed a set of kinetic equations for unconstrained simulations. The results were analysed in terms of their PR-2 compliance by employing symbolic regression and machine learning techniques.
+Chargaff’s second parity rule (PR-2), where the complementary base (and k-mer) contents are matching within the same strand of a double stranded DNA (dsDNA), is a phenomenon that invited many elaborations for its explanation. The strict compliance of nearly all nuclear dsDNA genomes to PR-2 implies that the explanation should also be similarly strict and constraining. In this work, we revisited the possibility of mutation rates being the drivers behind PR-2. Starting from the assumption-free approach, we constructed a set of kinetic equations for unconstrained simulations. The results were analysed in terms of their PR-2 compliance by employing symbolic regression and machine learning techniques. [[bioRxiv]](https://www.biorxiv.org/content/10.1101/2022.12.23.521832v1)
 
 ## Installation
 
