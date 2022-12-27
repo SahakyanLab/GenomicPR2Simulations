@@ -1,7 +1,7 @@
 AnalyseSR <- R6::R6Class(
     classname = "AnalyseSR",
     public = list(
-        #' @field df_test Data.frame. Training data from the PR-2 compliant 
+        #' @field df_train Data.frame. Training data from the PR-2 compliant 
         #'  results from simulation.
         df_train = NULL,
 
