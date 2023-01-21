@@ -3,8 +3,8 @@ Simulation <- R6::R6Class(
     public = list(
         initialize = function(Acont, Gcont, Ccont, span, step, max_runs,
                               muttype, distribution, species, scale_fac,
-                              tolerance, tol_return, sim_evol, EQtolerance,
-                              sy_reg_run, NCPU, seed){
+                              tolerance, random_init_bases, edge_skew_cases, 
+                              tol_return, sim_evol, EQtolerance, sy_reg_run, NCPU, seed){                                
             if(!missing(Acont)) private$Acont <- Acont
             if(!missing(Gcont)) private$Gcont <- Gcont
             if(!missing(Ccont)) private$Ccont <- Ccont
@@ -16,40 +16,15 @@ Simulation <- R6::R6Class(
             if(!missing(species)) private$species <- species 
             if(!missing(scale_fac)) private$scale_fac <- scale_fac 
             if(!missing(tolerance)) private$tolerance <- tolerance 
+            if(!missing(random_init_bases)) private$random_init_bases <- random_init_bases
+            if(!missing(edge_skew_cases)) private$edge_skew_cases <- edge_skew_cases
+            if(private$edge_skew_cases) private$random_init_bases <- FALSE
             if(!missing(tol_return)) private$tol_return <- tol_return
             if(!missing(EQtolerance)) private$EQtolerance <- EQtolerance
             if(!missing(sim_evol)) private$sim_evol <- sim_evol
             if(!missing(sy_reg_run)) private$sy_reg_run <- sy_reg_run
             if(!missing(NCPU)) private$NCPU <- NCPU 
-            if(!missing(seed)) private$seed <- seed
-
-            # checks
-            if((!Acont<1 | !Gcont<1 | !Ccont<1))
-                stop("Base content need to be numeric values below one.")
-            if(sum(Acont, Gcont, Ccont)>=1)
-                stop("Base contents need to sum to less than one so Tcont is non-zero.")
-            if(max_runs%%1 != 0 | max_runs<=0)
-                stop("max_runs needs to be an integer of positive value.")
-            if(!is.character(muttype))
-                stop("Muttype must be of character class.")
-            if(!is.character(distribution))
-                stop("Muttype must be of character class.")
-            if(!is.character(species))
-                stop("Muttype must be of character class.")
-            if(scale_fac%%1 != 0 | scale_fac<=0)
-                stop("scale_fac needs to be of positive integer value.")
-            if(!scale_fac %in% c(0,1,2,5,10))
-                stop("To reproduce the results in the paper, please use scale_fac = c(0,1,2,5,10).")
-            if(!is.logical(tolerance))
-                stop("Tolerance can only be TRUE or FALSE") 
-            if(!is.character(tol_return))
-                stop("tol_return must be of character class.")
-            if(!is.logical(sim_evol))
-                stop("sim_evol can only be TRUE or FALSE") 
-            if(NCPU%%1 != 0 | NCPU<=0)
-                stop("NCPU must be a positive integer values for parallel execution.")
-            if(seed%%1 != 0 | seed<=0)
-                stop("seed must be a positive integer values for producing random objects.")
+            if(!missing(seed)) private$seed <- seed                              
 
             # get prokaryote and eukaryote genomic information
             private$get_species_df()
@@ -77,8 +52,13 @@ Simulation <- R6::R6Class(
             original.sim.runs <- private$max_runs
             private$max_runs <- 1
             sim.output <- private$generate_systems()
-            private$plotATGC(atgc = sim.output, time.unit = time.unit, xlim = xlim, ylim = ylim)
             private$max_runs <- original.sim.runs
+            return(private$plotATGC(
+                atgc = sim.output, 
+                time.unit = time.unit, 
+                xlim = xlim, 
+                ylim = ylim
+            ))
         }
     ),
     private = list(
@@ -123,17 +103,25 @@ Simulation <- R6::R6Class(
         #'  real life species (Lynch paper).
         lynch_rates = NULL,
         
-        #' @field Numeric vector of c(1,2,5,10), indicating the standard deviation of the
+        #' @field scale_fac Numeric vector of c(1,2,5,10), indicating the standard deviation of the
         #'  random drawing of mutation rate constants.
         scale_fac = 1,
         
-        #' @field Boolean of the Charaff tolerance for the simulation. 
+        #' @field tolerance Boolean of the Charaff tolerance for the simulation. 
         #'  If FALSE, general simulation run (default). 
         #'  If TRUE, simulation for time periods to reach chargaff compliance
         #'  and genome equilibration.
         tolerance = FALSE,
+
+        #' @field random_init_bases Boolean. If TRUE, will use random initial nucleotide contents 
+        #'  for the generation of a given system.
+        random_init_bases = FALSE,
+
+        #' @field edge_skew_cases Boolean. If TRUE, will run a demonstration simulation where the
+        #'  initial base contents for each generation is at edge values of (1,1), (-1,1), (1,-1), (-1,-1).
+        edge_skew_cases = FALSE,
         
-        #' @field Character vector of c("NONE", "equil_time", "fluctuation"). 
+        #' @field tol_return Character vector of c("NONE", "equil_time", "fluctuation"). 
         #'  Return intermediate results for the chargaff tolerance. 
         #'  Use "NONE" for a general simulation run. 
         #'  Use "equil_time" for simlation for time periods to reach 
@@ -245,6 +233,7 @@ Simulation <- R6::R6Class(
             cat(cur.msg, l, "\n", sep = "")
 
             # time taken for full processing for this experiment
+            cat(paste(c(rep("-", 70), "\n"), collapse = ""))
             cur.msg <- paste0("\n",
                 "Max. time period (byr):  ", private$span, "\n",
                 "Iterations:              ", private$max_runs, "\n",
@@ -253,29 +242,44 @@ Simulation <- R6::R6Class(
                 "Mutation type:           ", private$muttype, "\n",
                 "CPUs:                    ", private$NCPU
             )
-            cat(paste(c(rep("-", 70), "\n"), collapse = ""))
             cat("Quick infosheet:", "\n", cur.msg, "\n")
             cat(paste(c(rep("-", 70), "\n"), collapse = ""))
 
             # obtain states 
-            if(private$tolerance){
+            if(private$edge_skew_cases){
+                all.states <- private$get_extreme_skew_states()
+                saveRDS(
+                    as.data.frame(all.states),
+                    file = "./all_states_edge_skew_cases.RData"
+                )
+            } else if(private$tolerance | private$random_init_bases){
                 all.states <- private$get_states()
+                if(private$random_init_bases){
+                    saveRDS(
+                        as.data.frame(all.states),
+                        file = "./all_states_random_init_bases.RData"
+                    )
+                }
             } else {
                 private$Tcont <- 1-private$Acont-private$Gcont-private$Ccont
                 state <- c(
                     Ca=private$Acont, 
-                    Cg=private$Gcont, 
+                    Cg=private$Gcont,
                     Ct=private$Tcont, 
                     Cc=private$Ccont
-                ) 
+                )
             }
 
             if(private$NCPU > 1){
                 `%op%` <- `%dopar%`
             } else {
                 `%op%` <- `%do%`
-                pb <- txtProgressBar(min = 1, max = private$max_runs, style = 3) 
-            }            
+                pb <- txtProgressBar(
+                    min = 0, 
+                    max = private$max_runs,
+                    style = 3
+                )
+            }
 
             # set-up cluster for parallel computation
             cl <- makeCluster(private$NCPU)
@@ -297,9 +301,10 @@ Simulation <- R6::R6Class(
                                 .export=c(ls(globalenv()), "private", "self"),
                                 .packages=c("foreach", "truncnorm", "dplyr", "deSolve", "R6"),
                                 .inorder=FALSE)%op%{
-                if(private$NCPU < 2) setTxtProgressBar(pb,i)
                 Simulation$parent_env <- environment()
-                if(private$tolerance){
+                if(private$NCPU < 2) setTxtProgressBar(pb, i)
+
+                if(private$tolerance | private$random_init_bases | private$edge_skew_cases){
                     state <- all.states[i,]
                 }
 
@@ -577,11 +582,11 @@ Simulation <- R6::R6Class(
             stopImplicitCluster()
             stopCluster(cl)
 
-            # time taken for full processing for this experiment
-            if(private$NCPU < 2){
+            if(private$NCPU == 1){
                 close(pb)
                 cat(paste(c(rep("-", 70), "\n"), collapse = ""))
             }
+            # time taken for full processing for this experiment
             final.t <- Sys.time() - start.time
             cat("Final time taken:", signif(final.t[[1]], digits = 3), 
                 attr(final.t, "units"), "\n")
@@ -592,7 +597,7 @@ Simulation <- R6::R6Class(
                 return(sim.run)
             } else {
                 if(private$sy_reg_run){
-                return(sim.run)
+                    return(sim.run)
                 } else {
                     dir.create(
                         path = paste0("../data/Main_Simulation/",private$muttype,
@@ -600,19 +605,38 @@ Simulation <- R6::R6Class(
                         showWarnings = FALSE,
                         recursive = TRUE
                     )
-                    saveRDS(
-                        sim.run,
-                        file=paste0("../data/Main_Simulation/",private$muttype,
-                                    "-",private$distribution,"/", private$muttype,"-",
-                                    private$distribution,"-scaling-",private$scale_fac,".Rdata")
-                    )
+                    if(private$random_init_bases){
+                        saveRDS(
+                            sim.run,
+                            file=paste0("../data/Main_Simulation/", private$muttype,
+                                        "-",private$distribution,"/random_init_bases_", 
+                                        private$muttype,"-",private$distribution,
+                                        "-scaling-",private$scale_fac,".Rdata")
+                        )
+                    } else if(private$edge_skew_cases){
+                        saveRDS(
+                            sim.run,
+                            file=paste0("../data/Main_Simulation/", private$muttype,
+                                        "-",private$distribution,"/edge_skew_cases_", 
+                                        private$muttype,"-",private$distribution,
+                                        "-scaling-",private$scale_fac,".Rdata")
+                        )
+                    } else {
+                        saveRDS(
+                            sim.run,
+                            file=paste0("../data/Main_Simulation/",private$muttype,
+                                        "-",private$distribution,"/", 
+                                        private$muttype,"-", private$distribution,
+                                        "-scaling-",private$scale_fac,".Rdata")
+                        )
+                    }
                 }
             }
         },
 
         #' @description
         #' Obtains min and max single nucleotide content from real-life species.
-        #' @return None.
+        #' @return matrix of all initial base content states.
         get_states = function(){
             df <- c(private$eukaryote_df$G_content,
                     private$eukaryote_df$C_content,
@@ -650,6 +674,46 @@ Simulation <- R6::R6Class(
         },
 
         #' @description
+        #' Initial base contents for each generation is at edge values of
+        #' (1,1), (-1,1), (1,-1), (-1,-1).
+        #' @return matrix of all initial base content states.
+        get_extreme_skew_states = function(){
+            rng <- set.seed(private$seed)
+            samples.per.edge <- ceiling(private$max_runs/4)
+
+            # at skew = +1 & gc skew = +1
+            Cg <- runif(n = samples.per.edge, min = 1e-5, max = 1)
+            Cc <- rep(0, samples.per.edge)
+            Ca <- 1-(Cg+Cc)
+            Ct <- rep(0, samples.per.edge)
+            at.skew.one.gc.skew.one <- cbind(Ca, Cg, Ct, Cc)
+
+            # at skew = -1 & gc skew = +1
+            Ct <- 1-(Cg+Cc)
+            Ca <- rep(0, samples.per.edge)
+            at.skew.mone.gc.skew.one <- cbind(Ca, Cg, Ct, Cc)
+
+            # at skew = +1 & gc skew = -1
+            Cc <- runif(n = samples.per.edge, min = 1e-5, max = 1)
+            Cg <- rep(0, samples.per.edge)
+            Ca <- 1-(Cg+Cc)
+            Ct <- rep(0, samples.per.edge)
+            at.skew.one.gc.skew.mone <- cbind(Ca, Cg, Ct, Cc)
+
+            # at skew = -1 & gc skew = -1
+            Ct <- 1-(Cg+Cc)
+            Ca <- rep(0, samples.per.edge)
+            at.skew.mone.gc.skew.mone <- cbind(Ca, Cg, Ct, Cc)
+            all.states <- rbind(
+                at.skew.one.gc.skew.one,
+                at.skew.mone.gc.skew.one,
+                at.skew.one.gc.skew.mone,
+                at.skew.mone.gc.skew.mone
+            )
+            return(all.states)
+        },
+
+        #' @description
         #' Numerically solves the kinetic rate equations for the simulation 
         #' @param parameters Numeric vector of all the mutation rate constants.
         #' @param state Numeric vector of the states of all four base contents. 
@@ -662,6 +726,9 @@ Simulation <- R6::R6Class(
             #' solves system of ODEs
             #' @param t time sequence for which output is wanted.
             #' @param state the initial state values for the ODE system.
+            #'  VERY IMPORTANT THAT THE ORDER OF THE BASES MATCH THE ORDER OF THE 
+            #'  BASE IN THE EQUATIONS BELOW, I.E. c("Ca", "Cg", "Ct", "Ct"). IF NOT,
+            #'  THE ODE WILL NOT WORK.
             #' @param parameters Numeric vector of all the mutation rate constants.
             #' @return matrix of class deSolve.
             mut.mdl <- function(t, state, parameters){
@@ -680,8 +747,15 @@ Simulation <- R6::R6Class(
 
             length.out <- dim(out)[1]
             length.genome <- sum(state)
-            dif.nucl <- c(sum(out[1,c("Ca","Cg","Ct","Cc")], na.rm = TRUE),
-                          rowSums(abs(diff(out[,c("Ca","Cg","Ct","Cc")])), na.rm = TRUE)/4)
+            dif.nucl <- c(sum(out[1,c("Ca","Cg","Ct","Cc")]),
+                          rowSums(abs(diff(out[,c("Ca","Cg","Ct","Cc")])))/4)
+            at.ratio <- out[,"Ca"]/out[,"Ct"]
+            gc.ratio <- out[,"Cg"]/out[,"Cc"]
+            at.content <- (out[,"Ca"] + out[,"Ct"])*100/length.genome
+            gc.content <- (out[,"Cg"] + out[,"Cc"])*100/length.genome
+            at.skew <- ((out[,"Ca"] - out[,"Ct"])/(out[,"Ca"] + out[,"Ct"]))/length.genome
+            gc.skew <- ((out[,"Cg"] - out[,"Cc"])/(out[,"Cg"] + out[,"Cc"]))/length.genome
+            Fin.GC  <- as.numeric(gc.content[length.out])
 
             RESULTS <- NULL
             RESULTS$inp                 <- NULL # input data
@@ -689,31 +763,20 @@ Simulation <- R6::R6Class(
             RESULTS$inp$state           <- state
             RESULTS$inp$step            <- private$step
             RESULTS$inp$span            <- private$span
-            RESULTS$out                 <- out # numerical solution to the diff eqs
+            RESULTS$out                 <- out                 # numerical solution to the diff eqs
             RESULTS$dif.nucl            <- dif.nucl
             RESULTS$fluctuation.mean    <- mean(dif.nucl[2:length(dif.nucl)]/4, na.rm = TRUE) # average fluctuation difference
             RESULTS$fluctuation.sd      <- sd(dif.nucl[2:length(dif.nucl)]/4, na.rm = TRUE) # st.dev. fluctuation difference
-
-            if(!private$tolerance){
-                at.ratio <- out[,"Ca"]/out[,"Ct"]
-                gc.ratio <- out[,"Cg"]/out[,"Cc"]
-                at.content <- (out[,"Ca"] + out[,"Ct"])*100/length.genome
-                gc.content <- (out[,"Cg"] + out[,"Cc"])*100/length.genome
-                at.skew <- ((out[,"Ca"] - out[,"Ct"])/(out[,"Ca"] + out[,"Ct"]))/length.genome
-                gc.skew <- ((out[,"Cg"] - out[,"Cc"])/(out[,"Cg"] + out[,"Cc"]))/length.genome
-                Fin.GC  <- as.numeric(gc.content[length.out])
-
-                RESULTS$at.ratio            <- as.numeric(at.ratio) # at.ratio dynamics numeric
-                RESULTS$gc.ratio            <- as.numeric(gc.ratio)
-                RESULTS$gc.ratio            <- as.numeric(gc.ratio)
-                RESULTS$at.content          <- as.numeric(at.content)
-                RESULTS$gc.content          <- as.numeric(gc.content)
-                RESULTS$at.skew             <- as.numeric(at.skew)
-                RESULTS$gc.skew             <- as.numeric(gc.skew)
-                RESULTS$Fin.GC              <- Fin.GC # the G+C content at the end of the simulation
-                RESULTS$length.genome       <- length.genome
-                RESULTS$length.out          <- length.out
-            }
+            RESULTS$at.ratio            <- as.numeric(at.ratio) # at.ratio dynamics numeric
+            RESULTS$gc.ratio            <- as.numeric(gc.ratio)
+            RESULTS$gc.ratio            <- as.numeric(gc.ratio)
+            RESULTS$at.content          <- as.numeric(at.content)
+            RESULTS$gc.content          <- as.numeric(gc.content)
+            RESULTS$at.skew             <- as.numeric(at.skew)
+            RESULTS$gc.skew             <- as.numeric(gc.skew)
+            RESULTS$Fin.GC              <- Fin.GC            # the G+C content at the end of the simulation
+            RESULTS$length.genome       <- length.genome
+            RESULTS$length.out          <- length.out
 
             # record each billion year time step to observe evolution
             if(private$sim_evol){
@@ -724,27 +787,27 @@ Simulation <- R6::R6Class(
                 when.four.bn <- which(out[,"time"] == 4)
 
                 # 1bn yrs
-                RESULTS$one.bn              <- NULL 
+                RESULTS$one.bn              <- NULL # 1bn years
                 RESULTS$one.bn$at.content   <- at.content[when.one.bn]
                 RESULTS$one.bn$gc.content   <- gc.content[when.one.bn]
                 RESULTS$one.bn$at.skew      <- at.skew[when.one.bn]
                 RESULTS$one.bn$gc.skew      <- gc.skew[when.one.bn]
                 
                 # 2bn yrs
-                RESULTS$two.bn              <- NULL 
+                RESULTS$two.bn              <- NULL # 2bn years
                 RESULTS$two.bn$at.content   <- at.content[when.two.bn]
                 RESULTS$two.bn$gc.content   <- gc.content[when.two.bn]
                 RESULTS$two.bn$at.skew      <- at.skew[when.two.bn]
                 RESULTS$two.bn$gc.skew      <- gc.skew[when.two.bn]
                 
                 # 3bn yrs
-                RESULTS$three.bn            <- NULL
+                RESULTS$three.bn            <- NULL # 3bn years
                 RESULTS$three.bn$at.content <- at.content[when.three.bn]
                 RESULTS$three.bn$gc.content <- gc.content[when.three.bn]
                 RESULTS$three.bn$at.skew    <- at.skew[when.three.bn]
                 RESULTS$three.bn$gc.skew    <- gc.skew[when.three.bn]
                 # 4bn yrs
-                RESULTS$four.bn             <- NULL
+                RESULTS$four.bn             <- NULL # 4bn years
                 RESULTS$four.bn$at.content  <- at.content[when.four.bn]
                 RESULTS$four.bn$gc.content  <- gc.content[when.four.bn]
                 RESULTS$four.bn$at.skew     <- at.skew[when.four.bn]
@@ -795,9 +858,10 @@ Simulation <- R6::R6Class(
         #' @param time.unit Character vector of the time unit used in the simulation.
         #' @param xlim Numeric vector of the X-axis limits in the plot.
         #' @param ylim Numeric vector of the Y-axis limits in the plot.
-        #' @return ggplot object.
+        #' @return None.
         plotATGC = function(atgc, time.unit, xlim, ylim){
-            p1 <- as_tibble(atgc$out) %>%
+            res <- as.data.frame(atgc$out)
+            p1 <- as_tibble(res) %>%
                 dplyr::mutate(across(.cols = c(Ca, Cg, Ct, Cc), ~.*100)) %>%
                 ggplot(aes(x = time,
                         y = Ca)) + 
@@ -863,13 +927,13 @@ Simulation <- R6::R6Class(
                 ypos = max(ylim), 
                 annotateText = paste(
                     "t = ",signif(atgc$inp$span,2)," ",time.unit,"\n",
-                    "nG = ",signif(as.vector(atgc$out[atgc$length.out,"Cg"]),2),"\n",
-                    "nC = ",signif(as.vector(atgc$out[atgc$length.out,"Cc"]),2),"\n",
-                    "nA = ",signif(as.vector(atgc$out[atgc$length.out,"Ca"]),2),"\n",
-                    "nT = ",signif(as.vector(atgc$out[atgc$length.out,"Ct"]),2),"\n",
+                    "nG = ",signif(as.vector(res[atgc$length.out,"Cg"]),2),"\n",
+                    "nC = ",signif(as.vector(res[atgc$length.out,"Cc"]),2),"\n",
+                    "nA = ",signif(as.vector(res[atgc$length.out,"Ca"]),2),"\n",
+                    "nT = ",signif(as.vector(res[atgc$length.out,"Ct"]),2),"\n",
                     "G+C = ",signif(atgc$gc.content[atgc$length.out],2),"%","\n",
-                    "G/C = ",signif(atgc$out[atgc$length.out,"Cg"]/atgc$out[atgc$length.out,"Cc"],2),"\n",   
-                    "A/T = ",signif(atgc$out[atgc$length.out,"Ca"]/atgc$out[atgc$length.out,"Ct"],2), sep=""),
+                    "G/C = ",signif(res[atgc$length.out,"Cg"]/res[atgc$length.out,"Cc"],2),"\n",   
+                    "A/T = ",signif(res[atgc$length.out,"Ca"]/res[atgc$length.out,"Ct"],2), sep=""),
                 hjustvar = 0, vjustvar = 1), 
                         aes(x = xpos, 
                             y = ypos, 

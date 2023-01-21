@@ -4,11 +4,15 @@ Plots <- R6::R6Class(
         #' @field sim_run Data.frame object of the simulation output.
         sim_run = NULL,
 
-        initialize = function(muttype, distribution, scale_fac, equilibration){
+        initialize = function(muttype, distribution, scale_fac, equilibration, 
+                              random_init_bases, edge_skew_cases){
             if(!missing(muttype)) private$muttype <- muttype
             if(!missing(distribution)) private$distribution <- distribution
             if(!missing(scale_fac)) private$scale_fac <- scale_fac
             if(!missing(equilibration)) private$equilibration <- equilibration
+            if(!missing(random_init_bases)) private$random_init_bases <- random_init_bases
+            if(!missing(edge_skew_cases)) private$edge_skew_cases <- edge_skew_cases
+            if(private$edge_skew_cases) private$random_init_bases <- FALSE
         },
 
         #' @description
@@ -21,11 +25,16 @@ Plots <- R6::R6Class(
             private$plot_GC_hist()
             private$plot_AT_hist()
             private$plot_difference()
-            private$plot_ratios()
+            if(private$muttype != "Strand_Symmetric") private$plot_ratios()
             private$plot_skews()
-            private$plot_gc_content_vs_rates()
-            private$plot_ratio_constants(tolerance = FALSE)
-            private$plot_ratio_constants(tolerance = TRUE)
+            private$plot_gc_skew_vs_rates()
+            private$plot_gc_content_vs_rates(tolerance = FALSE)
+            if(private$muttype == "Strand_Symmetric"){
+                private$plot_ratio_constants_for_strand_symmetric_cases()
+            } else {
+                private$generate_equil_const_plots()
+                private$plot_ratio_constants()
+            }
             if(private$muttype == "Strand_Symmetric"){
                 private$plot_skew_evolution()
             }
@@ -52,7 +61,7 @@ Plots <- R6::R6Class(
         #'  The type of distribution from which the mutation rate constants to randomly draw from. 
         distribution = "uniform",
 
-        #' @field scale_fac Numeric vector of c(1,2,5,10), indicating the standard deviation of the
+        #' @field Numeric vector of c(1,2,5,10), indicating the standard deviation of the
         #'  random drawing of mutation rate constants.
         scale_fac = 1,
 
@@ -66,12 +75,19 @@ Plots <- R6::R6Class(
         #' @field EQtolerance Numeric vector of the tolerance value for reaching genome equilibration
         EQtolerance = NULL,
 
-        #' @field save_as Character of c("png", "pdf") to save the plots.
+        #' @field Character of c("png", "pdf") to save the plots.
         save_as = "png",
+
+        #' @field random_init_bases Boolean. If TRUE, will use random initial nucleotide contents 
+        #'  for the generation of a given system.
+        random_init_bases = FALSE,
+
+        #' @field edge_skew_cases Boolean. If TRUE, will run a demonstration simulation where the
+        #'  initial base contents for each generation is at edge values of (1,1), (-1,1), (1,-1), (-1,-1).
+        edge_skew_cases = FALSE,
 
         #' @description
         #' Load simulation results.
-        #' @param other_species Boolean. If TRUE, will plot results of human and non-human species.
         #' @return None.
         get_sim_output = function(other_species = FALSE){
             t1 <- Sys.time()
@@ -107,7 +123,6 @@ Plots <- R6::R6Class(
                         pattern = "^ChargaffEquilibriumDistribution_scaling.*\\.Rdata",
                         full.names = TRUE
                     )
-                    # files <- files[c(5,2,4,1,3)]
                     files <- files[c(2,4,1,3)]
                     scaling <- c("one" = 1, "two" = 2, "five" = 5, "ten" = 10)
                     file.name <- as.character(unname(scaling))
@@ -136,11 +151,16 @@ Plots <- R6::R6Class(
                     tidyr::gather(key, value, -scalings)
             } else {
                 self$sim_run <- readRDS(
-                    file = paste0("../data/Main_Simulation/",private$muttype,
-                                "-",private$distribution,"/", private$muttype,"-",
-                                private$distribution,"-scaling-",private$scale_fac,".Rdata")
+                    file = paste0("../data/Main_Simulation/", private$muttype, 
+                                  "-", private$distribution, ifelse(
+                                    private$random_init_bases, 
+                                    "/random_init_bases_", ifelse(
+                                        private$edge_skew_cases,
+                                        "/edge_skew_cases_",
+                                    "/")),
+                                  private$muttype,"-", private$distribution, 
+                                  "-scaling-",private$scale_fac,".Rdata")
                 )
-
                 self$sim_run$nC <- (self$sim_run$GC/100)/(1+self$sim_run$GCratio)
                 self$sim_run$nG <- (self$sim_run$GC/100)-self$sim_run$nC
                 self$sim_run$nT <- (1-(self$sim_run$GC/100)) / (1+self$sim_run$ATratio)
@@ -175,7 +195,6 @@ Plots <- R6::R6Class(
 
         #' @description
         #' Generates all plots for the equilibration runs.
-        #' @param other_species Boolean. If TRUE, will plot results of human and non-human species.
         #' @return None.
         plot_equilibrations = function(other_species){
             t1 <- Sys.time()
@@ -259,9 +278,10 @@ Plots <- R6::R6Class(
                     fill = "skyblue",
                     color = "black",
                     alpha = 1,
-                    breaks = seq(min(self$sim_run$GC),
-                                 max(self$sim_run$GC),
+                    breaks = seq(min(self$sim_run$GC, na.rm = TRUE),
+                                 max(self$sim_run$GC, na.rm = TRUE),
                                  length.out = 51)) +
+                coord_cartesian(xlim = c(0, 100)) + 
                 labs(x = paste0(
                     "GC hist (%)", "\n",
                     "Mean = ", signif(mean(self$sim_run$GC, na.rm = TRUE), 2), " ",
@@ -281,7 +301,12 @@ Plots <- R6::R6Class(
                 filename = paste0("../figures/Main_Simulation/",
                                   private$muttype, "-", private$distribution,
                                   "/Scaling_", private$scale_fac,
-                                  "/GC_hist.", private$save_as),
+                                  ifelse(private$random_init_bases,
+                                    "/random_init_bases_", ifelse(
+                                        private$edge_skew_cases,
+                                        "/edge_skew_cases_",
+                                    "/")),
+                                  "GC_hist.", private$save_as),
                 plot = p1,
                 width=15, height=8
             )
@@ -309,9 +334,10 @@ Plots <- R6::R6Class(
                     fill = "skyblue",
                     color = "black",
                     alpha = 1,
-                    breaks = seq(min(self$sim_run$AT),
-                                 max(self$sim_run$AT),
+                    breaks = seq(min(self$sim_run$AT, na.rm = TRUE),
+                                 max(self$sim_run$AT, na.rm = TRUE),
                                  length.out = 51)) +
+                coord_cartesian(xlim = c(0, 100)) + 
                 labs(x = paste0(
                     "AT hist (%)", "\n",
                     "Mean = ", signif(mean(self$sim_run$AT, na.rm = TRUE), 2), " ",
@@ -324,7 +350,12 @@ Plots <- R6::R6Class(
                 filename = paste0("../figures/Main_Simulation/",
                                   private$muttype, "-", private$distribution,
                                   "/Scaling_", private$scale_fac,
-                                  "/AT_hist.", private$save_as),
+                                  ifelse(private$random_init_bases,
+                                    "/random_init_bases_", ifelse(
+                                        private$edge_skew_cases,
+                                        "/edge_skew_cases_",
+                                    "/")),
+                                  "AT_hist.", private$save_as),
                 plot = p1,
                 width=15, height=8
             )
@@ -347,7 +378,12 @@ Plots <- R6::R6Class(
                 "../figures/Main_Simulation/",
                 private$muttype, "-", private$distribution,
                 "/Scaling_", private$scale_fac,
-                "/G-C_vs_A-T.", private$save_as
+                ifelse(private$random_init_bases,
+                "/random_init_bases_", ifelse(
+                    private$edge_skew_cases,
+                    "/edge_skew_cases_",
+                "/")),
+                "G-C_vs_A-T.", private$save_as
             )
             x = self$sim_run$nA-self$sim_run$nT
             y = self$sim_run$nG-self$sim_run$nC
@@ -360,7 +396,10 @@ Plots <- R6::R6Class(
             smoothScatter(
                 y=y, x=x,
                 nrpoints=100, nbin=1000,
-                bandwidth=c(diff(range(x))/500, diff(range(y))/500),
+                bandwidth=c(
+                    diff(range(x, na.rm = TRUE))/500, 
+                    diff(range(y, na.rm = TRUE))/500
+                ),
                 xlim=c(-1,1),ylim=c(-1,1),
                 xlab="A-T", ylab="G-C", 
                 main=paste0("Scaling: ", private$scale_fac),
@@ -404,22 +443,32 @@ Plots <- R6::R6Class(
                     )),
                     cex.axis = 1.2, cex.lab = 1.1
                 )
-                abline(v = 0, lty = 2, lwd = 2)
-                abline(h = 0, lty = 2, lwd = 2)                
+                abline(v = 1, lty = 2, lwd = 2)
+                abline(h = 1, lty = 2, lwd = 2)              
             }
 
             save_plot_name_full <- paste0(
                 "../figures/Main_Simulation/",
                 private$muttype, "-", private$distribution,
                 "/Scaling_", private$scale_fac,
-                "/G-C_vs_A-T_0-10-range.", private$save_as
+                ifelse(private$random_init_bases,
+                "/random_init_bases_", ifelse(
+                    private$edge_skew_cases,
+                    "/edge_skew_cases_",
+                "/")),
+                "GC-ratio_vs_AT-ratio.", private$save_as
             )
             save_plot_name_zoomed <- paste0(
                 "../figures/Main_Simulation/",
                 private$muttype, "-", private$distribution,
                 "/Scaling_", private$scale_fac,
-                "/G-C_vs_A-T_0-10-range.", private$save_as
-            )            
+                ifelse(private$random_init_bases,
+                "/random_init_bases_", ifelse(
+                    private$edge_skew_cases,
+                    "/edge_skew_cases_",
+                "/")),
+                "GC-ratio_vs_AT-ratio_0-10-range.", private$save_as
+            )
 
             if(private$save_as == "pdf"){
                 pdf(width = 15, height = 8, file = save_plot_name_full)
@@ -457,7 +506,12 @@ Plots <- R6::R6Class(
                 "../figures/Main_Simulation/",
                 private$muttype, "-", private$distribution,
                 "/Scaling_", private$scale_fac,
-                "/GC-skew_vs_AT-skew.", private$save_as
+                ifelse(private$random_init_bases,
+                "/random_init_bases_", ifelse(
+                    private$edge_skew_cases,
+                    "/edge_skew_cases_",
+                "/")),
+                "GC-skew_vs_AT-skew.", private$save_as
             )    
 
             if(private$save_as == "pdf"){
@@ -489,14 +543,20 @@ Plots <- R6::R6Class(
 
         #' @description
         #' Plot the G+C content vs. mutation rate constants
+        #' @param tolerance Boolean. If TRUE, will apply PR-2 tolerance.
         #' @return None.
-        plot_gc_content_vs_rates = function(species = NULL, tolerance = FALSE){
+        plot_gc_content_vs_rates = function(tolerance = FALSE){
             t1 <- Sys.time()
             cur.msg <- "Generating density plot for GC content vs. rates"
             l <- paste0(rep(".", 70-nchar(cur.msg)), collapse = "")
             cat(paste0(cur.msg, l))
 
-            plot_func = function(species, tolerance){
+            #' @description
+            #' Helper function for generating plots.
+            #' @param species Character vector of c("Prokaryotes", "Eukaryotes", "Viruses")
+            #' @param tolerance Boolean. If TRUE, will apply PR-2 tolerance.
+            #' @return List of plots.
+            plot.gc.cont.func <- function(species = NULL, tolerance = FALSE){
                 rates <- c("kag", "kat", "kac", "kga", "kgt", "kcg")
                 xlab <- switch(private$muttype,
                     "Strand_Symmetric" = paste(rates, ", byr-1", sep = ""),
@@ -518,8 +578,8 @@ Plots <- R6::R6Class(
                             x=x.values, y=y.values, 
                             nrpoints=100, 
                             nbin=400,
-                            bandwidth=c(diff(range(x.values))/200, 
-                                        diff(range(self$sim_run$GC))/200),
+                            bandwidth=c(diff(range(x.values, na.rm = TRUE))/200, 
+                                        diff(range(self$sim_run$GC, na.rm = TRUE))/200),
                             xlab=xlab[x],
                             ylab="G+C content, %",
                             main=paste0("Scaling: ", private$scale_fac),
@@ -539,8 +599,8 @@ Plots <- R6::R6Class(
                             x=x.values, y=self$sim_run$GC, 
                             nrpoints=100, 
                             nbin=400,
-                            bandwidth=c(diff(range(x.values))/200, 
-                                        diff(range(self$sim_run$GC))/200),
+                            bandwidth=c(diff(range(x.values, na.rm = TRUE))/200, 
+                                        diff(range(self$sim_run$GC, na.rm = TRUE))/200),
                             xlab=xlab[x],
                             ylab="G+C content, %",
                             main=paste0("Scaling: ", private$scale_fac),
@@ -561,8 +621,18 @@ Plots <- R6::R6Class(
                 "../figures/Main_Simulation/",
                 private$muttype, "-", private$distribution,
                 "/Scaling_", private$scale_fac,
-                ifelse(tolerance, "/tolerance-GC-content_vs_rates-all.", 
-                "/GC-content_vs_rates-all."), private$save_as
+                ifelse(tolerance, 
+                    ifelse(private$random_init_bases,
+                    "/random_init_bases_tolerance-GC-content_vs_rates-all.", 
+                    ifelse(private$edge_skew_cases, 
+                    "/edge_skew_cases_tolerance-GC-content_vs_rates-all.",
+                    "/tolerance-GC-content_vs_rates-all.")),
+                ifelse(private$random_init_bases, 
+                    "/random_init_bases_GC-content_vs_rates-all.",
+                    ifelse(private$edge_skew_cases, 
+                    "/edge_skew_cases_GC-content_vs_rates-all.",
+                "/GC-content_vs_rates-all."))),
+                private$save_as
             )
 
             if(private$save_as == "pdf"){
@@ -573,14 +643,14 @@ Plots <- R6::R6Class(
             }
             if(tolerance){
                 par(mfcol=c(6,3))
-                plot_func(species = "eukaryotes")
-                plot_func(species = "prokaryotes")
-                plot_func(species = "viruses")
+                plot.gc.cont.func(species = "eukaryotes", tolerance = tolerance)
+                plot.gc.cont.func(species = "prokaryotes", tolerance = tolerance)
+                plot.gc.cont.func(species = "viruses", tolerance = tolerance)
             } else {
                 par(mfcol=c(6,1))
-                plot_func()
+                plot.gc.cont.func()
             }
-            pic.saved <- dev.off()     
+            pic.saved <- dev.off()
 
             total.time <- Sys.time() - t1
             cat("DONE! --", signif(total.time[[1]], 2), 
@@ -588,19 +658,150 @@ Plots <- R6::R6Class(
         },
 
         #' @description
-        #' Plot the mutation rate constants as ratio distribution plots
-        #' @param tolerance Boolean. If TRUE, will generate plots with PR-2 compliance 
-        #'  tolerance applied.
+        #' Plot the G+C skew vs. mutation rate constants
+        #' @param tolerance Boolean. If TRUE, will apply PR-2 tolerance.
         #' @return None.
-        plot_ratio_constants = function(tolerance){
+        plot_gc_skew_vs_rates = function(tolerance = FALSE){
             t1 <- Sys.time()
-            cur.msg <- paste0("Generating ratio distribution plots with tolerance: ", tolerance)
+            cur.msg <- "Generating density plot for GC skew vs. rates"
             l <- paste0(rep(".", 70-nchar(cur.msg)), collapse = "")
             cat(paste0(cur.msg, l))
 
-            plot_func = function(species = NULL){
+            #' @description
+            #' Helper function for generating plots.
+            #' @param species Character vector of c("Prokaryotes", "Eukaryotes", "Viruses")
+            #' @param tolerance Boolean. If TRUE, will apply PR-2 tolerance.
+            #' @return List of plots.
+            plot.gc.skew.func <- function(species = NULL, tolerance = FALSE){
+                rates <- c("kag", "kat", "kac", "ktc", "kgt", "kgc",  
+                           "kga", "kta", "kca", "kct", "ktg", "kcg")
+                rates.lims <- c(
+                    ceiling(max(self$sim_run[, "kag"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kat"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kac"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kga"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kgt"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kgc"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kag"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kat"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kac"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kga"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kgt"], na.rm = TRUE)),
+                    ceiling(max(self$sim_run[, "kgc"], na.rm = TRUE))                  
+                )                           
+                xlab <- switch(private$muttype,
+                    "Strand_Symmetric" = paste(rates, ", byr-1", sep = ""),
+                    "Non_Symmetric" = rates
+                )
+
+                if(tolerance){
+                    species_tol_values <- private$species_tolerance[[species]]
+                    at.tol <- species_tol_values[species_tol_values$metadata == "AT_skew", "st.dev"]
+                    gc.tol <- species_tol_values[species_tol_values$metadata == "GC_skew", "st.dev"]
+                    ind <- which(
+                        abs(self$sim_run$GCskew-0) <= gc.tol & abs(self$sim_run$ATskew-0) <= at.tol
+                    )
+
+                    plots <- lapply(1:length(rates), function(x){
+                        x.values <- self$sim_run[ind, rates[x]]
+                        y.values <- self$sim_run$GCskew[ind]
+                        smoothScatter(
+                            x=x.values, y=y.values, 
+                            nrpoints=100, 
+                            nbin=400,
+                            bandwidth=c(diff(range(x.values, na.rm = TRUE))/200, 
+                                        diff(range(self$sim_run$GC, na.rm = TRUE))/200),
+                            xlim=c(0, ceiling(max(x.values, na.rm=TRUE))),
+                            xlab=xlab[x],
+                            ylab="GC skew",
+                            main=paste0("Scaling: ", private$scale_fac),
+                            colramp=colorRampPalette(c(
+                                "white","blue","skyblue",
+                                "chartreuse3","green","yellow",
+                                "orange","red","darkred"
+                            )), 
+                            cex.axis = 1.5, cex.lab = 1.5
+                        )
+                        abline(h = 0, lty = 2, lwd = 2)
+                    })
+                } else {
+                    plots <- lapply(1:length(rates), function(x){
+                        x.values <- self$sim_run[,rates[x]] 
+                        smoothScatter(
+                            x=x.values, y=self$sim_run$GCskew, 
+                            nrpoints=100, 
+                            nbin=400,
+                            bandwidth=c(diff(range(x.values, na.rm = TRUE))/200, 
+                                        diff(range(self$sim_run$GCskew, na.rm = TRUE))/200),
+                            xlim=c(0, rates.lims[x]),                                       
+                            xlab=xlab[x],
+                            ylab="GC skew",
+                            main=paste0("Scaling: ", private$scale_fac),
+                            colramp=colorRampPalette(c(
+                                "white","blue","skyblue",
+                                "chartreuse3","green","yellow",
+                                "orange","red","darkred"
+                            )),
+                            cex.axis = 1.5, cex.lab = 1.5
+                        )
+                        abline(h = 0, lty = 2, lwd = 2)
+                    })
+                }
+                return(plots)
+            }
+
+            save_plot_name <- paste0(
+                "../figures/Main_Simulation/",
+                private$muttype, "-", private$distribution,
+                "/Scaling_", private$scale_fac,
+                ifelse(tolerance, 
+                    ifelse(private$random_init_bases,
+                    "/random_init_bases_tolerance-GC-skew_vs_rates-all.", 
+                    ifelse(private$edge_skew_cases, 
+                    "/edge_skew_cases_tolerance-GC-skew_vs_rates-all.",
+                    "/tolerance-GC-skew_vs_rates-all.")),
+                ifelse(private$random_init_bases, 
+                    "/random_init_bases_GC-skew_vs_rates-all.",
+                    ifelse(private$edge_skew_cases, 
+                    "/edge_skew_cases_GC-skew_vs_rates-all.", 
+                "/GC-skew_vs_rates-all."))),
+                private$save_as
+            )
+
+            if(private$save_as == "pdf"){
+                pdf(width = 6, height = 15, file = save_plot_name)
+            } else if(private$save_as == "png"){
+                png.width <- ifelse(tolerance, 1200, 700)
+                png(width = png.width, height = 1700, file = save_plot_name)
+            }
+            if(tolerance){
+                par(mfcol=c(12,3))
+                plot.gc.skew.func(species = "eukaryotes", tolerance = tolerance)
+                plot.gc.skew.func(species = "prokaryotes", tolerance = tolerance)
+                plot.gc.skew.func(species = "viruses", tolerance = tolerance)
+            } else {
+                par(mfcol=c(6,2))
+                plot.gc.skew.func()
+            }
+            pic.saved <- dev.off()
+
+            total.time <- Sys.time() - t1
+            cat("DONE! --", signif(total.time[[1]], 2), 
+                attr(total.time, "units"), "\n")                    
+        },        
+
+        #' @description
+        #' Plot the mutation rate constants as ratio distribution plots
+        #' @return None.
+        plot_ratio_constants = function(){
+            #' @description
+            #' Helper function for generating plots.
+            #' @param species Character vector of c("Prokaryotes", "Eukaryotes", "Viruses")
+            #' @param tolerance Boolean. If TRUE, will apply PR-2 tolerance.
+            #' @return List of plots.
+            plot.ratio.func <- function(species = NULL, tolerance = FALSE){
                 length.out <- 10*5+1
-                df.filtered <- as_tibble(self$sim_run)    
+                df.filtered <- as_tibble(self$sim_run)
 
                 # chargaff compliance
                 if(tolerance){
@@ -617,75 +818,169 @@ Plots <- R6::R6Class(
 
                 df.filtered <- df.filtered %>% 
                     dplyr::summarise(
-                        kag_ktc = kag/ktc,
-                        kat_kta = kat/kta,
-                        kac_ktg = kac/ktg,
-                        kct_kga = kct/kga,
-                        kca_kgt = kca/kgt,
-                        kcg_kgc = kcg/kgc) %>% 
+                        `kag/ktc` = kag/ktc,
+                        `kat/kta` = kat/kta,
+                        `kac/ktg` = kac/ktg,
+                        `kct/kga` = kct/kga,
+                        `kca/kgt` = kca/kgt,
+                        `kcg/kgc` = kcg/kgc) %>% 
                     tidyr::gather(key, frac) %>% 
                     dplyr::filter(frac <= 5)
-                    
-                p1 <- df.filtered %>% 
-                    ggplot(aes(x = frac, after_stat(density))) + 
-                    geom_histogram(
-                        fill = "skyblue", 
-                        color = "black",
-                        alpha = 1,
-                        breaks = seq(min(df.filtered$frac), 
-                                     max(df.filtered$frac), 
-                                     length.out = length.out)) +
-                    geom_vline(
-                        xintercept = 1,
-                        linetype = "dashed",
-                        linewidth = 1) + 
-                    facet_wrap(~key, ncol = 1) + 
-                    scale_fill_manual(values = c("#69b3a2")) + 
-                    labs(
-                        x = "Rate constant ratio",
-                        y = "Density"
-                    )
+
+                if(nrow(df.filtered) > 1){
+                    p1 <- df.filtered %>% 
+                        ggplot(aes(x = frac, after_stat(density))) + 
+                        geom_histogram(
+                            fill = "skyblue", 
+                            color = "black",
+                            alpha = 1,
+                            breaks = seq(min(df.filtered$frac, na.rm = TRUE), 
+                                        max(df.filtered$frac, na.rm = TRUE), 
+                                        length.out = length.out)) +
+                        geom_vline(
+                            xintercept = 1,
+                            linetype = "dashed",
+                            linewidth = 1) + 
+                        facet_wrap(~key, ncol = 1) + 
+                        coord_cartesian(xlim = c(0, 5)) + 
+                        scale_fill_manual(values = c("#69b3a2")) + 
+                        labs(
+                            x = "Rate constant ratio",
+                            y = "Density"
+                        )
+                } else {
+                    p1 <- NULL
+                }
                 return(p1)
             }
+
+            for(tolerance in c(FALSE, TRUE)){
+                t1 <- Sys.time()
+                cur.msg <- paste0("Generating ratio distribution plots with tolerance: ", tolerance)
+                l <- paste0(rep(".", 70-nchar(cur.msg)), collapse = "")
+                cat(paste0(cur.msg, l))
+
+                save_plot_name = paste0(
+                    "../figures/Main_Simulation/",
+                    private$muttype, "-", private$distribution,
+                    "/Scaling_", private$scale_fac,
+                    ifelse(tolerance, 
+                        ifelse(private$random_init_bases,
+                        "/random_init_bases_tolerance-rate_ratios.", 
+                        ifelse(private$edge_skew_cases, 
+                        "/edge_skew_cases_tolerance-rate_ratios.",
+                        "/tolerance-rate_ratios.")),
+                    ifelse(private$random_init_bases, 
+                        "/random_init_bases_allind-rate_ratios.",
+                        ifelse(private$edge_skew_cases, 
+                        "/edge_skew_cases_allind-rate_ratios.", 
+                    "/allind-rate_ratios."))), 
+                    private$save_as
+                )
+
+                if(tolerance){
+                    p1 <- plot.ratio.func(species = "eukaryotes", tolerance = TRUE)
+                    p2 <- plot.ratio.func(species = "prokaryotes", tolerance = TRUE)
+                    p3 <- plot.ratio.func(species = "viruses", tolerance = TRUE)
+
+                    if(private$save_as == "pdf"){
+                        pdf(width = 18, height = 14, file = save_plot_name)
+                    } else if(private$save_as == "png"){
+                        png(width = 1000, height = 700, file = save_plot_name)
+                    }
+                    gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
+                    pic.saved <- dev.off()
+                } else {
+                    if(private$save_as == "pdf"){
+                        pdf(width = 9, height = 14, file = save_plot_name)
+                    } else if(private$save_as == "png"){
+                        png(width = 700, height = 1000, file = save_plot_name)
+                    }
+                    p1 <- plot.ratio.func(tolerance = FALSE)
+                    gridExtra::grid.arrange(p1, ncol = 1)
+                    pic.saved <- dev.off()
+                }
+
+                total.time <- Sys.time() - t1
+                cat("DONE! --", signif(total.time[[1]], 2), 
+                    attr(total.time, "units"), "\n")
+            }
+        },
+
+        #' @description
+        #' Plot the mutation rate constants as ratio distribution plots
+        #' @return None.
+        plot_ratio_constants_for_strand_symmetric_cases = function(){
+            #' @description
+            #' Helper function for generating plots.
+            #' @return List of plots.
+            plot.ratio.func <- function(){
+                length.out <- 10*5+1
+                df.filtered <- as_tibble(self$sim_run)
+                df.filtered <- df.filtered %>% 
+                    dplyr::summarise(
+                        m_n = kct/kag,
+                        i_j = kca/kac) %>% 
+                    tidyr::gather(key, frac) %>% 
+                    dplyr::filter(frac <= 5)
+
+                if(nrow(df.filtered) > 1){
+                    p1 <- df.filtered %>% 
+                        ggplot(aes(x = frac, after_stat(density))) + 
+                        geom_histogram(
+                            fill = "skyblue", 
+                            color = "black",
+                            alpha = 1,
+                            breaks = seq(min(df.filtered$frac, na.rm = TRUE), 
+                                         max(df.filtered$frac, na.rm = TRUE), 
+                                         length.out = length.out)) +
+                        geom_vline(
+                            xintercept = 1,
+                            linetype = "dashed",
+                            linewidth = 1) + 
+                        facet_wrap(~key, ncol = 1, scales = "free_y") + 
+                        coord_cartesian(xlim = c(0, 5)) + 
+                        scale_fill_manual(values = c("#69b3a2")) + 
+                        labs(
+                            x = "Rate constant ratio",
+                            y = "Density"
+                        )
+                } else {
+                    p1 <- NULL
+                }
+                return(p1)
+            }
+
+            t1 <- Sys.time()
+            cur.msg <- "Generating ratio distribution plots"
+            l <- paste0(rep(".", 70-nchar(cur.msg)), collapse = "")
+            cat(paste0(cur.msg, l))
 
             save_plot_name = paste0(
                 "../figures/Main_Simulation/",
                 private$muttype, "-", private$distribution,
                 "/Scaling_", private$scale_fac,
-                ifelse(tolerance, "/tolerance-rate_ratios.", 
-                "/allind-rate_ratios."), private$save_as
+                "/allind-rate_ratios.", 
+                private$save_as
             )
 
-            if(tolerance){
-                p1 <- plot_func(species = "eukaryotes")
-                p2 <- plot_func(species = "prokaryotes")
-                p3 <- plot_func(species = "viruses")
-
-                if(private$save_as == "pdf"){
-                    pdf(width = 18, height = 14, file = save_plot_name)
-                } else if(private$save_as == "png"){
-                    png(width = 1000, height = 700, file = save_plot_name)
-                }
-                gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
-                pic.saved <- dev.off()
-            } else {
-                if(private$save_as == "pdf"){
-                    pdf(width = 9, height = 14, file = save_plot_name)
-                } else if(private$save_as == "png"){
-                    png(width = 700, height = 1000, file = save_plot_name)
-                }
-                plot_func()
-                pic.saved <- dev.off()
+            if(private$save_as == "pdf"){
+                pdf(width = 9, height = 14, file = save_plot_name)
+            } else if(private$save_as == "png"){
+                png(width = 700, height = 1000, file = save_plot_name)
             }
+            p1 <- plot.ratio.func()
+            gridExtra::grid.arrange(p1, ncol = 1)
+            pic.saved <- dev.off()
 
             total.time <- Sys.time() - t1
             cat("DONE! --", signif(total.time[[1]], 2), 
-                attr(total.time, "units"), "\n")               
+                attr(total.time, "units"), "\n")
         },
 
         #' @description
-        #' Creates a moving-picture of the GC-AT skew evolution for strand-symmetric
-        #' normal distribution simulations.
+        #' Plots the evolution of the GC-AT skew in intervals of 1 billion years
+        #' for the strand-symmetric mutation rate simulation outcomes.
         #' @return None.
         plot_skew_evolution = function(){
             # edit simulation data set
@@ -788,6 +1083,123 @@ Plots <- R6::R6Class(
                                     private$scale_fac, "/SkewEvolutionAnimation.mp4"),
                 other.opts = paste0("-pix_fmt yuv420p -b 300k ", opts)
             )
+        },
+
+        #' @description
+        #' Plot the mutation rate constants as ratio distribution plots.
+        #' @return None.
+        generate_equil_const_plots = function(){
+            #' @description
+            #' Helper function for generating plots.
+            #' @param species Character vector of c("Prokaryotes", "Eukaryotes", "Viruses")
+            #' @param tolerance Boolean. If TRUE, will apply PR-2 tolerance.
+            #' @return List of plots.
+            plot.equil.func <- function(species = NULL, tolerance = FALSE){
+                length.out <- 10*5+1
+                df.filtered <- as_tibble(self$sim_run)
+
+                # chargaff compliance
+                if(tolerance){
+                    species_tol_values <- private$species_tolerance[[species]]
+                    at.tol <- species_tol_values[species_tol_values$metadata == "AT_skew", "st.dev"]
+                    gc.tol <- species_tol_values[species_tol_values$metadata == "GC_skew", "st.dev"]
+                    ind <- which(
+                        abs(self$sim_run$GCskew-0) <= gc.tol & abs(self$sim_run$ATskew-0) <= at.tol
+                    )
+
+                    df.filtered <- df.filtered %>% 
+                        dplyr::slice(ind)
+                }
+
+                df.filtered <- df.filtered %>% 
+                    dplyr::summarise(
+                        `kct/ktc (m/n)` = kct/ktc,
+                        `kag/kga (m/n)` = kag/kga,
+                        `kca/kac (i/j)` = kca/kac,
+                        `kgt/ktg (i/j)` = kgt/ktg,
+                        `kcg/kgc (k/k)` = kcg/kgc,
+                        `kat/kta (l/l)` = kat/kta) %>% 
+                    tidyr::gather(key, frac) %>% 
+                    dplyr::filter(frac <= 5)
+
+                if(nrow(df.filtered) > 1){
+                    p1 <- df.filtered %>% 
+                        ggplot(aes(x = frac, after_stat(density))) + 
+                        geom_histogram(
+                            fill = "skyblue", 
+                            color = "black",
+                            alpha = 1,
+                            breaks = seq(min(df.filtered$frac, na.rm = TRUE), 
+                                        max(df.filtered$frac, na.rm = TRUE), 
+                                        length.out = length.out)) +
+                        geom_vline(
+                            xintercept = 1,
+                            linetype = "dashed",
+                            linewidth = 1) + 
+                        facet_wrap(~key, ncol = 1) + 
+                        coord_cartesian(xlim = c(0, 5)) + 
+                        scale_fill_manual(values = c("#69b3a2")) + 
+                        labs(
+                            x = "Rate constant ratio",
+                            y = "Density"
+                        )
+                } else {
+                    p1 <- NULL
+                }
+                return(p1)
+            }
+
+            for(tolerance in c(FALSE, TRUE)){
+                t1 <- Sys.time()
+                cur.msg <- paste0("Generating equil constant plots with tolerance: ", tolerance)
+                l <- paste0(rep(".", 70-nchar(cur.msg)), collapse = "")
+                cat(paste0(cur.msg, l))
+
+                save_plot_name = paste0(
+                    "../figures/Main_Simulation/",
+                    private$muttype, "-", private$distribution,
+                    "/Scaling_", private$scale_fac,
+                    ifelse(tolerance, 
+                        ifelse(private$random_init_bases,
+                        "/random_init_bases_tolerance-rate_ratios_fwd-div-rev.", 
+                        ifelse(private$edge_skew_cases, 
+                        "/edge_skew_cases_tolerance-rate_ratios_fwd-div-rev.",
+                        "/tolerance-rate_ratios_fwd-div-rev.")),
+                    ifelse(private$random_init_bases, 
+                        "/random_init_bases_allind-rate_ratios_fwd-div-rev.",
+                        ifelse(private$edge_skew_cases, 
+                        "/edge_skew_cases_allind-rate_ratios_fwd-div-rev.", 
+                    "/allind-rate_ratios_fwd-div-rev."))), 
+                    private$save_as
+                )
+
+                if(tolerance){
+                    p1 <- plot.equil.func(species = "eukaryotes", tolerance = TRUE)
+                    p2 <- plot.equil.func(species = "prokaryotes", tolerance = TRUE)
+                    p3 <- plot.equil.func(species = "viruses", tolerance = TRUE)
+
+                    if(private$save_as == "pdf"){
+                        pdf(width = 18, height = 14, file = save_plot_name)
+                    } else if(private$save_as == "png"){
+                        png(width = 1000, height = 700, file = save_plot_name)
+                    }
+                    gridExtra::grid.arrange(p1, p2, p3, ncol = 3)
+                    pic.saved <- dev.off()
+                } else {
+                    if(private$save_as == "pdf"){
+                        pdf(width = 9, height = 14, file = save_plot_name)
+                    } else if(private$save_as == "png"){
+                        png(width = 700, height = 1000, file = save_plot_name)
+                    }
+                    p1 <- plot.equil.func(tolerance = FALSE)
+                    gridExtra::grid.arrange(p1, ncol = 1)
+                    pic.saved <- dev.off()
+                }
+
+                total.time <- Sys.time() - t1
+                cat("DONE! --", signif(total.time[[1]], 2), 
+                    attr(total.time, "units"), "\n")
+            }
         }
     )
 )
