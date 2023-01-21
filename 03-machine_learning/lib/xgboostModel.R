@@ -257,6 +257,33 @@ xgboostModel <- R6::R6Class(
             cat("Final time taken:", signif(final.t[[1]], digits = 3), 
                 attr(final.t, "units"), "\n")
             cat(paste(c(rep("-", 70), "\n"), collapse = ""))           
+        },
+
+        #' @description
+        #' Filter simulation batches for use in symbolic regression plots.
+        #' Mainly for demonstration purposes as in the publication, the 
+        #' equations are generated based on the eukaryotic organisms.
+        #' @return None.
+        filter_datasets = function(){
+            private$import_sim_run(symbolic_regression = TRUE)
+            private$filter_compliant_data()
+            write.csv(
+                x = self$df_compliant %>% dplyr::select(-Label),
+                file = paste0("../../04-symbolic_regression/data/", 
+                              "Test/simulation_batches_compliant_",
+                              private$species, ".csv"),
+                row.names = FALSE
+            )
+            
+            private$import_sim_run(symbolic_regression = FALSE)
+            private$filter_compliant_data()
+            write.csv(
+                x = self$df_compliant %>% dplyr::select(-Label),
+                file = paste0("../../04-symbolic_regression/data/", 
+                              "Train/simulation_batches_compliant_", 
+                              private$species, ".csv"),
+                row.names = FALSE
+            )
         }
     ),
     private = list(

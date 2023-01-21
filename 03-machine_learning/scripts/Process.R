@@ -28,5 +28,5 @@ train_model$find_best_model(
 )
 train_model$get_avg_behaviour(
     seed = seed,
-    avg_ml_seed = avg_ml_seed
+    avg_ml_seed = avg_ml_see
 )
