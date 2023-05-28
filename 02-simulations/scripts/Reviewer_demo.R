@@ -1,5 +1,6 @@
-# # read arguments from job submission
-# args <- commandArgs(trailingOnly = TRUE)
+# read arguments from job submission
+args <- commandArgs(trailingOnly = TRUE)
+my.path <- as.character(args[1])
 
 # import dependencies
 suppressPackageStartupMessages(suppressWarnings(library(deSolve)))
@@ -13,7 +14,6 @@ suppressPackageStartupMessages(suppressWarnings(library(gridExtra)))
 suppressPackageStartupMessages(suppressWarnings(library(geneplotter)))
 suppressPackageStartupMessages(suppressWarnings(library(Biostrings)))
 
-my.path="/Users/paddy/Documents/DPhil/01-Chargaff/02-simulations/scripts/"
 ncpu=1
 save_as="png"
 
