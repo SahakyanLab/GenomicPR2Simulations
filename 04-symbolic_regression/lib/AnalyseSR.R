@@ -61,7 +61,7 @@ AnalyseSR <- R6::R6Class(
         #' @return None.
         get_mut_rates = function(){
             private$lynch_rates <- read.csv(
-                file = paste0("../../02-simulations/data/Raw/Michael_Lynch", 
+                file = paste0("../../02-simulations/data/Raw/Other_species/", 
                               ifelse(private$trek_scale, "/Trek_scale_", "/"),
                               "Lynch-2010-mutation-rates_FREQUENCY.csv"),
                 header = TRUE
